@@ -1,0 +1,3 @@
+[submodule "WTMainDocs"]
+	path = WTMainDocs
+	url = git@github.com:WarThunderFreeCommunity/WTMainDocs.git
