@@ -1,0 +1,4 @@
+colorama
+aeval
+aiosqlite
+sphinx
