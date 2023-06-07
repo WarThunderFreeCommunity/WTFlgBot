@@ -48,10 +48,25 @@ expected_hash="b7a710cd995b244f7cf0f9165894900e"
 wget http://84.252.74.222:9000/nextcord.zip
 actual_hash=$(md5sum nextcord.zip | cut -d " " -f 1)
 
+"
+
+discord_token: str = ""
+
+qiwi_number: str = "" # for AuthPayTempCog
+
+qiwi_token: str = "" # for AuthPayTempCog
+
+cogs_add_on_ready: list[str] = [""]
+
+test_guild_ids: list[int] = []
+
+" > configuration.py
+
 if [ "$actual_hash" = "$expected_hash" ]
 then
     python3 -m venv Venv
     source Venv/bin/activate
+    pip install -r requirements.txt
     sudo unzip nextcord.zip -d "Venv/lib/python3.8/site-packages/"
     deactivate
     rm nextcord.zip

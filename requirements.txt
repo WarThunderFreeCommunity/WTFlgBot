@@ -1,4 +1,16 @@
 colorama
 aeval
+glQiwiApi
 aiosqlite
 sphinx
+
+typing-extensions
+multidict
+idna
+yarl
+frozenlist
+aiosignal
+charset-normalizer
+async-timeout
+attrs
+aiohttp
