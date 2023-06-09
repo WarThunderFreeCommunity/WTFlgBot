@@ -16,6 +16,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.message = message
         self.admin = admin
         self.lang = lang
+        # TODO: нормальные имена забабахать
         self.data = {
             "set_cmbr": "set_cmbr",
             "set_tech": "set_tech",
