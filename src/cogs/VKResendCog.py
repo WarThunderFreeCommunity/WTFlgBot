@@ -24,7 +24,7 @@ class VKResendCog(Cog):
             await db.connect()
             if (await db.get_one("SELECT * FROM VKResendCog WHERE valId=?", (id,))) == None:
                 #print(await db.get_all("SELECT * FROM VKResendCog"))
-                await db.run_que('INSERT INTO VKResendCog (valId) VALUES (?)', (id,))
+                #await db.run_que('UPDATE VKResendCog SET valId=? WHERE valId=?', (id,))
 
                 avatar_author = 'https://sun9-24.userapi.com/impg/S0g9s8KKftuqPX3dIBHHY2jw8tgGtnC4x-i9Jg/azI1ProULmg.jpg?size=512x512&quality=95&sign=c5ee033441f41cf2ac4e2d057f6d2df6&type=album'
                 channel_id = 1114216573901754459
