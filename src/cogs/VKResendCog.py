@@ -3,6 +3,7 @@ from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
 import vk_api
 
+from ..extensions.EXFormatExtension import format_exception, ex_format
 from ..extensions.DBWorkerExtension import DataBase
 from configuration import vk_servise_key, vk_app_id, vk_domain
 
@@ -11,30 +12,30 @@ class VKResendCog(Cog):
         self.bot = bot
         self.vk_update.start()
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(seconds=5)
     async def vk_update(self):
-        vk_session = vk_api.VkApi(app_id=vk_app_id, token=vk_servise_key)
-        vk = vk_session.get_api()
-        self.wall = vk.wall.get(domain=vk_domain, count=1)
-
-        id = self.wall['items'][-1]['id']
-        db = DataBase("WarThunder.db")
-
-
-        await db.connect()
         try:
+            vk_session = vk_api.VkApi(app_id=vk_app_id, token=vk_servise_key)
+            vk = vk_session.get_api()
+            self.wall = vk.wall.get(domain=vk_domain, count=1)
+
+            id = self.wall['items'][-1]['id']
+            db = DataBase("WarThunder.db")
+            await db.connect()
             if (await db.get_one("SELECT * FROM VKResendCog WHERE valId=?", (id,))) == None:
-                print(await db.get_all("SELECT * FROM VKResendCog"))
+                #print(await db.get_all("SELECT * FROM VKResendCog"))
                 await db.run_que('INSERT INTO VKResendCog (valId) VALUES (?)', (id,))
 
                 avatar_author = 'https://sun9-24.userapi.com/impg/S0g9s8KKftuqPX3dIBHHY2jw8tgGtnC4x-i9Jg/azI1ProULmg.jpg?size=512x512&quality=95&sign=c5ee033441f41cf2ac4e2d057f6d2df6&type=album'
-                channel_id = 1109839451200438372
+                channel_id = 1114216573901754459
 
                 all = self.get_all()
 
                 url_post, text_post, photos, videos = all['url'], all['text'], all['photo'], all['videos']
-
-                videos_links = "\n".join([f"[link_to_video]({post})" for post in videos])
+                if len(videos) > 0:
+                    videos_links = "\n".join([f"[link_to_video]({post})" for post in videos])
+                else:
+                    videos_links = ""
                 embed_main = nextcord.Embed.from_dict({
                     "description": f"{text_post} \n {videos_links}",
                     "url": photos[0],
@@ -49,7 +50,7 @@ class VKResendCog(Cog):
                     },
                 })
 
-                channel = commands.get_channel(channel_id)
+                channel = self.bot.get_channel(channel_id)
                 embeds_list = []
                 embeds_list.append(embed_main)
                 if len(photos) > 1:
@@ -63,7 +64,8 @@ class VKResendCog(Cog):
 
             else:
                 print('This id is already in table')
-        except BaseException:
+        except BaseException as ex:
+            print(ex_format(ex, "vk_update"))
             pass
         finally:
             await db.close()
@@ -83,7 +85,7 @@ class VKResendCog(Cog):
         return list
 
     def get_number_res(self, items: list):
-        count = len(items)
+        count = len(items)+1
         for number in range(count):
             type = items[number]['type']
             if type == 'x':
@@ -94,9 +96,10 @@ class VKResendCog(Cog):
     def get_photos(self, items: dict):
         list = []
         length = len(items)
+        items = items
         for number in range(length):
             try:
-                photo = VKResendCog.get_number_res(items[number]['photo']['sizes'])
+                photo = self.get_number_res(items[number]['photo']['sizes'])
                 list.append(photo)
             except:
                 pass
