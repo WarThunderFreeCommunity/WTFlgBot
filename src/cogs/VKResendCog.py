@@ -6,7 +6,7 @@ import vk_api
 from ..extensions.EXFormatExtension import format_exception, ex_format
 from ..extensions.DBWorkerExtension import DataBase
 from configuration import vk_servise_key, vk_app_id, vk_domain
-
+#TODO sending skipped messages
 class VKResendCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
