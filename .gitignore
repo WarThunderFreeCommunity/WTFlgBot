@@ -120,6 +120,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
+Venv
 .env
 .venv
 env/
@@ -159,6 +160,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+# VsCode config file
 .vscode/
 
+# Project config files
 configuration.py

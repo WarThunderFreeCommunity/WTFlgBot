@@ -3,6 +3,7 @@ aeval
 glQiwiApi
 aiosqlite
 sphinx
+sphinx_rtd_theme
 
 typing-extensions
 multidict
