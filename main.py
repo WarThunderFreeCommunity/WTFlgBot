@@ -75,7 +75,7 @@ class Bot(commands.Bot):
         print(f"Logged in as {self.user} (ID: {self.user.id})\n------")
         if not self.DATA['bot-started']:
             if self.cogs_add_on_ready:
-                [self.load_extension(f"cogs.{cog}") for cog in self.cogs_add_on_ready]
+                [self.load_extension(f"src.cogs.{cog}") for cog in self.cogs_add_on_ready]
             application_info = await self.application_info()
             self.OWNERS.append(application_info.owner.id)
             self.EVAL_OWNER.append(application_info.owner.id)
@@ -101,12 +101,12 @@ async def cog_load(ctx: commands.Context, cog: str):
     if ctx.author.id not in bot.OWNERS:
         return
     try:
-        bot.load_extension(f"cogs.{cog}")
+        bot.load_extension(f"src.cogs.{cog}")
     except BaseException as ex:
         message = await ctx.channel.send(f"Exception:\n```bash\n{ex}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
     else:
-        message = await ctx.channel.send(f"```cog.{cog} loaded!```")
+        message = await ctx.channel.send(f"```src.cogs.{cog} loaded!```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 @bot.command()
@@ -120,12 +120,12 @@ async def cog_unload(ctx: commands.Context, cog: str):
     if ctx.author.id not in bot.OWNERS:
         return
     try:
-        bot.unload_extension(f"cogs.{cog}")
+        bot.unload_extension(f"src.cogs.{cog}")
     except BaseException as ex:
         message = await ctx.channel.send(f"Exception:\n```bash\n{ex}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
     else:
-        message = await ctx.channel.send(f"```cog.{cog} unloaded!```")
+        message = await ctx.channel.send(f"```src.cogs.{cog} unloaded!```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
@@ -140,14 +140,14 @@ async def cog_reload(ctx: commands.Context, cog: str):
     if ctx.author.id not in bot.OWNERS:
         return
     try:
-        bot.unload_extension(f"cogs.{cog}")
+        bot.unload_extension(f"src.cogs.{cog}")
         await asyncio.sleep(1)
-        bot.load_extension(f"cogs.{cog}")
+        bot.load_extension(f"src.cogs.{cog}")
     except BaseException as ex:
         message = await ctx.channel.send(f"Exception:\n```bash\n{ex}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
     else:
-        message = await ctx.channel.send(f"```cog.{cog} reloaded!```")
+        message = await ctx.channel.send(f"```src.cogs.{cog} reloaded!```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
@@ -167,7 +167,7 @@ async def remove_cog(ctx: commands.Context, cog: str):
         message = await ctx.channel.send(f"Exception:\n```bash\n{ex}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
     else:
-        message = await ctx.channel.send(f"```cog.{cog} removed!```")
+        message = await ctx.channel.send(f"```src.cogs.{cog} removed!```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
