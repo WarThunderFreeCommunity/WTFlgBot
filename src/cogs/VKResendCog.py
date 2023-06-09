@@ -42,7 +42,7 @@ class VKResendCog(Cog):
                     "color": 0xE74C3C,
                     "author": {
                         "name": "War Thunder Events",
-                        "url": 'https://vk.com/warthunderevents',
+                        "url": url_post,
                         "icon_url": avatar_author
                     },
                     "image": {
