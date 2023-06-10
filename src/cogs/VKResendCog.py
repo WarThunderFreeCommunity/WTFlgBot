@@ -22,7 +22,7 @@ class VKResendCog(Cog):
             try:
                 video = f"https://vk.com/video{attachment['video']['owner_id']}_{attachment['video']['id']}"
                 result_list.append(video)
-            except:
+            except BaseException:
                 pass
         return result_list
 
@@ -86,12 +86,18 @@ class VKResendCog(Cog):
 
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
-                        videos_links = "\n".join(
-                            [f"[Ссылка на видео]({video})" for video in videos]
-                        ) if len(videos) > 0 else ""
-                        photos_link = "\n".join(
-                            [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
-                        ) if len(photos) > 4 else ""
+                        try:
+                            videos_links = "\n".join(
+                                [f"[Ссылка на видео]({video})" for video in videos]
+                            ) if len(videos) > 0 else ""
+                            photos_link = "\n".join(
+                                [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
+                            ) if (len(photos) > 4 and len(photos) > 0) else ""
+                        except BaseException as ex:
+                            print(ex)
+                        finally:
+                            videos_links = ""
+                            photos_link = ""
                         embed_main = nextcord.Embed.from_dict(
                             {
                                 "description": f"{text} \n {videos_links} \n {photos_link}",
