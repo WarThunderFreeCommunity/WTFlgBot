@@ -66,6 +66,9 @@ class VKResendCog(Cog):
                 text = item["text"]
                 photos = self.get_photos(attachments)
                 videos = self.get_videos(attachments)
+                post_time = datetime.datetime.fromtimestamp(int(item['date']))#Вывод даты и времени
+
+
 
                 vk_tags = {
                     "#история@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPT"
@@ -111,6 +114,7 @@ class VKResendCog(Cog):
                                 "image": {"url": photos[0]},
                             }
                         )
+                        embed.timestamp = post_time #Вывод даты и времени
                         embeds.append(embed_main)
                         if len(photos) > 1:
                             for photo in photos[1:4]:
