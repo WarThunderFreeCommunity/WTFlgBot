@@ -58,8 +58,8 @@ class VKResendCog(Cog):
             await DB.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps([item['id'] for item in wall["items"] ]),))
 
             for item in wall["items"][::-1]:
-                #if item['id'] in last_id_posts:
-                #    continue
+                if item['id'] in last_id_posts:
+                    continue
 
                 attachments = item["attachments"]
                 url = f"https://vk.com/wall{item['owner_id']}_{item['id']}"
