@@ -80,55 +80,43 @@ class VKResendCog(Cog):
         finally:
             await db.close()
 
-    def get_videos(self, items: dict):
-        list = []
-        length = len(items)
-        for number in range(length):
+    def get_videos(self, attachments: dict):
+        result_list = []
+        for item in attachments:
             try:
-                video = f"https://vk.com/video{items[1]['video']['owner_id']}_{items[number]['video']['id']}"
-                list.append(video)
+                video = f"https://vk.com/video{item['video']['owner_id']}_{item['video']['id']}"
+                result_list.append(video)
             except:
                 pass
-        return list
+        return result_list
 
     def get_number_res(self, items: list):
-        count = len(items) + 1
-        for number in range(count):
-            type = items[number]["type"]
-            if type == "x":
-                photo_url = items[number]["url"]
+        for item in items:
+            if item["type"] == "x":
+                photo_url = item["url"]
                 return photo_url
         return items[0]["width"]
 
-    def get_photos(self, items: dict):
-        list = []
-        length = len(items)
-        items = items
-        for number in range(length):
+    def get_photos(self, attachments: dict):
+        photos = []
+        for item in attachments:
             try:
-                photo = self.get_number_res(items[number]["photo"]["sizes"])
-                list.append(photo)
-            except:
+                photo = self.get_number_res(item["photo"]["sizes"])
+                photos.append(photo)
+            except BaseException:
                 pass
-        return list
+        return photos
 
     def get_all(self):
-        try:
-            items = self.wall["items"][0]
-            # print(items['owner_id'], items['post_id'])
-            text = items["text"]
-            text = f"*{text}*"
+        for item in self.wall["items"]:
+            text = item["text"]
+            attachments = item["attachments"]
 
-            attachments = items["attachments"]
-            url = f"https://vk.com/wall{self.wall['items'][-1]['owner_id']}_{self.wall['items'][-1]['id']}"
+            url = f"https://vk.com/wall{item['owner_id']}_{item['id']}"
             photo = self.get_photos(attachments)
             videos = self.get_videos(attachments)
-            return {"url": url, "text": text, "videos": videos, "photo": photo}
-        except:
-            pass
+            z = {"url": url, "text": text, "videos": videos, "photo": photo}
 
-    # async def create(self, ctx: Context):
-    #     await ctx.send("test", view=PersistentView())
 
 
 # on_ready cog!
