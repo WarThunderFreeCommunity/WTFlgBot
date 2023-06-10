@@ -165,6 +165,7 @@ cython_debug/
 
 # Project config files
 configuration.py
+nextcord.zip
 
 # Project test files
 test.py
