@@ -164,6 +164,7 @@ cython_debug/
 .vscode/
 
 # Project config files
+temp_outut.txt
 configuration.py
 nextcord.zip
 
@@ -172,3 +173,5 @@ test.py
 
 # DataBases
 WarThunder.db
+
+
