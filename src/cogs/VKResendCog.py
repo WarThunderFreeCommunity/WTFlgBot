@@ -115,7 +115,7 @@ class VKResendCog(Cog):
                                 "image": {"url": photos[0]},
                             }
                         )
-                        embed.timestamp = post_time #Вывод даты и времени
+                        embed_main.timestamp = post_time #Вывод даты и времени
                         embeds.append(embed_main)
                         if len(photos) > 1:
                             for photo in photos[1:4]:
