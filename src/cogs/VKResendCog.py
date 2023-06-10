@@ -99,7 +99,6 @@ class VKResendCog(Cog):
                             ) if (len(photos) > 4 and len(photos) > 0) else ""
                         except BaseException as ex:
                             print(ex)
-                        finally:
                             videos_links = ""
                             photos_link = ""
                         embed_main = nextcord.Embed.from_dict(

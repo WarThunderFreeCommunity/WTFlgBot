@@ -45,8 +45,8 @@ class DeleteMessage(nextcord.ui.View):
             await interaction.message.delete()  
 
     async def on_timeout(self):
-        self.delete_message.disabled = True
-        self.delete_all.disabled = True
+        self.delete_this.disabled = True
+        self.delete_two.disabled = True
         try:
             await self.message.edit(view=self)     
         except BaseException:
@@ -195,11 +195,10 @@ async def eval_string(ctx, *, content):
     if "```" in content:
         content = "\n".join(content.split('\n')[1:-1])
     try:
-        message = await aeval.aeval(content, standart_args, {})
-        await message.edit(view=DeleteMessage(ctx=ctx, message=message))
+        await aeval.aeval(content, standart_args, {})
     except Exception as ex:
         result = "".join(format_exception(ex, ex, ex.__traceback__))
-        message = await ctx.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")   
+        message = await ctx.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
