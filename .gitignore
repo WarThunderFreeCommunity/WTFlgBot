@@ -168,3 +168,6 @@ configuration.py
 
 # Project test files
 test.py
+
+# DataBases
+WarThunder.db

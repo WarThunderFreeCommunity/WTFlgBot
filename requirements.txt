@@ -1,6 +1,7 @@
 colorama
 aeval
 glQiwiApi
+vk_api
 aiosqlite
 sphinx
 sphinx_rtd_theme
