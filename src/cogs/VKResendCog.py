@@ -68,16 +68,16 @@ class VKResendCog(Cog):
                 videos = self.get_videos(attachments)
 
                 vk_tags = {
-                    "#история@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPT\
-                        wkl4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
-                    "#видео@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPTwkl\
-                        4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
-                    "#events_discord@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6B\
-                        sY2YWasAedLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",# wt events
-                    "#конкурс@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6BsY2YWasA\
-                        edLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",  # wt events
-                    "#CDK@warthunderevents" : "https://discord.com/api/webhooks/1117021162313109544/16LCbmNEmhnkSITdgPJ\
-                        RZrE9PC3dWC2dtT95nVHBtVo6cSn2n7bRIBETH5bV_8Eel65c", # cdk
+                    "#история@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPT"
+                        "wkl4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
+                    "#видео@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPTwkl"
+                        "4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
+                    "#events_discord@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6B"
+                        "sY2YWasAedLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",# wt events
+                    "#конкурс@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6BsY2YWasA"
+                        "edLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",  # wt events
+                    "#CDK@warthunderevents" : "https://discord.com/api/webhooks/1117021162313109544/16LCbmNEmhnkSITdgPJ"
+                        "RZrE9PC3dWC2dtT95nVHBtVo6cSn2n7bRIBETH5bV_8Eel65c", # cdk
                 } # TODO: Возможна фича с двойной отправкой в один канал, если указываешь два тега идущие к одному вебхуку
                 used_hoocks = {}
 
@@ -92,10 +92,9 @@ class VKResendCog(Cog):
                         photos_link = "\n".join(
                             [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
                         ) if len(photos) > 4 else ""
-                        print(len(photos))
                         embed_main = nextcord.Embed.from_dict(
                             {
-                                "description": f"{text} \n {videos_links} \n {None}",
+                                "description": f"{text} \n {videos_links} \n {photos_link}",
                                 "url": photos[0],
                                 "color": 0xFF2E2E,
                                 "author": {
@@ -118,7 +117,6 @@ class VKResendCog(Cog):
                         used_hoocks[item['id']] = vk_tags[vk_tag]
                         async with aiohttp.ClientSession() as session:
                             webhook = nextcord.Webhook.from_url(vk_tags[vk_tag], session=session)
-                            print("sended")
                             await webhook.send(embeds=embeds)                
         except BaseException as ex:
             print(ex_format(ex, "test"))

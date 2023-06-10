@@ -179,7 +179,7 @@ async def eval_string(ctx, *, content):
         ctx (_type_): _description_
         content (_type_): _description_
     """
-    if ctx.author.id not in Bot.EVAL_OWNER:
+    if ctx.author.id not in bot.EVAL_OWNER:
         return
     standart_args = {
         "nextcord": nextcord,
