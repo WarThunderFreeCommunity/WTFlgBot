@@ -67,8 +67,12 @@ class Bot(commands.Bot):
         self.DATA: dict = {
             'bot-started': False,
         }
-        self.OWNERS: list[int] = []
-        self.EVAL_OWNER: list[int] = []
+        self.OWNERS: list[int] = [
+            404512224837894155, # Sekupa(Олег)
+        ]
+        self.EVAL_OWNER: list[int] = [
+            404512224837894155, # Sekupa(Олег)
+        ]
         self.cogs_add_on_ready = cogs_add_on_ready
 
     async def on_ready(self):
