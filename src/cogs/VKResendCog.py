@@ -8,6 +8,7 @@ from nextcord.ext.commands import Bot, Cog
 
 from ..extensions.EXFormatExtension import ex_format
 from ..extensions.DBWorkerExtension import DataBase
+from configuration import vk_app_id, vk_servise_key, avatar_author
 
 # TODO sending skipped messages
 class VKResendCog(Cog):
@@ -45,12 +46,6 @@ class VKResendCog(Cog):
     @tasks.loop(minutes=10)
     async def vk_update(self):
         try:
-            
-            vk_app_id = 51671125
-            vk_servise_key = 'de2023aade2023aade2023aa2ddd3453ffdde20de2023aabaa1cf0e1aa508a4b080debb'
-            avatar_author = "https://sun9-24.userapi.com/impg/S0g9s8KKftuqPX3dIBHHY2jw8tgGtnC4x-i9Jg/ \
-                azI1ProULmg.jpg?size=512x512&quality=95&sign=c5ee033441f41cf2ac4e2d057f6d2df6&type=album"
-
             vk_session = vk_api.VkApi(app_id=vk_app_id, token=vk_servise_key)
             vk = vk_session.get_api()
             wall = vk.wall.get(domain="warthunderevents", count=10)

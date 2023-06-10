@@ -56,6 +56,12 @@ qiwi_number: str = "" # for AuthPayTempCog
 
 qiwi_token: str = "" # for AuthPayTempCog
 
+vk_app_id: int = 000000
+
+vk_servise_key: str = ""
+
+avatar_author: str = ""
+
 cogs_add_on_ready: list[str] = [""]
 
 test_guild_ids: list[int] = []
