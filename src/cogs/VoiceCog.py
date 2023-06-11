@@ -110,7 +110,7 @@ class VoiceCog(Cog):
         self.on_init.start()
         self.update_consts.start()
 
-    @tasks.loop(count=1)
+    @tasks.loop(count=1, reconnect=False)
     async def on_init(self):
         # TODO: чекер каналов активных
         # TODO: Изменение сообщений в старых каналах (или удаление или перезапись но новые view)
