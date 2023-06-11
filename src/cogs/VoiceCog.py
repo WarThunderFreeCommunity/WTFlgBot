@@ -55,6 +55,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
+        # TODO Модал с выборов боевого рейтинга (только float, длина от 1(1.0) до 4(10.7))
         ...
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
@@ -63,6 +64,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
+        # TODO Select отправляется сообщение с select и флагами стран
         ...
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
@@ -87,6 +89,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
+        
+        # TODO отправляется select со списком юзеров в канале, после кика появляется кнопка запрета
+        #  участнику на вход и установкой ограничения для канала
         ...
 
 
