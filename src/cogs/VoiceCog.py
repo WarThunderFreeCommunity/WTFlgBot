@@ -35,7 +35,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
     async def update_message(self, member, before=None, after=None):
         # TODO: Вызывается при изменении on_voice_state_update для канала с данным сообщением,
-        #  с участием channel_id с данным view (хранить в словаре)
+        #  с участием channel_id с данным view (хранится в словаре)
         # Общая логика ещё не продумана Суть в обновлении select для разных людей, можно просто 
         #  заменить кнопками
         # Сюда же можно запихнуть логику обновления админа
@@ -90,8 +90,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if not await self.check_admin_rules(interaction):
             return
         
-        # TODO отправляется Select со списком юзеров в канале, после кика появляется кнопка запрета
-        #  участнику на вход и установкой ограничения для канала
+        # TODO отправляется Select со списком юзеров в канале, после кика в том же сообщении появляется кнопка запрета
+        #  участнику на вход и установкой ограничения для канала (меняются права)
         ...
         
 
