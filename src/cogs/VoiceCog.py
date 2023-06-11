@@ -55,7 +55,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
-        # TODO Модал с выборов боевого рейтинга (только float, длина от 1(1.0) до 4(10.7))
+        # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         ...
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
@@ -77,10 +77,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
         modal = nextcord.ui.Modal("your limit...",)
         limit = nextcord.ui.TextInput(label="limit..", default_value=4)
         modal.add_item(limit)
-        async def callback_fun(interaction: nextcord.Interaction):
+        async def modal_callback(interaction: nextcord.Interaction):
             await interaction.channel.edit(user_limit=int(limit.value))
             await interaction.response.send_message(f"the limit is set to {limit.value}...")
-        modal.callback = callback_fun
+        modal.callback = modal_callback
         await interaction.response.send_modal(modal)
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
@@ -90,10 +90,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if not await self.check_admin_rules(interaction):
             return
         
-        # TODO отправляется select со списком юзеров в канале, после кика появляется кнопка запрета
+        # TODO отправляется Select со списком юзеров в канале, после кика появляется кнопка запрета
         #  участнику на вход и установкой ограничения для канала
         ...
-
+        
 
 class VoiceCog(Cog):
     def __init__(self, bot: Bot):
