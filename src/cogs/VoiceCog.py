@@ -5,8 +5,8 @@ import nextcord
 from nextcord.ext import tasks
 from nextcord.ext.commands import Bot, Cog
 
-from extensions.DBWorkerExtension import DataBase
-from extensions.EXFormatExtension import ex_format
+from ..extensions.DBWorkerExtension import DataBase
+from ..extensions.EXFormatExtension import ex_format
 
 
 class VoiceChannelsButtons(nextcord.ui.View):
@@ -14,7 +14,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         super().__init__(timeout=None)
         self.channel = channel
         self.message = message
-        self.admin = admin
+        self.admins = [admin.id]
         self.lang = lang
         # TODO: нормальные имена забабахать
         self.data = {
@@ -41,22 +41,37 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # Сюда же можно запихнуть логику обновления админа
         print([member.name for member in self.channel.members])
 
+    async def check_admin_rules(self, interaction: nextcord.Interaction):
+        if interaction.user.id in self.admins \
+        or interaction.user.guild_permissions.administrator:
+            return True
+        await interaction.response.send_message("Вы не администратор", ephemeral=True)
+        return False
+        ...
+        
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового
         """
-        pass
+        if not await self.check_admin_rules(interaction):
+            return
+        ...
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def set_tech(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка нации для голосового
         """
-        pass
+        if not await self.check_admin_rules(interaction):
+            return
+        ...
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def set_limit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка лимита пользователей
         """
+        if not await self.check_admin_rules(interaction):
+            return
+        
         modal = nextcord.ui.Modal("your limit...",)
         limit = nextcord.ui.TextInput(label="limit..", default_value=4)
         modal.add_item(limit)
@@ -70,7 +85,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def kick_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Удаления участника из канала
         """
-        pass
+        if not await self.check_admin_rules(interaction):
+            return
+        ...
 
 
 class VoiceCog(Cog):

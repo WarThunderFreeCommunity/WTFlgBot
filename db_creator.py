@@ -76,5 +76,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    print("Настройки для тестового сервера")
     asyncio.run(main())
