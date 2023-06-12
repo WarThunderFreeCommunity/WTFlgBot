@@ -1,12 +1,48 @@
 import time
 import json
+from typing import List, Optional
 
 import nextcord
+from nextcord.components import SelectOption
 from nextcord.ext import tasks
 from nextcord.ext.commands import Bot, Cog
+from nextcord.utils import MISSING
 
 from ..extensions.DBWorkerExtension import DataBase
 from ..extensions.EXFormatExtension import ex_format
+
+
+class KickUserSelect(nextcord.ui.Select):
+    def __init__(self, admins, members, lang):
+        self.data = {
+
+        } if lang == "ru" else {
+
+        }
+        options = [
+            nextcord.SelectOption(
+                label=member.name,
+                description=f"Удалить из канала {member.name}",
+                value=member.id,
+                emoji="❌" if member.id in admins else "✔"
+            ) for member in members
+        ]
+        options.append(nextcord.SelectOption(label="Очистить выбор"))
+        print(len(members))
+        super().__init__(
+            placeholder="Выберите человека, которого нужно кикнуть...",
+            min_values=1, 
+            max_values=len(members) if len(members) > 0 else 1,
+            options=options, 
+        )
+        async def callback(self, interaction: nextcord.Interaction):
+            answer = "Из канала удалены:\n"
+            for member in self.values:
+                answer += f"{member.name}\n"
+                await member.move_to(None)
+            
+
+        ...
 
 
 class VoiceChannelsButtons(nextcord.ui.View):
@@ -26,6 +62,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
         } if lang == "ru" else {
             ...
         }
+        self.select = KickUserSelect(
+            self.admins, self.channel.members, "ru"
+        )
+        self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
         self.set_tech.label = self.data["set_tech"]
         self.set_limit.label = self.data["set_limit"]
@@ -39,7 +79,15 @@ class VoiceChannelsButtons(nextcord.ui.View):
         #  заменить кнопками
         # Сюда же можно запихнуть логику обновления админа
         print([member.name for member in self.channel.members])
-        
+
+        self.set_cmbr.disabled = True
+        self.remove_item(self.select)
+        self.select = KickUserSelect(
+            self.admins, self.channel.members, "ru"
+        )
+        self.add_item(self.select)
+        await self.message.edit(view=self)
+
         # Новый человек в канале
         if pos == "in":
             # TODO обновление селектов?? или у нас всё таки будут кнопки, я не уверен...
@@ -115,18 +163,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
         
         # TODO переделать на управление правами (для доната)
         ...
-    
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
-    async def kick_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Удаления участника из канала
-        """
-        if not await self.check_admin_rules(interaction):
-            return
-        
-        # TODO отправляется Select со списком юзеров в канале, после кика в том же сообщении появляется кнопка запрета
-        #  участнику на вход и установкой ограничения для канала (меняются права)
-        # TODO SELECT можно прикрплять сразу, вместо данной кнокпи
-        ...
         
 
 class VoiceCog(Cog):
@@ -148,6 +184,7 @@ class VoiceCog(Cog):
     async def on_init(self):
         # TODO: чекер каналов активных
         # TODO: Изменение сообщений в старых каналах (или удаление или перезапись но новые view)
+        # TODO тут также обновляются channel_views и подобное
         ...
 
     def cog_unload(self):
@@ -181,6 +218,8 @@ class VoiceCog(Cog):
         before: nextcord.VoiceState,
         after: nextcord.VoiceState,
     ): # TODO: Всё это дело можно разнести по разным функциям, дабы не городить 100500 вложенностей
+        if before.channel == after.channel:
+            return
         try:
             db = DataBase("WarThunder.db")
             await db.connect()
@@ -220,6 +259,7 @@ class VoiceCog(Cog):
             if before.channel and (before.channel.id in created_channels) \
             and len(before.channel.members) == 0: # Канал стал пустым, view обновляются автоматически!
                     await before.channel.delete()
+                    del self.channel_views[before.channel.id]
                     await db.run_que(
                         "DELETE FROM VoiceCogChannels WHERE channelId=?",
                         (before.channel.id,)
