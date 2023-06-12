@@ -18,7 +18,7 @@ class KickUserSelect(nextcord.ui.Select):
         self.members = members
         self.data = {
             ...
-        } if lang == "ru" else {
+        } if lang == "RU" else {
             ...
         }
         options = [
@@ -39,12 +39,12 @@ class KickUserSelect(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
-        if interaction.user.id not in self.admins:
-            await interaction.send("Вы не являяетесь администратором", ephemeral=True)
-            return
         if "clear" in self.values:
             self.values.remove("clear")
         if not self.values:
+            return
+        if interaction.user.id not in self.admins:
+            await interaction.send("Вы не являяетесь администратором", ephemeral=True)
             return
         answer = "Из канала удалены:\n"
         for member_id in self.values:
@@ -69,11 +69,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "set_tech": "set_tech",
             "set_limit": "set_limit",
             "close_channel": "close_channel",
-        } if lang == "ru" else {
+        } if lang == "RU" else {
             ...
         }
         self.select = KickUserSelect(
-            self.admins, self.channel.members, "ru"
+            self.admins, self.channel.members, "RU"
         )
         self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
@@ -112,7 +112,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             self.remove_item(self.select)
             self.select = KickUserSelect(
-                self.admins, self.channel.members, "ru"
+                self.admins, self.channel.members, "RU"
             )
             self.add_item(self.select)
             await self.message.edit(view=self)
@@ -297,8 +297,8 @@ class VoiceCog(Cog):
                 )
                 await member.move_to(voice_channel)
                 message = await voice_channel.send(f"{member.name} created voice") # TODO: embeds
-                lang = self.parrent_channel_ids[str(before.channel.id)].split(":")[0]
-                view = VoiceChannelsButtons(lang, member, message, voice_channel) # TODO: языки
+                lang = self.parrent_channel_ids[str(after.channel.id)].split(":")[0]
+                view = VoiceChannelsButtons(lang, member, message, voice_channel)
                 await message.edit(view=view)
                 self.channel_views[voice_channel.id] = view
                 await db.run_que(
