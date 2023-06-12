@@ -95,10 +95,12 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             # Новый человек в канале
             if pos == "in":
+                # TODO тут слишком мало, что то забыл 💀
                 ...
             
             # Человек вышел
             if pos == "out":
+                # TODO тут слишком мало, что то забыл xD
                 if member.id in self.admins and len(self.admins) == 1:
                     self.admins.remove(member.id)
                     self.admins.append(self.channel.members[0].id)
@@ -106,7 +108,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         "UPDATE VoiceCogChannels SET creatorId=? WHERE creatorId=?",
                         (self.channel.members[0].id, member.id)
                     )
-                
                 ...
 
             self.remove_item(self.select)
@@ -127,7 +128,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
             return True
         await interaction.send("Вы не администратор", ephemeral=True)
         return False
-        ...
         
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
