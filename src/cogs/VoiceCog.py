@@ -54,8 +54,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
             # TODO обновление селектов?? или у нас всё таки будут кнопки, я не уверен...
 
 
-
-
     async def check_admin_rules(self, interaction: nextcord.Interaction):
         if interaction.user.id in self.admins \
         or interaction.user.guild_permissions.administrator:
