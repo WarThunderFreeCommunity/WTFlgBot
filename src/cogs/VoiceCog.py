@@ -89,24 +89,37 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # Сюда же можно запихнуть логику обновления админа
         
         #print([member.name for member in self.channel.members])
+        try:
+            db = DataBase("WarThunder.db")
+            await db.connect()
 
-        self.remove_item(self.select)
-        self.select = KickUserSelect(
-            self.admins, self.channel.members, "ru"
-        )
-        self.add_item(self.select)
-        await self.message.edit(view=self)
+            # Новый человек в канале
+            if pos == "in":
+                ...
+            
+            # Человек вышел
+            if pos == "out":
+                if member.id in self.admins and len(self.admins) == 1:
+                    self.admins.remove(member.id)
+                    self.admins.append(self.channel.members[0].id)
+                    await db.run_que(
+                        "UPDATE VoiceCogChannels SET creatorId=? WHERE creatorId=?",
+                        (self.channel.members[0].id, member.id)
+                    )
+                
+                ...
 
-        # Новый человек в канале
-        if pos == "in":
-            ...
-        
-        # Человек вышел
-        if pos == "out":
-            if member.id in self.admins and len(self.admins) == 0:
-                self.admins.remove(member.id)
-                self.admins.append(self.channel.members[0].id)
+            self.remove_item(self.select)
+            self.select = KickUserSelect(
+                self.admins, self.channel.members, "ru"
+            )
+            self.add_item(self.select)
+            await self.message.edit(view=self)
 
+        except BaseException as ex:
+            print(ex_format(ex, "update_message"))
+        finally:
+            await db.close()
 
     async def check_admin_rules(self, interaction: nextcord.Interaction):
         if interaction.user.id in self.admins \
@@ -183,15 +196,48 @@ class VoiceCog(Cog):
         self.smiles_channel = None
         self.afk_channel_id = None
         self.parrent_channel_ids = None
-        self.on_init.start()
         self.update_consts.start()
-
+        self.on_init.start()
+    
     @tasks.loop(count=1, reconnect=False)
     async def on_init(self):
-        # TODO: чекер каналов активных
-        # TODO: Изменение сообщений в старых каналах (или удаление или перезапись но новые view)
-        # TODO тут также обновляются channel_views и подобное
-        ...
+        # Чекер активных каналов
+        try:
+            db = DataBase("WarThunder.db")
+            await db.connect()
+            channels_db = await db.get_all("SELECT * FROM VoiceCogChannels")
+            for channel_db in channels_db:
+                try:
+                    voice_channel: nextcord.VoiceChannel = await self.bot.fetch_channel(channel_db[1])
+                except nextcord.errors.NotFound:
+                    await db.run_que("DELETE FROM VoiceCogChannels WHERE channelId=?", (channel_db[1],))
+                    continue
+                if len(voice_channel.members) == 0:
+                    await voice_channel.delete()
+                    await db.run_que("DELETE FROM VoiceCogChannels WHERE channelId=?", (voice_channel.id,))
+                    continue
+                if channel_db[2] not in [member.id for member in voice_channel.members]:
+                    await db.run_que(
+                        "UPDATE VoiceCogChannels SET creatorId=? WHERE creatorId=?",
+                        (channel_db[2], voice_channel.members[0])
+                    )
+                try:
+                    message = await voice_channel.fetch_message(channel_db[4])
+                except nextcord.errors.NotFound:
+                    message = await voice_channel.send("creating new message...")
+                    await db.run_que( # Можно на всякий указать id канала, но и так норм
+                        "UPDATE VoiceCogChannels SET messageId=? WHERE messageId=?",
+                        (message.id, channel_db[4])
+                    )
+                lang = self.parrent_channel_ids[str(channel_db[0])].split(":")[0]
+                view = VoiceChannelsButtons(lang, voice_channel.members[0], message, voice_channel)
+                await message.edit(view=view) # TODO embeds
+                self.channel_views[voice_channel.id] = view
+       
+        except BaseException as ex:
+            print(ex_format(ex, "on_init"))
+        finally:
+            await db.close()
 
     def cog_unload(self):
         pass
@@ -227,6 +273,7 @@ class VoiceCog(Cog):
         if before.channel == after.channel:
             return
         try:
+            voice_channel = None
             db = DataBase("WarThunder.db")
             await db.connect()
 
@@ -250,7 +297,8 @@ class VoiceCog(Cog):
                 )
                 await member.move_to(voice_channel)
                 message = await voice_channel.send(f"{member.name} created voice") # TODO: embeds
-                view = VoiceChannelsButtons("ru", member, message, voice_channel) # TODO: языки
+                lang = self.parrent_channel_ids[str(before.channel.id)].split(":")[0]
+                view = VoiceChannelsButtons(lang, member, message, voice_channel) # TODO: языки
                 await message.edit(view=view)
                 self.channel_views[voice_channel.id] = view
                 await db.run_que(
@@ -265,11 +313,11 @@ class VoiceCog(Cog):
             if before.channel and (before.channel.id in created_channels) \
             and len(before.channel.members) == 0: # Канал стал пустым, view обновляются автоматически!
                     await before.channel.delete()
-                    del self.channel_views[before.channel.id]
                     await db.run_que(
                         "DELETE FROM VoiceCogChannels WHERE channelId=?",
                         (before.channel.id,)
-                    )                    
+                    )
+                    del self.channel_views[before.channel.id]
 
             # Updating view in channel
             if before.channel and before.channel.id in self.channel_views:
