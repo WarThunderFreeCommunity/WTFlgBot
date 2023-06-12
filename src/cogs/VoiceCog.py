@@ -33,13 +33,29 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.set_limit.label = self.data["set_limit"]
         self.kick_user.label = self.data["kick_user"]
 
-    async def update_message(self, member, before=None, after=None):
+    async def update_message(self, member, pos):
         # TODO: Вызывается при изменении on_voice_state_update для канала с данным сообщением,
         #  с участием channel_id с данным view (хранится в словаре)
         # Общая логика ещё не продумана Суть в обновлении select для разных людей, можно просто 
         #  заменить кнопками
         # Сюда же можно запихнуть логику обновления админа
         print([member.name for member in self.channel.members])
+        
+        # Новый человек в канале
+        if pos == "in":
+            # TODO обновление селектов?? или у нас всё таки будут кнопки, я не уверен...
+            ...
+        
+        # Человек вышел
+        if pos == "out":
+            if member.id in self.admins and len(self.admins) == 0:
+                self.admins.remove(member.id)
+                self.admins.append(self.channel.members[0].id)
+
+            # TODO обновление селектов?? или у нас всё таки будут кнопки, я не уверен...
+
+
+
 
     async def check_admin_rules(self, interaction: nextcord.Interaction):
         if interaction.user.id in self.admins \
@@ -151,12 +167,6 @@ class VoiceCog(Cog):
             db = DataBase("WarThunder.db")
             await db.connect()
 
-            # Updating view in channel
-            if before.channel and before.channel.id in self.channel_views:
-                await self.channel_views[before.channel.id].update_message(member, before)
-            if after.channel and after.channel.id in self.channel_views:
-                await self.channel_views[after.channel.id].update_message(member, after=after)
-
             # Connected to creater new channel (channel with ➕ in name)
             if after.channel and (str(after.channel.id) in self.parrent_channel_ids):
                 # Поиск последнего канала в категории (сортировка, заключается в распределении между None и creater channel)
@@ -196,7 +206,13 @@ class VoiceCog(Cog):
                         "DELETE FROM VoiceCogChannels WHERE channelId=?",
                         (before.channel.id,)
                     )                    
-        
+
+            # Updating view in channel
+            if before.channel and before.channel.id in self.channel_views:
+                await self.channel_views[before.channel.id].update_message(member, pos="out")
+            if after.channel and after.channel.id in self.channel_views:
+                await self.channel_views[after.channel.id].update_message(member, pos="in")
+
         except BaseException as ex:
             if voice_channel:
                 await voice_channel.delete()
