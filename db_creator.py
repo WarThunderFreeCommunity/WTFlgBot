@@ -4,7 +4,7 @@ import json
 from src.extensions.DBWorkerExtension import DataBase
 
 
-# consts
+# consts TEST SERVER
 # data_str = json.dumps(data)
 # data = json.loads(data_str)
 # A, H, P - последние
