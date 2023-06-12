@@ -1,12 +1,9 @@
 import time
 import json
-from typing import List, Optional
 
 import nextcord
-from nextcord.components import SelectOption
 from nextcord.ext import tasks
 from nextcord.ext.commands import Bot, Cog
-from nextcord.utils import MISSING
 
 from ..extensions.DBWorkerExtension import DataBase
 from ..extensions.EXFormatExtension import ex_format
