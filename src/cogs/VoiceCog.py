@@ -21,16 +21,15 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "set_cmbr": "set_cmbr",
             "set_tech": "set_tech",
             "set_limit": "set_limit",
+            "close_channel": "close_channel",
             "kick_user": "kick_user"
         } if lang == "ru" else {
-            "set_cmbr": "set_cmbr",
-            "set_tech": "set_tech",
-            "set_limit": "set_limit",
-            "kick_user": "kick_user"
+            ...
         }
         self.set_cmbr.label = self.data["set_cmbr"]
         self.set_tech.label = self.data["set_tech"]
         self.set_limit.label = self.data["set_limit"]
+        self.close_channel.label = self.data["close_channel"]
         self.kick_user.label = self.data["kick_user"]
 
     async def update_message(self, member, pos):
@@ -100,6 +99,26 @@ class VoiceChannelsButtons(nextcord.ui.View):
         await interaction.response.send_modal(modal)
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
+    async def close_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """Установка лимита пользователей
+        """
+        if not await self.check_admin_rules(interaction):
+            return
+        
+        # TODO переделать на управление правами (для доната)
+        ...
+    
+    @nextcord.ui.button(label="add_member", style=nextcord.ButtonStyle.grey)
+    async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """Добавление людей в права канала
+        """
+        if not await self.check_admin_rules(interaction):
+            return
+        
+        # TODO переделать на управление правами (для доната)
+        ...
+    
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def kick_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Удаления участника из канала
         """
@@ -108,6 +127,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         
         # TODO отправляется Select со списком юзеров в канале, после кика в том же сообщении появляется кнопка запрета
         #  участнику на вход и установкой ограничения для канала (меняются права)
+        # TODO SELECT можно прикрплять сразу, вместо данной кнокпи
         ...
         
 
