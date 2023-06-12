@@ -17,9 +17,9 @@ class KickUserSelect(nextcord.ui.Select):
         self.admins = admins
         self.members = members
         self.data = {
-
+            ...
         } if lang == "ru" else {
-
+            ...
         }
         options = [
             nextcord.SelectOption(
@@ -29,29 +29,31 @@ class KickUserSelect(nextcord.ui.Select):
                 emoji="❌" if member.id in admins else "✅"
             ) for member in members
         ]
-        options.append(nextcord.SelectOption(label="Очистить выбор"))
-        print(len(members))
+        options.append(nextcord.SelectOption(label="Очистить выбор", value="clear"))
         super().__init__(
             placeholder="Выберите человека, которого нужно кикнуть...",
             min_values=1, 
-            max_values=len(members) if len(members) > 0 else 1,
+            # len(members) if len(members) > 0 else 1  # Просто перестраховка
+            max_values=len(members),
             options=options, 
         )
 
     async def callback(self, interaction: nextcord.Interaction):
         if interaction.user.id not in self.admins:
             await interaction.send("Вы не являяетесь администратором", ephemeral=True)
+            return
+        if "clear" in self.values:
+            self.values.remove("clear")
+        if not self.values:
+            return
         answer = "Из канала удалены:\n"
         for member_id in self.values:
-            if member_id in self.admins:
+            if int(member_id) in self.admins:
                 continue
             member = [member for member in self.members if int(member_id) == member.id][0]
             answer += f"{member.name}\n"
             await member.move_to(None)
             await interaction.send(answer, ephemeral=True)
-            
-
-        ...
 
 
 class VoiceChannelsButtons(nextcord.ui.View):
@@ -85,9 +87,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # Общая логика ещё не продумана Суть в обновлении select для разных людей, можно просто 
         #  заменить кнопками
         # Сюда же можно запихнуть логику обновления админа
-        print([member.name for member in self.channel.members])
+        
+        #print([member.name for member in self.channel.members])
 
-        self.set_cmbr.disabled = True
         self.remove_item(self.select)
         self.select = KickUserSelect(
             self.admins, self.channel.members, "ru"
@@ -97,7 +99,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
         # Новый человек в канале
         if pos == "in":
-            # TODO обновление селектов?? или у нас всё таки будут кнопки, я не уверен...
             ...
         
         # Человек вышел
@@ -105,8 +106,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
             if member.id in self.admins and len(self.admins) == 0:
                 self.admins.remove(member.id)
                 self.admins.append(self.channel.members[0].id)
-
-            # TODO обновление селектов?? или у нас всё таки будут кнопки, я не уверен...
 
 
     async def check_admin_rules(self, interaction: nextcord.Interaction):
