@@ -1,5 +1,6 @@
 import time
 import json
+from typing import Optional
 
 import nextcord
 from nextcord.ext import tasks
@@ -7,6 +8,34 @@ from nextcord.ext.commands import Bot, Cog
 
 from ..extensions.DBWorkerExtension import DataBase
 from ..extensions.EXFormatExtension import ex_format
+
+
+class AfterKickUserButtons(nextcord.ui.View):
+    def __init__(self, lang, members, message) -> None:
+        self.members = members
+        self.message = message
+        super().__init__(timeout=5*60)
+
+    @nextcord.ui.button(label="close_for_all", style=nextcord.ButtonStyle.grey)
+    async def close_for_all(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        
+        
+        ...
+    
+    @nextcord.ui.button(label="close_for_user", style=nextcord.ButtonStyle.grey)
+    async def close_for_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+
+
+        ...
+    
+
+    async def on_timeout(self):
+        self.delete_this.disabled = True
+        self.delete_two.disabled = True
+        try:
+            await self.message.edit(view=self)     
+        except BaseException:
+            pass
 
 
 class KickUserSelect(nextcord.ui.Select):
@@ -44,13 +73,16 @@ class KickUserSelect(nextcord.ui.Select):
             await interaction.send("Вы не являяетесь администратором", ephemeral=True)
             return
         answer = "Из канала удалены:\n"
+        members = []
         for member_id in self.values:
             if int(member_id) in self.admins:
                 continue
             member = [member for member in self.members if int(member_id) == member.id][0]
+            members.append(member)
             answer += f"{member.name}\n"
             await member.move_to(None)
-            await interaction.send(answer, ephemeral=True)
+        message = await interaction.send(answer, ephemeral=True)
+        await message.edit(view=AfterKickUserButtons("RU", members, message))
 
 
 class VoiceChannelsButtons(nextcord.ui.View):
@@ -74,18 +106,15 @@ class VoiceChannelsButtons(nextcord.ui.View):
         )
         self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
+        self.set_cmbr.disabled = True
         self.set_tech.label = self.data["set_tech"]
+        self.set_tech.disabled = True
         self.set_limit.label = self.data["set_limit"]
         self.close_channel.label = self.data["close_channel"]
+        self.close_channel.disabled = True
 
     async def update_message(self, member, pos):
-        # TODO: Вызывается при изменении on_voice_state_update для канала с данным сообщением,
-        #  с участием channel_id с данным view (хранится в словаре)
-        # Общая логика ещё не продумана Суть в обновлении select для разных людей, можно просто 
-        #  заменить кнопками
-        # Сюда же можно запихнуть логику обновления админа
-        
-        #print([member.name for member in self.channel.members])
+        # Вызывается при изменении on_voice_state_update для канала с данным сообщением
         try:
             db = DataBase("WarThunder.db")
             await db.connect()
