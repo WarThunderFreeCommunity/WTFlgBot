@@ -14,6 +14,8 @@ from ..extensions.EXFormatExtension import ex_format
 
 class KickUserSelect(nextcord.ui.Select):
     def __init__(self, admins, members, lang):
+        self.admins = admins
+        self.members = members
         self.data = {
 
         } if lang == "ru" else {
@@ -24,7 +26,7 @@ class KickUserSelect(nextcord.ui.Select):
                 label=member.name,
                 description=f"Удалить из канала {member.name}",
                 value=member.id,
-                emoji="❌" if member.id in admins else "✔"
+                emoji="❌" if member.id in admins else "✅"
             ) for member in members
         ]
         options.append(nextcord.SelectOption(label="Очистить выбор"))
@@ -35,11 +37,18 @@ class KickUserSelect(nextcord.ui.Select):
             max_values=len(members) if len(members) > 0 else 1,
             options=options, 
         )
-        async def callback(self, interaction: nextcord.Interaction):
-            answer = "Из канала удалены:\n"
-            for member in self.values:
-                answer += f"{member.name}\n"
-                await member.move_to(None)
+
+    async def callback(self, interaction: nextcord.Interaction):
+        if interaction.user.id not in self.admins:
+            await interaction.response.send_message("Вы не являяетесь администратором", ephemeral=True)
+        answer = "Из канала удалены:\n"
+        for member_id in self.values:
+            if member_id in self.admins:
+                continue
+            member = [member for member in self.members if int(member_id) == member.id][0]
+            answer += f"{member.name}\n"
+            await member.move_to(None)
+            await interaction.response.send_message(answer, ephemeral=True)
             
 
         ...
@@ -58,7 +67,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "set_tech": "set_tech",
             "set_limit": "set_limit",
             "close_channel": "close_channel",
-            "kick_user": "kick_user"
         } if lang == "ru" else {
             ...
         }
@@ -70,7 +78,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.set_tech.label = self.data["set_tech"]
         self.set_limit.label = self.data["set_limit"]
         self.close_channel.label = self.data["close_channel"]
-        self.kick_user.label = self.data["kick_user"]
 
     async def update_message(self, member, pos):
         # TODO: Вызывается при изменении on_voice_state_update для канала с данным сообщением,
