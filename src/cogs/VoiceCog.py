@@ -40,7 +40,7 @@ class KickUserSelect(nextcord.ui.Select):
 
     async def callback(self, interaction: nextcord.Interaction):
         if interaction.user.id not in self.admins:
-            await interaction.response.send_message("Вы не являяетесь администратором", ephemeral=True)
+            await interaction.send("Вы не являяетесь администратором", ephemeral=True)
         answer = "Из канала удалены:\n"
         for member_id in self.values:
             if member_id in self.admins:
@@ -48,7 +48,7 @@ class KickUserSelect(nextcord.ui.Select):
             member = [member for member in self.members if int(member_id) == member.id][0]
             answer += f"{member.name}\n"
             await member.move_to(None)
-            await interaction.response.send_message(answer, ephemeral=True)
+            await interaction.send(answer, ephemeral=True)
             
 
         ...
@@ -113,7 +113,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if interaction.user.id in self.admins \
         or interaction.user.guild_permissions.administrator:
             return True
-        await interaction.response.send_message("Вы не администратор", ephemeral=True)
+        await interaction.send("Вы не администратор", ephemeral=True)
         return False
         ...
         
@@ -147,7 +147,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         modal.add_item(limit)
         async def modal_callback(interaction: nextcord.Interaction):
             await interaction.channel.edit(user_limit=int(limit.value))
-            await interaction.response.send_message(f"the limit is set to {limit.value}...")
+            await interaction.send(f"the limit is set to {limit.value}...")
         modal.callback = modal_callback
         await interaction.response.send_modal(modal)
     
