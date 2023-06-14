@@ -14,17 +14,17 @@ class AfterKickUserButtons(nextcord.ui.View):
     def __init__(self, lang, members, message) -> None:
         self.members = members
         self.message = message
+        self.close_for_all.disabled = True
+        self.close_for_user.disabled = True
         super().__init__(timeout=5*60)
 
     @nextcord.ui.button(label="close_for_all", style=nextcord.ButtonStyle.grey)
     async def close_for_all(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         
-        
         ...
     
     @nextcord.ui.button(label="close_for_user", style=nextcord.ButtonStyle.grey)
     async def close_for_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-
 
         ...
     
@@ -42,22 +42,31 @@ class KickUserSelect(nextcord.ui.Select):
     def __init__(self, admins, members, lang):
         self.admins = admins
         self.members = members
+        self.lang = lang
         self.data = {
-            ...
-        } if lang == "RU" else {
-            ...
+            "options_descr": "Удалить из канала ",
+            "options_clear": "Очистить выбор",
+            "placeholder": "Выберите человека, которого нужно кикнуть...",
+            "no_admin": "Вы не являяетесь администратором",
+            "answer": "Из канала удалены:\n",
+        } if self.lang == "RU" else {
+            "options_descr": "Remove from Channel ",
+            "options_clear": "Clear selection",
+            "placeholder": "Choose the person you want to kick...",
         }
         options = [
             nextcord.SelectOption(
                 label=member.name,
-                description=f"Удалить из канала {member.name}",
+                description=self.data["options_descr"] + member.name,
                 value=member.id,
                 emoji="❌" if member.id in admins else "✅"
             ) for member in members
         ]
-        options.append(nextcord.SelectOption(label="Очистить выбор", value="clear"))
+        options.append(nextcord.SelectOption(
+            label=self.data["options_clear"], value="clear")
+        )
         super().__init__(
-            placeholder="Выберите человека, которого нужно кикнуть...",
+            placeholder=self.data["placeholder"],
             min_values=1, 
             # len(members) if len(members) > 0 else 1  # Просто перестраховка
             max_values=len(members),
@@ -70,19 +79,21 @@ class KickUserSelect(nextcord.ui.Select):
         if not self.values:
             return
         if interaction.user.id not in self.admins:
-            await interaction.send("Вы не являяетесь администратором", ephemeral=True)
+            await interaction.send(self.data["no_admin"], ephemeral=True)
             return
-        answer = "Из канала удалены:\n"
+        answer = self.data["answer"]
         members = []
         for member_id in self.values:
             if int(member_id) in self.admins:
                 continue
-            member = [member for member in self.members if int(member_id) == member.id][0]
+            member = [
+                member for member in self.members if int(member_id) == member.id
+            ][0]
             members.append(member)
             answer += f"{member.name}\n"
             await member.move_to(None)
         message = await interaction.send(answer, ephemeral=True)
-        await message.edit(view=AfterKickUserButtons("RU", members, message))
+        await message.edit(view=AfterKickUserButtons(self.lang, members, message))
 
 
 class VoiceChannelsButtons(nextcord.ui.View):
@@ -157,16 +168,17 @@ class VoiceChannelsButtons(nextcord.ui.View):
         
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Установка БР для голосового
+        """Установка БР для голосового (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
+        # TODO: как вариант или запись в бд или поиспрямо по имени канала через strip(' ')
         # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         ...
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def set_tech(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Установка нации для голосового
+        """Установка нации для голосового (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
@@ -191,7 +203,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def close_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Установка лимита пользователей
+        """Закрывает чат для вступления других людей (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
@@ -201,7 +213,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
     
     @nextcord.ui.button(label="add_member", style=nextcord.ButtonStyle.grey)
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Добавление людей в права канала
+        """Добавление людей в права канала (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
