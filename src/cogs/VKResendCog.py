@@ -90,6 +90,7 @@ class VKResendCog(Cog):
                     if vk_tag in text and used_hoocks.get(item['id']) != vk_tags[vk_tag]:
                         if len(text) > 3500:
                             text = text[:3500] + f"\n[Текст был обрезан, оригинал смотрите в группе]({url})"
+
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
                         try:

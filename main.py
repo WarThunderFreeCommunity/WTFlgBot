@@ -45,8 +45,8 @@ class DeleteMessage(nextcord.ui.View):
             await interaction.message.delete()  
 
     async def on_timeout(self):
-        self.delete_message.disabled = True
-        self.delete_all.disabled = True
+        self.delete_this.disabled = True
+        self.delete_two.disabled = True
         try:
             await self.message.edit(view=self)     
         except BaseException:
@@ -67,8 +67,12 @@ class Bot(commands.Bot):
         self.DATA: dict = {
             'bot-started': False,
         }
-        self.OWNERS: list[int] = []
-        self.EVAL_OWNER: list[int] = []
+        self.OWNERS: list[int] = [
+            404512224837894155, # Sekupa(Олег)
+        ]
+        self.EVAL_OWNER: list[int] = [
+            404512224837894155, # Sekupa(Олег)
+        ]
         self.cogs_add_on_ready = cogs_add_on_ready
 
     async def on_ready(self):
@@ -179,7 +183,7 @@ async def eval_string(ctx, *, content):
         ctx (_type_): _description_
         content (_type_): _description_
     """
-    if ctx.author.id not in Bot.EVAL_OWNER:
+    if ctx.author.id not in bot.EVAL_OWNER:
         return
     standart_args = {
         "nextcord": nextcord,
@@ -191,11 +195,10 @@ async def eval_string(ctx, *, content):
     if "```" in content:
         content = "\n".join(content.split('\n')[1:-1])
     try:
-        message = await aeval.aeval(content, standart_args, {})
-        await message.edit(view=DeleteMessage(ctx=ctx, message=message))
+        await aeval.aeval(content, standart_args, {})
     except Exception as ex:
         result = "".join(format_exception(ex, ex, ex.__traceback__))
-        message = await ctx.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")   
+        message = await ctx.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 

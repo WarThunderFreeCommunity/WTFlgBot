@@ -48,7 +48,7 @@ expected_hash="b7a710cd995b244f7cf0f9165894900e"
 wget http://84.252.74.222:9000/nextcord.zip
 actual_hash=$(md5sum nextcord.zip | cut -d " " -f 1)
 
-"
+cat > configuration.py << EOL
 
 discord_token: str = ""
 
@@ -64,9 +64,9 @@ avatar_author: str = ""
 
 cogs_add_on_ready: list[str] = [""]
 
-test_guild_ids: list[int] = []
+test_guild_ids: list[int] = [] 
 
-" > configuration.py
+EOL
 
 if [ "$actual_hash" = "$expected_hash" ]
 then
