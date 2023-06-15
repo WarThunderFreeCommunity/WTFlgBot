@@ -1,5 +1,6 @@
 import json
 import aiohttp
+import datetime
 
 import vk_api
 import nextcord
@@ -22,7 +23,7 @@ class VKResendCog(Cog):
             try:
                 video = f"https://vk.com/video{attachment['video']['owner_id']}_{attachment['video']['id']}"
                 result_list.append(video)
-            except:
+            except BaseException:
                 pass
         return result_list
 
@@ -58,44 +59,53 @@ class VKResendCog(Cog):
             await DB.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps([item['id'] for item in wall["items"] ]),))
 
             for item in wall["items"][::-1]:
-                #if item['id'] in last_id_posts:
-                #    continue
+                if item['id'] in last_id_posts:
+                    print("contunie post:", item["text"], "\n\n")
+                    continue
 
                 attachments = item["attachments"]
                 url = f"https://vk.com/wall{item['owner_id']}_{item['id']}"
                 text = item["text"]
                 photos = self.get_photos(attachments)
                 videos = self.get_videos(attachments)
+                post_time = datetime.datetime.fromtimestamp(int(item['date']))#Вывод даты и времени
+
+
 
                 vk_tags = {
-                    "#история@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPT\
-                        wkl4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
-                    "#видео@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPTwkl\
-                        4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
-                    "#events_discord@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6B\
-                        sY2YWasAedLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",# wt events
-                    "#конкурс@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6BsY2YWasA\
-                        edLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",  # wt events
-                    "#CDK@warthunderevents" : "https://discord.com/api/webhooks/1117021162313109544/16LCbmNEmhnkSITdgPJ\
-                        RZrE9PC3dWC2dtT95nVHBtVo6cSn2n7bRIBETH5bV_8Eel65c", # cdk
+                    "#история@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPT"
+                        "wkl4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
+                    "#видео@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPTwkl"
+                        "4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
+                    "#events_discord@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6B"
+                        "sY2YWasAedLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",# wt events
+                    "#конкурс@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6BsY2YWasA"
+                        "edLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",  # wt events
+                    "#CDK@warthunderevents" : "https://discord.com/api/webhooks/1117021162313109544/16LCbmNEmhnkSITdgPJ"
+                        "RZrE9PC3dWC2dtT95nVHBtVo6cSn2n7bRIBETH5bV_8Eel65c", # cdk
                 } # TODO: Возможна фича с двойной отправкой в один канал, если указываешь два тега идущие к одному вебхуку
                 used_hoocks = {}
 
                 for vk_tag in vk_tags:
                     if vk_tag in text and used_hoocks.get(item['id']) != vk_tags[vk_tag]:
-
+                        if len(text) > 3500:
+                            text = text[:3500] + f"\n[Текст был обрезан, оригинал смотрите в группе]({url})"
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
-                        videos_links = "\n".join(
-                            [f"[Ссылка на видео]({video})" for video in videos]
-                        ) if len(videos) > 0 else ""
-                        photos_link = "\n".join(
-                            [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
-                        ) if len(photos) > 4 else ""
-                        print(len(photos))
+                        try:
+                            videos_links = "\n".join(
+                                [f"[Ссылка на видео]({video})" for video in videos]
+                            ) if len(videos) > 0 else ""
+                            photos_link = "\n".join( 
+                                [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
+                            ) if (len(photos) > 4 and len(photos) > 0) else ""
+                        except BaseException as ex:
+                            print(ex)
+                            videos_links = ""
+                            photos_link = ""
                         embed_main = nextcord.Embed.from_dict(
                             {
-                                "description": f"{text} \n {videos_links} \n {None}",
+                                "description": f"{text} \n {videos_links} \n {photos_link}",
                                 "url": photos[0],
                                 "color": 0xFF2E2E,
                                 "author": {
@@ -106,6 +116,8 @@ class VKResendCog(Cog):
                                 "image": {"url": photos[0]},
                             }
                         )
+                        embed_main.set_footer(text="Имя паблика кликабельно, ссылка ведёт на пост. Гиперссылки - не поместившиеся картинки или видео.")
+                        embed_main.timestamp = post_time  # Вывод даты и времени
                         embeds.append(embed_main)
                         if len(photos) > 1:
                             for photo in photos[1:4]:
@@ -118,10 +130,9 @@ class VKResendCog(Cog):
                         used_hoocks[item['id']] = vk_tags[vk_tag]
                         async with aiohttp.ClientSession() as session:
                             webhook = nextcord.Webhook.from_url(vk_tags[vk_tag], session=session)
-                            print("sended")
                             await webhook.send(embeds=embeds)                
         except BaseException as ex:
-            print(ex_format(ex, "test"))
+            print(ex_format(ex, "vk_update"))
         finally:
             await DB.close()
 
