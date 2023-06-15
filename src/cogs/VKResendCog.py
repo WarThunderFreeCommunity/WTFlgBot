@@ -60,6 +60,7 @@ class VKResendCog(Cog):
 
             for item in wall["items"][::-1]:
                 if item['id'] in last_id_posts:
+                    print("contunie post:", item["text"], "\n\n")
                     continue
 
                 attachments = item["attachments"]
@@ -87,6 +88,7 @@ class VKResendCog(Cog):
 
                 for vk_tag in vk_tags:
                     if vk_tag in text and used_hoocks.get(item['id']) != vk_tags[vk_tag]:
+                        print(text)
 
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
@@ -130,7 +132,7 @@ class VKResendCog(Cog):
                             webhook = nextcord.Webhook.from_url(vk_tags[vk_tag], session=session)
                             await webhook.send(embeds=embeds)                
         except BaseException as ex:
-            print(ex_format(ex, "test"))
+            print(ex_format(ex, "vk_update"))
         finally:
             await DB.close()
 
