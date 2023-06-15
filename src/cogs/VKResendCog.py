@@ -88,15 +88,15 @@ class VKResendCog(Cog):
 
                 for vk_tag in vk_tags:
                     if vk_tag in text and used_hoocks.get(item['id']) != vk_tags[vk_tag]:
-                        print(text)
-
+                        if len(text) > 3500:
+                            text = text[:3500] + f"[Текст был обрезан, оригинал смотрите в посте]({url})"
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
                         try:
                             videos_links = "\n".join(
                                 [f"[Ссылка на видео]({video})" for video in videos]
                             ) if len(videos) > 0 else ""
-                            photos_link = "\n".join(
+                            photos_link = "\n".join( 
                                 [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
                             ) if (len(photos) > 4 and len(photos) > 0) else ""
                         except BaseException as ex:

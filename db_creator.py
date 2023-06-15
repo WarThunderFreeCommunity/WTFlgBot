@@ -10,9 +10,9 @@ async def main():
 
     # Creating table in VKResendCog
     await db.run_que("CREATE TABLE IF NOT EXISTS VKResendCog (valId INTEGER)")
-    ids = [1344, 1341, 1339, 1338, 1337, 1234, 5432, 6357, 3457, 7643]
+    ids = [8989, 8888, 8465, 4567, 1377, 1376, 1374, 1373, 1371, 1370]
     await db.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps(ids),))
-    
+    # 1383, 1380
     await db.close()
 
 
