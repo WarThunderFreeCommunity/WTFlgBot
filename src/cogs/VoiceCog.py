@@ -427,6 +427,7 @@ class VoiceCog(Cog):
                     reason=f"{member.name} in '{after.channel.name}'",  # (отображается в Audit Log)
                 )
                 await member.move_to(voice_channel)
+                await voice_channel.edit(sync_permissions=True)
                 message = await voice_channel.send(f"{member.name} created voice")
                 lang = self.parrent_channel_ids[str(after.channel.id)].split(":")[0]
                 view = VoiceChannelsButtons(lang, member, message, voice_channel)
