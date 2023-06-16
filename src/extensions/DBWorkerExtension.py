@@ -166,7 +166,7 @@ async def __test():
     }
     await db.run_que(
         "UPDATE VoiceCogConstants SET constantValue=? WHERE constantName=?",
-        ("parrent_channel_ids", f"{json.dumps(parrent_channel_ids)}")
+        (json.dumps(parrent_channel_ids), "parrent_channel_ids")
     )
     await db.close()
 
