@@ -91,7 +91,7 @@ class KickUserSelect(nextcord.ui.Select):
         if not self.values:
             return
         if interaction.user.id not in self.admins \
-        or interaction.user.guild_permissions.administrator:
+        or not interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
             return
         answer = self.data["answer"]
