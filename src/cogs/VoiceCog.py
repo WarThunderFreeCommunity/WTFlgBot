@@ -1,10 +1,13 @@
+import datetime
 import time
 import json
-from typing import Optional
+from typing import Any, Optional, Union
 
 import nextcord
+from nextcord.colour import Colour
 from nextcord.ext import tasks
 from nextcord.ext.commands import Bot, Cog
+from nextcord.types.embed import EmbedType
 
 from ..extensions.DBWorkerExtension import DataBase
 from ..extensions.EXFormatExtension import ex_format
@@ -14,6 +17,11 @@ class AfterKickUserButtons(nextcord.ui.View):
     def __init__(self, lang, members, message) -> None:
         self.members = members
         self.message = message
+        self.data = { # TODO
+            ...
+        } if lang == "RU" else { 
+            ...
+        }
         self.close_for_all.disabled = True # TODO
         self.close_for_user.disabled = True # TODO
         super().__init__(timeout=5*60)
@@ -49,12 +57,14 @@ class KickUserSelect(nextcord.ui.Select):
             "placeholder": "Выберите человека, которого нужно кикнуть...",
             "no_admin": "Вы не являяетесь администратором",
             "answer": "Из канала удалены:\n",
+            "none_answer": "Ни кто не удалён..."
         } if self.lang == "RU" else {
             "options_descr": "Remove from Channel ",
             "options_clear": "Clear selection",
             "placeholder": "Choose the person you want to kick...",
             "no_admin": "You are not an administrator",
             "answer": "Removed from the channel:\n",
+            "none_answer": "No one has been deleted..."
         }
         options = [
             nextcord.SelectOption(
@@ -80,7 +90,8 @@ class KickUserSelect(nextcord.ui.Select):
             self.values.remove("clear")
         if not self.values:
             return
-        if interaction.user.id not in self.admins:
+        if interaction.user.id not in self.admins \
+        or interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
             return
         answer = self.data["answer"]
@@ -94,8 +105,34 @@ class KickUserSelect(nextcord.ui.Select):
             members.append(member)
             answer += f"{member.name}\n"
             await member.move_to(None)
+        if answer == self.data["answer"]:
+            answer = self.data["none_answer"]
         message = await interaction.send(answer, ephemeral=True)
         await message.edit(view=AfterKickUserButtons(self.lang, members, message))
+
+
+class VoiceInfoEmbed(nextcord.Embed):
+    def __init__(self, lang, admins, channel: nextcord.VoiceChannel):
+        # TODO ...
+        self.data = {
+            "user_designation": "Учатник ",
+            "admin": "с правами администратора:",
+            "not_admin": "без прав администратора:",
+        } if lang == "RU" else {
+            "user_designation": "Member ",
+            "admin": "with administrator rights:",
+            "not_admin": "without administrator rights:",
+        }
+        super().__init__(
+            colour=nextcord.Colour.red(),
+            title=channel.name.replace("●", ""),
+        )
+        for member in channel.members:
+            self.add_field(
+                name=self.data["user_designation"] + (self.data["admin"] \
+                    if member.id in admins else self.data["not_admin"]),
+                value=f"{member.mention};"
+            )
 
 
 class VoiceChannelsButtons(nextcord.ui.View):
@@ -105,14 +142,32 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.message = message
         self.admins = [admin.id]
         self.lang = lang
-        # TODO: нормальные имена забабахать
         self.data = {
-            "set_cmbr": "set_cmbr",
-            "set_tech": "set_tech",
-            "set_limit": "set_limit",
-            "close_channel": "close_channel",
+            "set_cmbr": "Установить боевой рейтинг",
+            "set_tech": "Установить нацию игры",
+            "set_limit": "Установить лимит пользователей",
+            "close_channel": "Закрыть канал",
+            "open_channel": "Открыть канал",
+            "add_member": "Добавить людей в закрытый канал",
+            "del_member": "Удалить людей из закрытого канала",
+            "set_limit_modal_name": "Установите лимит участников",
+            "set_limit_modal_input": 'Лимит...',
+            "after_limit_message": "Лимит установлен на: ",
+            "after_limit_error": "Максимум 99, 0 для удаления ограничения",
+            "else_error": "Что-то пошло не так...",
         } if lang == "RU" else {
-            ...
+            "set_cmbr": "Set combat rating",
+            "set_tech": "Set game nation",
+            "set_limit": "Set limit users",
+            "close_channel": "Close channel",
+            "open_channel": "Open channel",
+            "add_member": "Add people to closed channel",
+            "del_member": "Remove people from closed channel",
+            "set_limit_modal_name": "Set limit of members",
+            "set_limit_modal_input": "Limit...",
+            "after_limit_message": "Limit set to: ",
+            "after_limit_error": "Maximum of 99, 0 to remove the restriction",
+            "else_error": "Something went wrong"
         }
         self.select = KickUserSelect(
             self.admins, self.channel.members, "RU"
@@ -122,12 +177,15 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.set_tech.label = self.data["set_tech"]
         self.set_limit.label = self.data["set_limit"]
         self.close_channel.label = self.data["close_channel"]
+        self.add_member.label = self.data["add_member"]
+        self.del_member.label = self.data["del_member"]
 
         # TODO
         self.set_cmbr.disabled = True
         self.set_tech.disabled = True
         self.close_channel.disabled = True
         self.add_member.disabled = True
+        self.del_member.disabled = True
 
     async def update_message(self, member, pos):
         # Вызывается при изменении on_voice_state_update для канала с данным сообщением
@@ -137,12 +195,12 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             # Новый человек в канале
             if pos == "in":
-                # TODO тут слишком мало, что то забыл 💀
+                # тут слишком мало, что то забыл 💀
                 ...
             
             # Человек вышел
             if pos == "out":
-                # TODO тут слишком мало, что то забыл xD
+                # тут слишком мало, что то забыл xD
                 if member.id in self.admins and len(self.admins) == 1:
                     self.admins.remove(member.id)
                     self.admins.append(self.channel.members[0].id)
@@ -157,7 +215,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 self.admins, self.channel.members, "RU"
             )
             self.add_item(self.select)
-            await self.message.edit(view=self)
+            embed = VoiceInfoEmbed(self.lang, self.admins, self.channel)
+            await self.message.edit(embed=embed, view=self)
 
         except BaseException as ex:
             print(ex_format(ex, "update_message"))
@@ -170,62 +229,90 @@ class VoiceChannelsButtons(nextcord.ui.View):
             return True
         await interaction.send("Вы не администратор", ephemeral=True)
         return False
-        
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
+    
+    # TODO: Переделать логику для назначения дополнительных администраторов
+
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=1)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
-        # TODO: как вариант или запись в бд или поиспрямо по имени канала через strip(' ')
+        # TODO: запись инфы о канале в бд
         # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         ...
     
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=1)
     async def set_tech(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка нации для голосового (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
+        # TODO: запись инфы о канале в бд
         # TODO Select отправляется сообщение с select и флагами стран
         ...
 
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=1)
     async def set_limit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка лимита пользователей
         """
         if not await self.check_admin_rules(interaction):
             return
-        
-        modal = nextcord.ui.Modal("your limit...",)
-        limit = nextcord.ui.TextInput(label="limit..", default_value=4)
-        modal.add_item(limit)
+        modal = nextcord.ui.Modal(self.data["set_limit_modal_name"])
+        modal.add_item(
+            limit := nextcord.ui.TextInput(
+                label=self.data["set_limit_modal_input"],
+                default_value=4
+            )
+        )
         async def modal_callback(interaction: nextcord.Interaction):
-            await interaction.channel.edit(user_limit=int(limit.value))
-            await interaction.send(f"the limit is set to {limit.value}...")
+            try:
+                if int(limit.value) < 99:
+                    await interaction.channel.edit(user_limit=int(limit.value))
+                    await interaction.send(
+                        str(self.data["after_limit_message"] + limit.value),
+                        ephemeral=True
+                    )
+                else:
+                    await interaction.send(
+                        self.data["after_limit_error"],
+                        ephemeral=True
+                    )
+            except BaseException:
+                await interaction.send(
+                    self.data["else_error"],
+                    ephemeral=True
+                )
         modal.callback = modal_callback
         await interaction.response.send_modal(modal)
     
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
     async def close_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Закрывает чат для вступления других людей (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
-        
         # TODO переделать на управление правами (для доната)
         ...
     
-    @nextcord.ui.button(label="add_member", style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Добавление людей в права канала (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
-        
         # TODO переделать на управление правами (для доната)
         ...
         
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """Удаление людей в правах канала (только премиум)
+        """
+        if not await self.check_admin_rules(interaction):
+            return
+        # TODO переделать на управление правами (для доната)
+        ...
+    
 
 class VoiceCog(Cog):
     def __init__(self, bot: Bot):
@@ -258,7 +345,7 @@ class VoiceCog(Cog):
                 if len(voice_channel.members) == 0:
                     await voice_channel.delete()
                     await db.run_que("DELETE FROM VoiceCogChannels WHERE channelId=?", (voice_channel.id,))
-                    continue
+                    continue# TODO embeds
                 if channel_db[2] not in [member.id for member in voice_channel.members]:
                     await db.run_que(
                         "UPDATE VoiceCogChannels SET creatorId=? WHERE creatorId=?",
@@ -274,7 +361,8 @@ class VoiceCog(Cog):
                     )
                 lang = self.parrent_channel_ids[str(channel_db[0])].split(":")[0]
                 view = VoiceChannelsButtons(lang, voice_channel.members[0], message, voice_channel)
-                await message.edit(view=view) # TODO embeds
+                embed = VoiceInfoEmbed(lang, [voice_channel.members[0].id], voice_channel)
+                await message.edit(content=None, embed=embed, view=view) # TODO embeds
                 self.channel_views[voice_channel.id] = view
        
         except BaseException as ex:
@@ -339,10 +427,11 @@ class VoiceCog(Cog):
                     reason=f"{member.name} in '{after.channel.name}'",  # (отображается в Audit Log)
                 )
                 await member.move_to(voice_channel)
-                message = await voice_channel.send(f"{member.name} created voice") # TODO: embeds
+                message = await voice_channel.send(f"{member.name} created voice")
                 lang = self.parrent_channel_ids[str(after.channel.id)].split(":")[0]
                 view = VoiceChannelsButtons(lang, member, message, voice_channel)
-                await message.edit(view=view)
+                embed = VoiceInfoEmbed(lang, [member.id], voice_channel)
+                await message.edit(content=None, embed=embed, view=view)
                 self.channel_views[voice_channel.id] = view
                 await db.run_que(
                     "INSERT INTO VoiceCogChannels (parrentId, channelId, creatorId, channelTime, messageId) \
