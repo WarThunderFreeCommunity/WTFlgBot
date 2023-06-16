@@ -15,6 +15,7 @@ from ..extensions.EXFormatExtension import ex_format
 
 class AfterKickUserButtons(nextcord.ui.View):
     def __init__(self, lang, members, message) -> None:
+        super().__init__(timeout=5*60)
         self.members = members
         self.message = message
         self.data = { # TODO
@@ -22,20 +23,21 @@ class AfterKickUserButtons(nextcord.ui.View):
         } if lang == "RU" else { 
             ...
         }
-        self.close_for_all.disabled = True # TODO
+        self.close_for_all.label = "close_for_all"
+        self.close_for_user.label = "close_for_user"
+
+        self.close_for_all_.disabled = True # TODO
         self.close_for_user.disabled = True # TODO
-        super().__init__(timeout=5*60)
 
-    @nextcord.ui.button(label="close_for_all", style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def close_for_all(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        
+        await interaction.send("close_for_all")
         ...
     
-    @nextcord.ui.button(label="close_for_user", style=nextcord.ButtonStyle.grey)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def close_for_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-
+        await interaction.send("close_for_user")
         ...
-    
 
     async def on_timeout(self):
         self.delete_this.disabled = True
@@ -85,13 +87,14 @@ class KickUserSelect(nextcord.ui.Select):
             options=options, 
         )
 
+
     async def callback(self, interaction: nextcord.Interaction):
         if "clear" in self.values:
             self.values.remove("clear")
         if not self.values:
             return
         if interaction.user.id not in self.admins \
-        or not interaction.user.guild_permissions.administrator:
+        and not interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
             return
         answer = self.data["answer"]
