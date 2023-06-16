@@ -241,6 +241,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
+        # Первым делом требуется получить инфу о cmbr с бд, if None то назначаем если уже есть меняем
         # TODO: запись инфы о канале в бд
         # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         ...
