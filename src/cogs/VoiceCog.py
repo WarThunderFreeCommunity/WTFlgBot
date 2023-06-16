@@ -14,8 +14,8 @@ class AfterKickUserButtons(nextcord.ui.View):
     def __init__(self, lang, members, message) -> None:
         self.members = members
         self.message = message
-        self.close_for_all.disabled = True
-        self.close_for_user.disabled = True
+        self.close_for_all.disabled = True # TODO
+        self.close_for_user.disabled = True # TODO
         super().__init__(timeout=5*60)
 
     @nextcord.ui.button(label="close_for_all", style=nextcord.ButtonStyle.grey)
@@ -53,6 +53,8 @@ class KickUserSelect(nextcord.ui.Select):
             "options_descr": "Remove from Channel ",
             "options_clear": "Clear selection",
             "placeholder": "Choose the person you want to kick...",
+            "no_admin": "You are not an administrator",
+            "answer": "Removed from the channel:\n",
         }
         options = [
             nextcord.SelectOption(
@@ -117,12 +119,15 @@ class VoiceChannelsButtons(nextcord.ui.View):
         )
         self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
-        self.set_cmbr.disabled = True
         self.set_tech.label = self.data["set_tech"]
-        self.set_tech.disabled = True
         self.set_limit.label = self.data["set_limit"]
         self.close_channel.label = self.data["close_channel"]
+
+        # TODO
+        self.set_cmbr.disabled = True
+        self.set_tech.disabled = True
         self.close_channel.disabled = True
+        self.add_member.disabled = True
 
     async def update_message(self, member, pos):
         # Вызывается при изменении on_voice_state_update для канала с данным сообщением
