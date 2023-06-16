@@ -3,8 +3,10 @@ import asyncio
 
 import aiosqlite
 
-from .EXFormatExtension import ex_format
-
+try:
+    from .EXFormatExtension import ex_format
+except ImportError:
+    from EXFormatExtension import ex_format
 
 class DataBase:
     def __init__(self, db_name):
