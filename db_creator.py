@@ -43,12 +43,16 @@ async def main():
     creatorId - id админа канала, используется в ...
     channelTime - время создания, нигде не используется
     messageId - id сообщения в голосовом канале 
+    cmbrId - id боевой рейтинг голосового канала
+    techId - id нация голосового канала
+    limitId - id лимит людей у канала
     """
     await db.run_que(
         "CREATE TABLE VoiceCogChannels \
         (parrentId INTEGER, channelId INTEGER, \
         creatorId INTEGER, channelTime INTEGER, \
-        messageId INTEGER)"
+        messageId INTEGER, cmbrId REAL, \
+        techId INTEGER, limitId INTEGER)"
     )
     # Создание таблицы для констант VoiceCog
     """
