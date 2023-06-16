@@ -26,7 +26,7 @@ class AfterKickUserButtons(nextcord.ui.View):
         self.close_for_all.label = "close_for_all"
         self.close_for_user.label = "close_for_user"
 
-        self.close_for_all_.disabled = True # TODO
+        self.close_for_all.disabled = True # TODO
         self.close_for_user.disabled = True # TODO
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
