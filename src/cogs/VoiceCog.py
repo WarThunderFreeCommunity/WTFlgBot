@@ -173,7 +173,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "else_error": "Something went wrong"
         }
         self.select = KickUserSelect(
-            self.admins, self.channel.members, "RU"
+            self.admins, self.channel.members, self.lang
         )
         self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
@@ -215,7 +215,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             self.remove_item(self.select)
             self.select = KickUserSelect(
-                self.admins, self.channel.members, "RU"
+                self.admins, self.channel.members, self.lang
             )
             self.add_item(self.select)
             embed = VoiceInfoEmbed(self.lang, self.admins, self.channel)
