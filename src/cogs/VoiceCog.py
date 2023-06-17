@@ -1,16 +1,17 @@
-import datetime
 import time
 import json
-from typing import Any, Optional, Union
+import asyncio
 
 import nextcord
-from nextcord.colour import Colour
 from nextcord.ext import tasks
 from nextcord.ext.commands import Bot, Cog
-from nextcord.types.embed import EmbedType
 
 from ..extensions.DBWorkerExtension import DataBase
 from ..extensions.EXFormatExtension import ex_format
+
+
+TECH_IDS = None
+NATION_IDS = None
 
 
 class AfterKickUserButtons(nextcord.ui.View):
@@ -40,12 +41,140 @@ class AfterKickUserButtons(nextcord.ui.View):
         ...
 
     async def on_timeout(self):
-        self.delete_this.disabled = True
-        self.delete_two.disabled = True
+        self.close_for_all.disabled = True
+        self.close_for_user.disabled = True
         try:
             await self.message.edit(view=self)     
         except BaseException:
             pass
+
+
+class ChooseGameModeSelect(nextcord.ui.Select):
+    def __init__(self, admins, lang):
+        self.admins = admins
+        self.lang = lang
+        self.data = {
+            "options_clear": "Очистить выбор",
+        } if self.lang == "RU" else {
+            "options_clear": "Clear selection",
+        }
+        options = [
+            nextcord.SelectOption(
+                label="Танковые",
+                description="Выбрать танковые бои",
+                emoji=TECH_IDS['0'],
+                value=0
+            ),
+            nextcord.SelectOption(
+                label="Воздушные",
+                description="Выбрать воздушные бои",
+                emoji=TECH_IDS['1'],
+                value=1
+            ),
+            nextcord.SelectOption(
+                label="Морские",
+                description="Выбрать морские бои",
+                emoji=TECH_IDS['2'],
+                value=2
+            ),
+            nextcord.SelectOption(
+                label="Убрать режим",
+                description="Убрать режим игры...",
+                emoji=TECH_IDS['-'],
+                value='-'
+            )
+        ]
+        super().__init__(
+            placeholder="Выберите режим игры..",
+            min_values=1, 
+            max_values=1,
+            options=options,
+            row=0
+        )
+
+
+    async def callback(self, interaction: nextcord.Interaction):
+        if interaction.user.id not in self.admins \
+        and not interaction.user.guild_permissions.administrator:
+            await interaction.send(self.data["no_admin"], ephemeral=True)
+            return
+        try:
+            await interaction.response.defer(with_message=True, ephemeral=True)
+            db = DataBase("WarThunder.db")
+            await db.connect()
+            await db.run_que(
+                "UPDATE VoiceCogChannelsSaves SET techId=? WHERE creatorId=?",
+                (None if self.values[0] == '-' else self.values[0] , interaction.user.id)
+            )
+            channel_parts = interaction.channel.name.split(" ")
+            channel_parts[0] = TECH_IDS[str(self.values[0])]
+            await interaction.send(
+                f"Нация установлена на: {TECH_IDS[str(self.values[0])]}",
+                ephemeral=True
+            )
+            await interaction.channel.edit(name=" ".join(channel_parts)) # TODO ебучий баг, жду хелпы с треда
+            await self.view.update_message()
+        except BaseException as ex:
+            print(ex_format(ex, "ChooseGameModeSelect.callback"))
+            await interaction.send(f"Что то пошло не так", ephemeral=True)
+        finally:
+            await db.close()
+
+
+
+class ChooseGameNationSelect(nextcord.ui.Select):
+    def __init__(self, admins, lang):
+        self.admins = admins
+        self.lang = lang
+        self.data = {
+            "options_clear": "Очистить выбор",
+        } if self.lang == "RU" else {
+            "options_clear": "Clear selection",
+        }
+        options = [
+            nextcord.SelectOption(
+                label="Америка",
+                description="Выбрать Америку",
+                emoji="🦅",
+                value=0
+            ),
+            nextcord.SelectOption(
+                label="Советский союз",
+                description="Выбрать Советский союз",
+                emoji="⚒",
+                value=1
+            ),
+            nextcord.SelectOption(
+                label="Япония",
+                description="Выбрать Японию",
+                emoji="🍣",
+                value=2
+            )
+        ]
+        options.append(nextcord.SelectOption(
+            label=self.data["options_clear"], value="clear")
+        )
+        super().__init__(
+            placeholder="Выберите нацию игры..",
+            min_values=1, 
+            max_values=1,
+            options=options,
+            row=1
+        )
+
+
+    async def callback(self, interaction: nextcord.Interaction):
+        if "clear" in self.values:
+            self.values.remove("clear")
+        if not self.values:
+            return
+        if interaction.user.id not in self.admins \
+        and not interaction.user.guild_permissions.administrator:
+            await interaction.send(self.data["no_admin"], ephemeral=True)
+            return
+        
+        await interaction.send("tutututu", ephemeral=True)
+
 
 
 class KickUserSelect(nextcord.ui.Select):
@@ -84,7 +213,8 @@ class KickUserSelect(nextcord.ui.Select):
             min_values=1, 
             # len(members) if len(members) > 0 else 1  # Просто перестраховка
             max_values=len(members),
-            options=options, 
+            options=options,
+            row=4
         )
 
 
@@ -172,12 +302,17 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "after_limit_error": "Maximum of 99, 0 to remove the restriction",
             "else_error": "Something went wrong"
         }
+        self.add_item(
+            ChooseGameModeSelect(self.admins, self.lang)
+        )
+        self.add_item(
+            ChooseGameNationSelect(self.admins, self.lang)
+        )
         self.select = KickUserSelect(
             self.admins, self.channel.members, self.lang
         )
         self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
-        self.set_tech.label = self.data["set_tech"]
         self.set_limit.label = self.data["set_limit"]
         self.close_channel.label = self.data["close_channel"]
         self.add_member.label = self.data["add_member"]
@@ -185,12 +320,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
         # TODO
         self.set_cmbr.disabled = True
-        self.set_tech.disabled = True
         self.close_channel.disabled = True
         self.add_member.disabled = True
         self.del_member.disabled = True
 
-    async def update_message(self, member, pos):
+    async def update_message(self, member=None, pos=None):
         # Вызывается при изменении on_voice_state_update для канала с данным сообщением
         try:
             db = DataBase("WarThunder.db")
@@ -218,7 +352,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 self.admins, self.channel.members, self.lang
             )
             self.add_item(self.select)
-            embed = VoiceInfoEmbed(self.lang, self.admins, self.channel)
+            embed = VoiceInfoEmbed(self.lang, self.admins)
             await self.message.edit(embed=embed, view=self)
 
         except BaseException as ex:
@@ -235,7 +369,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
     
     # TODO: Переделать логику для назначения дополнительных администраторов
 
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=1)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
@@ -245,18 +379,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO: запись инфы о канале в бд
         # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         ...
-    
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=1)
-    async def set_tech(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Установка нации для голосового (только премиум)
-        """
-        if not await self.check_admin_rules(interaction):
-            return
-        # TODO: запись инфы о канале в бд
-        # TODO Select отправляется сообщение с select и флагами стран
-        ...
 
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=1)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
     async def set_limit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка лимита пользователей
         """
@@ -271,26 +395,28 @@ class VoiceChannelsButtons(nextcord.ui.View):
         )
         async def modal_callback(interaction: nextcord.Interaction):
             try:
+                db = DataBase("WarThunder.db")
+                await db.connect()
                 if int(limit.value) < 99:
                     await interaction.channel.edit(user_limit=int(limit.value))
                     await interaction.send(
                         str(self.data["after_limit_message"] + limit.value),
                         ephemeral=True
                     )
-                else:
-                    await interaction.send(
-                        self.data["after_limit_error"],
-                        ephemeral=True
+                    await db.run_que(
+                        "UPDATE VoiceCogChannelsSaves SET limitVar=? WHERE creatorId=?",
+                        (int(limit.value), interaction.user.id)
                     )
+                else:
+                    await interaction.send(self.data["after_limit_error"], ephemeral=True)
             except BaseException:
-                await interaction.send(
-                    self.data["else_error"],
-                    ephemeral=True
-                )
+                await interaction.send(self.data["else_error"], ephemeral=True)
+            finally:
+                await db.close()
         modal.callback = modal_callback
         await interaction.response.send_modal(modal)
     
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=3)
     async def close_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Закрывает чат для вступления других людей (только премиум)
         """
@@ -299,7 +425,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO переделать на управление правами (для доната)
         ...
     
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=3)
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Добавление людей в права канала (только премиум)
         """
@@ -308,7 +434,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO переделать на управление правами (для доната)
         ...
         
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=3)
     async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Удаление людей в правах канала (только премиум)
         """
@@ -330,6 +456,8 @@ class VoiceCog(Cog):
         self.smiles_channel = None
         self.afk_channel_id = None
         self.parrent_channel_ids = None
+        self.tech_ids = None
+        self.nation_ids = None
         self.update_consts.start()
         self.on_init.start()
     
@@ -387,15 +515,25 @@ class VoiceCog(Cog):
         try:
             db = DataBase("WarThunder.db")
             await db.connect()
-            for constant in ["smiles_channel", "afk_channel_id", "parrent_channel_ids"]:
+            for constant in [
+                "smiles_channel", 
+                "afk_channel_id",
+                "parrent_channel_ids",
+                "tech_ids",
+                "nation_ids"
+            ]:
                 temp = await db.get_one(
                     "SELECT constantValue FROM VoiceCogConstants WHERE constantName=?",
                     (constant,),
                 )
                 setattr(self, constant, json.loads(temp[0]))
         except BaseException as ex:
-            ex_format(ex, "update_consts")
+            print(ex_format(ex, "update_consts"))
         finally:
+            global TECH_IDS
+            global NATION_IDS
+            TECH_IDS = self.tech_ids
+            NATION_IDS = self.nation_ids
             await db.close()
 
     @Cog.listener()
@@ -414,26 +552,44 @@ class VoiceCog(Cog):
 
             # Connected to creater new channel (channel with ➕ in name)
             if after.channel and (str(after.channel.id) in self.parrent_channel_ids):
-                # Поиск последнего канала в категории (сортировка, заключается в распределении между None и creater channel)
+                #  TODO Когда основной функционал будет готов и отлажен, добавить сортировку..
                 channel_type = self.parrent_channel_ids[str(after.channel.id)].split(':')
-                position = None if channel_type[3] == '-' else nextcord.utils.get(
-                    member.guild.voice_channels, id=int(channel_type[3])
-                ).position
+                channel_category = nextcord.utils.get(
+                    member.guild.categories, id=int(channel_type[3])
+                )
                 afk_channel = nextcord.utils.get(
                     member.guild.voice_channels, id=int(self.afk_channel_id)
                 )
-                # TODO: Костыль для того, чтоб очумелые ручки не успевали выходить из канала до создания нового
+                # Костыль для того, чтоб очумелые ручки не успевали выходить из канала до создания нового
                 await member.move_to(afk_channel)
+                tech_id = nation_id = cmbr_var = limit_var = None
+                channel_options = self.parrent_channel_ids[str(after.channel.id)].split(":")
+                lang = channel_options[0]
+                if not (channel_save_data := await db.get_one(
+                        "SELECT * FROM VoiceCogChannelsSaves WHERE creatorId=?",
+                        (member.id,)
+                    )):
+                    await db.run_que(
+                        "INSERT INTO VoiceCogChannelsSaves (creatorId) VALUES (?)",
+                        (member.id,)
+                    )
+                    channel_name = f"❌ ❌ {channel_options[1]} ❌"
+                else:
+                    limit_var = channel_save_data[4] # user_limit
+                    channel_name = \
+                        f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '❌'} " \
+                        f"{self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '❌'} " \
+                        f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '❌'}"
                 voice_channel = await member.guild.create_voice_channel(
-                    name=f"{after.channel.name.replace(self.smiles_channel[0], f'{self.smiles_channel[1]} ')}",
-                    position=position,  # создаём канал под последним по времени
-                    category=after.channel.category,  # в категории канала "основы"
+                    name=channel_name,
+                    #position=position,  # создаём канал под последним по времени
+                    category=channel_category,  # в категории канала "основы"
                     reason=f"{member.name} in '{after.channel.name}'",  # (отображается в Audit Log)
+                    user_limit= 0 if not limit_var else limit_var
                 )
                 await member.move_to(voice_channel)
                 await voice_channel.edit(sync_permissions=True)
                 message = await voice_channel.send(f"{member.name} created voice")
-                lang = self.parrent_channel_ids[str(after.channel.id)].split(":")[0]
                 view = VoiceChannelsButtons(lang, member, message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [member.id], voice_channel)
                 await message.edit(content=None, embed=embed, view=view)
