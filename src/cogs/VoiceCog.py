@@ -94,7 +94,6 @@ class ChooseGameModeSelect(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
-        await interaction.response.defer(with_message=True, ephemeral=True)
         if interaction.user.id not in self.admins \
         and not interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
@@ -166,7 +165,6 @@ class ChooseGameNationSelect(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
-        await interaction.response.defer(with_message=True, ephemeral=True)
         if interaction.user.id not in self.admins \
         and not interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
@@ -408,9 +406,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         "SELECT techId, nationId, cmbrVar FROM VoiceCogChannelsSaves WHERE creatorId=?",
                         (other["interaction"].user.id,)
                     )
-                    cmbr = channel_settings[2] if channel_settings[2] else NATION_IDS['-']                   
-                    channel_name = f"{TECH_IDS[str(channel_settings[0])]} " \
-                        f"{NATION_IDS[str(channel_settings[1])]} {self.channel.name.split(' ')[2]} {cmbr}"
+                    tech = TECH_IDS[str(channel_settings[0])] if channel_settings[0] else TECH_IDS['-'] 
+                    nation = NATION_IDS[str(channel_settings[1])] if channel_settings[1] else NATION_IDS['-'] 
+                    cmbr = channel_settings[2] if channel_settings[2] else NATION_IDS['-'] 
+                    channel_name = f"{tech} {nation} {self.channel.name.split(' ')[2]} {cmbr}"
                     await self.channel.edit(name=channel_name)
                     self.rename_channel.disabled = True
                 except BaseException as ex:
@@ -496,7 +495,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         permission, period = await self.__check_timeout(interaction.channel.id)
         if not permission:
             await interaction.send(
-                f"Discord timeout error, please wait {round(period/60, 1)}",
+                f"Discord timeout error, please wait {round(period/60, 1)} minutes",
                 ephemeral=True
             )
             return
