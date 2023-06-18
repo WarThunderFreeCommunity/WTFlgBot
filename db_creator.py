@@ -79,7 +79,7 @@ async def main():
         creatorId INTEGER, channelTime INTEGER, \
         messageId INTEGER, techId INTEGER, \
         nationId INTEGER, cmbrVar REAL, \
-        limitVar INTEGER)"
+        limitVar INTEGER, commandTime INTEGER)"
     )
 
     # Создание таблицы для сохранения настроек пользователей

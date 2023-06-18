@@ -19,12 +19,14 @@ class DataBase:
             os.path.dirname(os.path.abspath(__file__)), '..', 'data')
         self.db_path = os.path.join(file_dir, db_name)
         self.db_connection = None
+        self.connected: bool = False
     
     async def connect(self):
         """_summary_
         """
         try:
             self.db_connection = await aiosqlite.connect(self.db_path)
+            self.connected = True
         except BaseException as ex:
             print(ex_format(ex, "connect"))
 
@@ -32,7 +34,11 @@ class DataBase:
         """_summary_
         """
         try:
-            await self.db_connection.close()
+            if self.connected:
+                await self.db_connection.close()
+                self.connected = False
+            else:
+                raise "sqlite db not conected!"
         except BaseException as ex:
             print(ex_format(ex, "close"))
 

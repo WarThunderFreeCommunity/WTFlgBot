@@ -49,6 +49,7 @@ class AfterKickUserButtons(nextcord.ui.View):
             pass
 
 
+# TODO переписать на один класс и два наследника
 class ChooseGameModeSelect(nextcord.ui.Select):
     def __init__(self, admins, lang):
         self.admins = admins
@@ -92,41 +93,35 @@ class ChooseGameModeSelect(nextcord.ui.Select):
             row=0
         )
 
-    # TODO ввести timeout на callback
-    async def check_timeout(interaction: nextcord.Interaction):
-        return False
-
-
-    @application_checks.check(check_timeout)
     async def callback(self, interaction: nextcord.Interaction):
+        await interaction.response.defer(with_message=True, ephemeral=True)
         if interaction.user.id not in self.admins \
         and not interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
             return
         try:
-            await interaction.response.defer(with_message=True, ephemeral=True)
             db = DataBase("WarThunder.db")
             await db.connect()
             await db.run_que(
                 "UPDATE VoiceCogChannelsSaves SET techId=? WHERE creatorId=?",
                 (None if self.values[0] == '-' else self.values[0] , interaction.user.id)
             )
-            channel_parts = interaction.channel.name.split(" ")
-            channel_parts[0] = TECH_IDS[str(self.values[0])]
+            self.view.rename_channel.disabled = False
+            await self.view.update_message()
             await interaction.send(
-                f"Нация установлена на: {TECH_IDS[str(self.values[0])]}",
+                "Настройки сохранены, не забудьте применить их для данного канала!\n" \
+                "Будьте внимательны, настройки можно применить раз в пять минут к одному каналу.\n" \
+                "Если вы не хотите ждать, можете просто пересоздать канал, ограничение идёт со стороны "\
+                "Discord'а",
                 ephemeral=True
             )
-            await interaction.channel.edit(name=" ".join(channel_parts))
-            await self.view.update_message()
         except BaseException as ex:
             print(ex_format(ex, "ChooseGameModeSelect.callback"))
             await interaction.send(f"Что то пошло не так", ephemeral=True)
         finally:
             await db.close()
 
-
-
+# TODO переписать на один класс и два наследника
 class ChooseGameNationSelect(nextcord.ui.Select):
     def __init__(self, admins, lang):
         self.admins = admins
@@ -154,11 +149,14 @@ class ChooseGameNationSelect(nextcord.ui.Select):
                 description="Выбрать Японию",
                 emoji="🍣",
                 value=2
+            ),
+            nextcord.SelectOption(
+                label="Убрать режим",
+                description="Убрать режим игры...",
+                emoji=TECH_IDS['-'],
+                value='-'
             )
         ]
-        options.append(nextcord.SelectOption(
-            label=self.data["options_clear"], value="clear")
-        )
         super().__init__(
             placeholder="Выберите нацию игры..",
             min_values=1, 
@@ -167,18 +165,33 @@ class ChooseGameNationSelect(nextcord.ui.Select):
             row=1
         )
 
-    # TODO ввести timeout на callback
     async def callback(self, interaction: nextcord.Interaction):
-        if "clear" in self.values:
-            self.values.remove("clear")
-        if not self.values:
-            return
+        await interaction.response.defer(with_message=True, ephemeral=True)
         if interaction.user.id not in self.admins \
         and not interaction.user.guild_permissions.administrator:
             await interaction.send(self.data["no_admin"], ephemeral=True)
             return
-        
-        await interaction.send("tutututu", ephemeral=True)
+        try:
+            db = DataBase("WarThunder.db")
+            await db.connect()
+            await db.run_que(
+                "UPDATE VoiceCogChannelsSaves SET nationId=? WHERE creatorId=?",
+                (None if self.values[0] == '-' else self.values[0] , interaction.user.id)
+            )
+            self.view.rename_channel.disabled = False
+            await self.view.update_message()
+            await interaction.send(
+                "Настройки сохранены, не забудьте применить их для данного канала!\n" \
+                "Будьте внимательны, настройки можно применить раз в пять минут к одному каналу.\n" \
+                "Если вы не хотите ждать, можете просто пересоздать канал, ограничение идёт со стороны "\
+                "Discord'а",
+                ephemeral=True
+            )
+        except BaseException as ex:
+            print(ex_format(ex, "ChooseGameModeSelect.callback"))
+            await interaction.send(f"Что то пошло не так", ephemeral=True)
+        finally:
+            await db.close()
 
 
 
@@ -284,6 +297,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "set_cmbr": "Установить боевой рейтинг",
             "set_tech": "Установить нацию игры",
             "set_limit": "Установить лимит пользователей",
+            "rename_channel": "Применить изменения",
             "close_channel": "Закрыть канал",
             "open_channel": "Открыть канал",
             "add_member": "Добавить людей в закрытый канал",
@@ -297,6 +311,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "set_cmbr": "Set combat rating",
             "set_tech": "Set game nation",
             "set_limit": "Set limit users",
+            "rename_channel": "Accept changes",
             "close_channel": "Close channel",
             "open_channel": "Open channel",
             "add_member": "Add people to closed channel",
@@ -319,17 +334,50 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.add_item(self.select)
         self.set_cmbr.label = self.data["set_cmbr"]
         self.set_limit.label = self.data["set_limit"]
+        self.rename_channel.label = self.data["rename_channel"]
         self.close_channel.label = self.data["close_channel"]
         self.add_member.label = self.data["add_member"]
         self.del_member.label = self.data["del_member"]
 
         # TODO
         self.set_cmbr.disabled = True
+        self.rename_channel.disabled = True
         self.close_channel.disabled = True
         self.add_member.disabled = True
         self.del_member.disabled = True
 
-    async def update_message(self, member=None, pos=None):
+    @staticmethod
+    async def __check_timeout(channel_id):
+        """Проверяет timeout дискорда на переименование каналов
+
+        Args:
+            channel_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        try:
+            db = DataBase("WarThunder.db")
+            await db.connect()
+            last_time = (await db.get_one(
+                "SELECT commandTime FROM VoiceCogChannels WHERE channelId=?",
+                (channel_id,)
+            ))[0]
+            if not last_time or ((int(time.time()) - last_time) > 60*5):
+                await db.run_que(
+                    "UPDATE VoiceCogChannels SET commandTime=? WHERE channelId=?",
+                    (int(time.time()), channel_id)
+                )
+                await db.close()
+                return True, None
+            else:
+                await db.close()
+                return False, 60*5 - (int(time.time()) - last_time)
+        except BaseException as ex:
+            print(ex_format(ex, "__check_timeout"))
+            await db.close()
+
+    async def update_message(self, member=None, pos=None, other=None):
         # Вызывается при изменении on_voice_state_update для канала с данным сообщением
         try:
             db = DataBase("WarThunder.db")
@@ -344,6 +392,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             if pos == "out":
                 # тут слишком мало, что то забыл xD
                 if member.id in self.admins and len(self.admins) == 1:
+                    self.rename_channel.disabled = False
                     self.admins.remove(member.id)
                     self.admins.append(self.channel.members[0].id)
                     await db.run_que(
@@ -351,13 +400,30 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         (self.channel.members[0].id, member.id)
                     )
                 ...
-
-            self.remove_item(self.select)
-            self.select = KickUserSelect(
-                self.admins, self.channel.members, self.lang
-            )
-            self.add_item(self.select)
-            embed = VoiceInfoEmbed(self.lang, self.admins)
+            
+            # Обновление имени 
+            if pos == "name_update":
+                try:
+                    channel_settings = await db.get_one(
+                        "SELECT techId, nationId, cmbrVar FROM VoiceCogChannelsSaves WHERE creatorId=?",
+                        (other["interaction"].user.id,)
+                    )
+                    cmbr = channel_settings[2] if channel_settings[2] else NATION_IDS['-']                   
+                    channel_name = f"{TECH_IDS[str(channel_settings[0])]} " \
+                        f"{NATION_IDS[str(channel_settings[1])]} {self.channel.name.split(' ')[2]} {cmbr}"
+                    await self.channel.edit(name=channel_name)
+                    self.rename_channel.disabled = True
+                except BaseException as ex:
+                    print(ex_format(ex, "update_message -> name_update"))
+            
+            if member:
+                self.remove_item(self.select)
+                self.select = KickUserSelect(
+                    self.admins, self.channel.members, self.lang
+                )
+                self.add_item(self.select)
+            
+            embed = VoiceInfoEmbed(self.lang, self.admins, self.channel)
             await self.message.edit(embed=embed, view=self)
 
         except BaseException as ex:
@@ -374,7 +440,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
     
     # TODO: Переделать логику для назначения дополнительных администраторов
 
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.green, row=2)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
@@ -385,7 +451,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         ...
 
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.green, row=2)
     async def set_limit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка лимита пользователей
         """
@@ -421,7 +487,26 @@ class VoiceChannelsButtons(nextcord.ui.View):
         modal.callback = modal_callback
         await interaction.response.send_modal(modal)
     
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=3)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=2)
+    async def rename_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """Применяет изменения имени (можно использоавать раз в пять минут)
+        """
+        if not await self.check_admin_rules(interaction):
+            return
+        permission, period = await self.__check_timeout(interaction.channel.id)
+        if not permission:
+            await interaction.send(
+                f"Discord timeout error, please wait {round(period/60, 1)}",
+                ephemeral=True
+            )
+            return
+        button.disabled = True
+        await self.update_message(pos="name_update", other={"interaction": interaction})
+        await interaction.send("Настройки применены к каналу!", ephemeral=True)
+        # TODO переделать на управление правами (для доната)
+        ...
+
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def close_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Закрывает чат для вступления других людей (только премиум)
         """
@@ -430,7 +515,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO переделать на управление правами (для доната)
         ...
     
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=3)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Добавление людей в права канала (только премиум)
         """
@@ -439,7 +524,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO переделать на управление правами (для доната)
         ...
         
-    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey, row=3)
+    @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Удаление людей в правах канала (только премиум)
         """
@@ -619,9 +704,9 @@ class VoiceCog(Cog):
 
             # Updating view in channel
             if before.channel and before.channel.id in self.channel_views:
-                await self.channel_views[before.channel.id].update_message(member, pos="out")
+                await self.channel_views[before.channel.id].update_message(member=member, pos="out")
             if after.channel and after.channel.id in self.channel_views:
-                await self.channel_views[after.channel.id].update_message(member, pos="in")
+                await self.channel_views[after.channel.id].update_message(member=member, pos="in")
 
         except BaseException as ex:
             if voice_channel:
