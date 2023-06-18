@@ -3,7 +3,7 @@ import json
 import asyncio
 
 import nextcord
-from nextcord.ext import tasks
+from nextcord.ext import tasks, application_checks
 from nextcord.ext.commands import Bot, Cog
 
 from ..extensions.DBWorkerExtension import DataBase
@@ -92,7 +92,12 @@ class ChooseGameModeSelect(nextcord.ui.Select):
             row=0
         )
 
+    # TODO ввести timeout на callback
+    async def check_timeout(interaction: nextcord.Interaction):
+        return False
 
+
+    @application_checks.check(check_timeout)
     async def callback(self, interaction: nextcord.Interaction):
         if interaction.user.id not in self.admins \
         and not interaction.user.guild_permissions.administrator:
@@ -112,7 +117,7 @@ class ChooseGameModeSelect(nextcord.ui.Select):
                 f"Нация установлена на: {TECH_IDS[str(self.values[0])]}",
                 ephemeral=True
             )
-            await interaction.channel.edit(name=" ".join(channel_parts)) # TODO ебучий баг, жду хелпы с треда
+            await interaction.channel.edit(name=" ".join(channel_parts))
             await self.view.update_message()
         except BaseException as ex:
             print(ex_format(ex, "ChooseGameModeSelect.callback"))
@@ -162,7 +167,7 @@ class ChooseGameNationSelect(nextcord.ui.Select):
             row=1
         )
 
-
+    # TODO ввести timeout на callback
     async def callback(self, interaction: nextcord.Interaction):
         if "clear" in self.values:
             self.values.remove("clear")
