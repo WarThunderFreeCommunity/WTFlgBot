@@ -406,8 +406,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         "SELECT techId, nationId, cmbrVar FROM VoiceCogChannelsSaves WHERE creatorId=?",
                         (other["interaction"].user.id,)
                     )
-                    tech = TECH_IDS[str(channel_settings[0])] if channel_settings[0] else TECH_IDS['-'] 
-                    nation = NATION_IDS[str(channel_settings[1])] if channel_settings[1] else NATION_IDS['-'] 
+                    tech = TECH_IDS[str(channel_settings[0])] if channel_settings[0] != None else TECH_IDS['-'] 
+                    nation = NATION_IDS[str(channel_settings[1])] if channel_settings[1] != None else NATION_IDS['-'] 
+                    print(tech, nation)
                     cmbr = channel_settings[2] if channel_settings[2] else NATION_IDS['-'] 
                     channel_name = f"{tech} {nation} {self.channel.name.split(' ')[2]} {cmbr}"
                     await self.channel.edit(name=channel_name)
