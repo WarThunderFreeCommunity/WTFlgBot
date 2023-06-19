@@ -532,7 +532,23 @@ class VoiceChannelsButtons(nextcord.ui.View):
             return
         # TODO переделать на управление правами (для доната)
         ...
+
+
+class VoiceFindButtons(nextcord.ui.View):
+    def __init__(self, lang, message, channel):
+        self.lang = lang
+        self.message = message
+        self.channel = channel
+        super().__init__(timeout=None)
     
+    @nextcord.ui.button(label="none_button", style=nextcord.ButtonStyle.grey, row=0)
+    async def none_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        """Нужно спланировать поиск игроков, возможно будет через команду..
+        Также можно дублировать кнопки командами =)
+        """
+        
+        ...
+
 
 class VoiceCog(Cog):
     def __init__(self, bot: Bot):
