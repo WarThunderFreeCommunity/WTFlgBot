@@ -60,6 +60,7 @@ class VKResendCog(Cog):
 
             for item in wall["items"][::-1]:
                 if item['id'] in last_id_posts:
+                    print("contunie post:", item["text"], "\n\n")
                     continue
 
                 attachments = item["attachments"]
@@ -87,6 +88,8 @@ class VKResendCog(Cog):
 
                 for vk_tag in vk_tags:
                     if vk_tag in text and used_hoocks.get(item['id']) != vk_tags[vk_tag]:
+                        if len(text) > 3500:
+                            text = text[:3500] + f"\n[Текст был обрезан, оригинал смотрите в группе]({url})"
 
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
@@ -94,7 +97,7 @@ class VKResendCog(Cog):
                             videos_links = "\n".join(
                                 [f"[Ссылка на видео]({video})" for video in videos]
                             ) if len(videos) > 0 else ""
-                            photos_link = "\n".join(
+                            photos_link = "\n".join( 
                                 [f"[Ссылка на фото вне поста]({photo})" for photo in photos[4:]]
                             ) if (len(photos) > 4 and len(photos) > 0) else ""
                         except BaseException as ex:
@@ -130,7 +133,7 @@ class VKResendCog(Cog):
                             webhook = nextcord.Webhook.from_url(vk_tags[vk_tag], session=session)
                             await webhook.send(embeds=embeds)                
         except BaseException as ex:
-            print(ex_format(ex, "test"))
+            print(ex_format(ex, "vk_update"))
         finally:
             await DB.close()
 
