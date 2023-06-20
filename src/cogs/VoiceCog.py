@@ -204,7 +204,7 @@ class KickUserSelect(nextcord.ui.Select):
             "placeholder": "Выберите человека, которого нужно кикнуть...",
             "no_admin": "Вы не являяетесь администратором",
             "answer": "Из канала удалены:\n",
-            "none_answer": "Ни кто не удалён..."
+            "none_answer": "Никто не удалён..."
         } if self.lang == "RU" else {
             "options_descr": "Remove from Channel ",
             "options_clear": "Clear selection",
