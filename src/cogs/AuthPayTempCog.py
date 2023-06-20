@@ -398,14 +398,14 @@ class AdvertisementButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_day(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 120.0
+        self.payment_info['real_summ'] = 1 # 120.0
         self.payment_info['enrollment_summ'] = 120.0
         self.disable_buttons("one_day")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 3000.0
+        self.payment_info['real_summ'] = 1 # 3000.0
         self.payment_info['enrollment_summ'] = 3600
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
@@ -491,21 +491,21 @@ class VipButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 
+        self.payment_info['real_summ'] = 1 # 30.0
         self.payment_info['enrollment_summ'] = 30.0
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def six_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 182.0
+        self.payment_info['real_summ'] = 1 # 182.0
         self.payment_info['enrollment_summ'] = 182.0
         self.disable_buttons("six_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_year(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 364.0
+        self.payment_info['real_summ'] = 1 # 364.0
         self.payment_info['enrollment_summ'] = 364.0
         self.disable_buttons("one_year")
         await interaction.response.edit_message(view=self)
@@ -631,7 +631,6 @@ class AuthPayWT(Cog):
 
     @tasks.loop(seconds=1)
     async def check_roles_payment(self):
-        print(1)
         try:
             for data_path, type in zip([data_adver_path, data_vip_path],
                                         [[120.0, [adv_ru_role_id, adv_en_role_id]],
