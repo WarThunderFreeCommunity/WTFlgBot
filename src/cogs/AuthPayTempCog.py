@@ -616,10 +616,7 @@ class AuthPayWT(Cog):
         self.obj_guild = self.bot.get_guild(691182902633037834)
         self.on_init.start()
         self.check_roles_payment.start()
-        if not self.bot.DATA['AuthPayWT:MainButtons:persistent']:
-            self.bot.add_view(MainButtons())
-            print("AuthPayWT:MainButtons:persistent OK")
-            self.bot.DATA['AuthPayWT:MainButtons:persistent'] = True
+        self.bot.add_view(MainButtons())
 
     def __del__(self):
         ...
