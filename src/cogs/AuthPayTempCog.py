@@ -243,7 +243,7 @@ class PaymentButtons(nextcord.ui.View):
     @staticmethod
     async def _check_payment(amount: float, comment: str):
         async with QiwiWrapper(
-                api_access_token=cnfg.qiwi_token, phone_number=cnfg.qiwi_number
+            api_access_token=cnfg.qiwi_token, phone_number=f"+{cnfg.qiwi_number}"
         ) as wrapper:
             for transaction in await wrapper.transactions():
                 if (
@@ -684,23 +684,6 @@ class AuthPayWT(Cog):
             embed=deepcopy(main_embed),
             view=MainButtons()
         )
-
-    @Cog.listener()
-    async def on_member_join(self, member: nextcord.Member):
-        await asyncio.sleep(10 * 60)
-        try:
-            guild: nextcord.Guild = member.guild
-            if member.get_role(ru_role_id) is None and member.get_role(en_role_id) is None:
-                await member.add_roles(guild.get_role(ru_role_id))
-                await member.add_roles(guild.get_role(en_role_id))
-        except nextcord.errors.NotFound as e:
-            pass
-
-    @nextcord.slash_command(guild_ids=guild_ids, description="A simple ping command.")
-    async def ping(self, interaction: nextcord.Interaction):
-        if interaction.user.id not in self.bot.OWNERS:
-            return
-        await interaction.response.send_message(f"Pong! {self.bot.latency * 1000:.2f}ms")
 
 
 def setup(bot: Bot) -> None:
