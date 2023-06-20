@@ -66,6 +66,9 @@ class Bot(commands.Bot):
         super().__init__(command_prefix=command_prefix, help_command=help_command, intents=intents)
         self.DATA: dict = {
             'bot-started': False,
+            'messages': {
+                "pymsg": None
+            }
         }
         self.OWNERS: list[int] = [
             404512224837894155, # Sekupa(Олег)
