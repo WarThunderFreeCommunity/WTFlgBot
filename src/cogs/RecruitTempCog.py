@@ -97,7 +97,7 @@ class StafModal(nextcord.ui.Modal):
             timeout=60 * 60,
         )
         self.text_inputs: dict = {
-            "Moderator": {
+            "Модератор": {
                 "name": [
                     "ваше имя и возраст".upper(),
                     "Илья, 19 лет"
@@ -119,7 +119,7 @@ class StafModal(nextcord.ui.Modal):
                     "Большую часть онлайн с ПК..."
                 ],
             },
-            "Eventer": {
+            "Ивент организатор": {
                 "name": [
                     "ваше имя и возраст".upper(),
                     "Ева, 19 лет"
@@ -141,7 +141,7 @@ class StafModal(nextcord.ui.Modal):
                     "Ваш рассказ"
                 ],
             },
-            "SystemAdmin": {
+            "Системный администратор": {
                 "name": [
                     "ваше имя и возраст".upper(),
                     "Мария, 16 лет"
@@ -163,6 +163,28 @@ class StafModal(nextcord.ui.Modal):
                     "Ваш рассказ"
                 ],
             },
+            "Дизайнер": {
+                "name": [
+                    "ваше имя и возраст".upper(),
+                    "Полина, 20 лет"
+                ],
+                "time_zone": [
+                    "ваш часовой пояс и прайм-тайм".upper(),
+                    "0 МСК, 18:00 - 20:00",
+                ],
+                "experience": [
+                    "имеется ли у вас опыт на данной должности".upper(),
+                    "Если да, то приложите пример проекта",
+                ],
+                "skills": [
+                    "какие ключевые навыки вы имеете".upper(),
+                    "Adobe Photoshop, Paint Tool SAI, Adobe Illustrator..."
+                ],
+                "autobiography": [
+                    "расскажите немного о себе".upper(),
+                    "Ваш рассказ"
+                ],
+            }
         }
 
         @staticmethod
@@ -220,9 +242,10 @@ class StafModal(nextcord.ui.Modal):
     async def callback(self, interaction: nextcord.Interaction) -> None:
         try:
             colors = {
-                "Moderator" : 0x0079B1,
-                "Eventer": 0xF2FD00,
-                "SystemAdmin": 0xD22D2D
+                "Модератор" : 0x0079B1,
+                "Ивент организатор": 0xF2FD00,
+                "Системный администратор": 0xD22D2D,
+                "Дизайнер": 0xD22D2D,
             }
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}(`{interaction.user.id}`) создал новую заявку на `{self.modal_name}`!",
@@ -247,9 +270,10 @@ class StafModal(nextcord.ui.Modal):
 class StafSelect(nextcord.ui.Select):
     def __init__(self):
         options = [
-            nextcord.SelectOption(label="Moderator"),
-            nextcord.SelectOption(label="Eventer"),
-            nextcord.SelectOption(label="SystemAdmin"),
+            nextcord.SelectOption(label="Модератор", description="Создать заявку на роль модератора"),
+            nextcord.SelectOption(label="Ивент организатор", description="Создать заявку на роль ивент организатора"),
+            nextcord.SelectOption(label="Системный администратор", description="Создать заявку на роль системного администратора"),
+            nextcord.SelectOption(label="Дизайнер", description="Создать заявку на роль дизайнера"),
         ]
 
         super().__init__(
