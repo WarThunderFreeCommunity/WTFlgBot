@@ -22,7 +22,7 @@ class DenyStafButtons(nextcord.ui.View):
         async def modal_callback(interaction: nextcord.Interaction):
             modal.completed = False
             try:
-                member = await nextcord.utils.get(
+                member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
                 print(member.id)
