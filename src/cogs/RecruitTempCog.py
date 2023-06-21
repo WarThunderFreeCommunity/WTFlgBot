@@ -46,7 +46,6 @@ class DenyStafButtons(nextcord.ui.View):
         if modal.completed:
             button.disabled = True
             await interaction.message.edit(view=self)
-            self.stop() # хз нужно ли button.disabled, надеюсь, что кнопки останутся
 
 
 class StafModal(nextcord.ui.Modal):
