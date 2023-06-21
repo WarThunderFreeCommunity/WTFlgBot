@@ -144,13 +144,14 @@ class StafModal(nextcord.ui.Modal):
             "SystemAdmin": 0xD22D2D
         }
         embed = nextcord.Embed(
-            title=f"{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
+            description=f"```{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
             color=colors[self.modal_name]
         )
         for item in self.items:
             embed.add_field(
                 name=self.text_inputs[self.modal_name][item[1]][0],
                 value=item[0].value,
+                inline=False
             )
         channel = interaction.guild.get_channel(1121101138423451659)
         if channel:
