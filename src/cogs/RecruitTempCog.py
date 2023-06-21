@@ -7,7 +7,7 @@ class DenyStafButtons(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout=None, prevent_update=False)
     
-    @nextcord.ui.button(label="Отправить уведомление человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:allow_user")
+    @nextcord.ui.button(label="Отправить уведомление человеку", style=nextcord.ButtonStyle.grey, custom_id="RecruitTempCog:DenyStafButtons:allow_user")
     async def allow_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         modal = nextcord.ui.Modal(
             title="DM Уведомление о принятии",
