@@ -30,7 +30,7 @@ class StafModal(nextcord.ui.Modal):
                     "+6 МСК, 12:00 - 20:00",
                 ],
                 "experience": [
-                    "имеется ли у вас опыт в данной сфере деятельности?",
+                    "имеется ли у вас опыт на данной должности?",
                     "Если да - расскажите",
                 ],
                 "skills": [
@@ -144,13 +144,13 @@ class StafModal(nextcord.ui.Modal):
             "SystemAdmin": 0xD22D2D
         }
         embed = nextcord.Embed(
-            description=f"{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
+            titile=f"{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
             color=colors[self.modal_name]
         )
         for item in self.items:
             embed.add_field(
                 name=self.text_inputs[self.modal_name][item[1]][0],
-                value=item[0].value
+                value=item[0].value,
             )
         channel = interaction.guild.get_channel(1121101138423451659)
         if channel:
