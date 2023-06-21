@@ -22,6 +22,7 @@ class DenyStafButtons(nextcord.ui.View):
         modal.add_item(reason := nextcord.ui.TextInput(
             label="Укажите причину (по желанию)",
             placeholder="Не нравитесь модераторам",
+            required=False,
         ))
         async def modal_callback(interaction: nextcord.Interaction):
             modal.completed = False
