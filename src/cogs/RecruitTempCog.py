@@ -99,7 +99,7 @@ class StafModal(nextcord.ui.Modal):
         self.text_inputs: dict = {
             "Moderator": {
                 "name": [
-                    "ваше имя и возраст",
+                    "Ваше имя и возраст",
                     "Илья, 19 лет"
                 ],
                 "time_zone": [
