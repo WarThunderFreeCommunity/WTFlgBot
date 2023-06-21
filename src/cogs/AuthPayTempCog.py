@@ -243,7 +243,7 @@ class PaymentButtons(nextcord.ui.View):
     @staticmethod
     async def _check_payment(amount: float, comment: str):
         async with QiwiWrapper(
-                api_access_token=cnfg.qiwi_token, phone_number=cnfg.qiwi_number
+            api_access_token=cnfg.qiwi_token, phone_number=f"+{cnfg.qiwi_number}"
         ) as wrapper:
             for transaction in await wrapper.transactions():
                 if (
@@ -292,55 +292,60 @@ class PaymentButtons(nextcord.ui.View):
                     "> **Do not delete this message.**",
             view=self
         )
-        check: bool = False
-        for i in range(6):
-            check, _transaction = await self._check_payment(
-                amount=float(self.payment_info["real_summ"]),
-                comment=str(self.payment_info["comment"])
-            )
-            if check:   
-                self.stop()
-                await interaction.edit_original_message(view=None)
-                comment_base64 = self.payment_info["comment"]
-                comment_bytes = base64.b64decode(
-                    comment_base64)  # Декодируем строку из Base64
-                self.payment_info["comment"] = comment_bytes.decode(
-                    'utf-8')  # Преобразуем байты в строку
-                user = interaction.user
-                guild = user.guild
-                if self.lang == "ru":
-                    if self.payment_info["type"] == "adver":
-                        await user.add_roles(guild.get_role(adv_ru_role_id))
-                    else:
-                        await user.add_roles(guild.get_role(vip_ru_role_id))
-                else:
-                    if self.payment_info["type"] == "adver":
-                        await user.add_roles(guild.get_role(adv_en_role_id))
-                    else:
-                        await user.add_roles(guild.get_role(vip_en_role_id))
-                """
-                Добавить ограничение на вызов эфмеральных сообщений от ондого пользователя
-                """
-                self.write_data(
-                    dis_id=self.payment_info["comment"].split(":")[0],
-                    type=self.payment_info["type"],
-                    real_summ=self.payment_info["real_summ"],
-                    enrollment_summ=self.payment_info["enrollment_summ"],
-                    payment_id=_transaction
+        try:
+            check: bool = False
+            for i in range(6):
+                check, _transaction = await self._check_payment(
+                    amount=float(self.payment_info["real_summ"]),
+                    comment=str(self.payment_info["comment"])
                 )
-                break
-            await asyncio.sleep(10)
-        else:
-            self.cancel_payment.disabled = False
-            button.disabled = False
-            await interaction.edit_original_message(view=self)
-        await interaction.edit_original_message(
-            content=("Успешно!" if self.lang == "ru" else "All ok!") if check else 
-            ("Что-то пошло не так. Пожалуйста создайте тикет. Укажите комментарий к платежу, сумму, роль,"
-            " которую вы покупали. А также номер платежа. <#975319189407559691>" if self.lang == "ru" else
-            "Something went wrong. Please create a ticket. Specify a comment on the payment, the amount,"
-            " the role that you bought. As well as the payment number. <#975330313112780810>")
-        )
+                if check:   
+                    self.stop()
+                    await interaction.edit_original_message(view=None)
+                    comment_base64 = self.payment_info["comment"]
+                    comment_bytes = base64.b64decode(
+                        comment_base64)  # Декодируем строку из Base64
+                    self.payment_info["comment"] = comment_bytes.decode(
+                        'utf-8')  # Преобразуем байты в строку
+                    user = interaction.user
+                    guild = user.guild
+                    if self.lang == "ru":
+                        if self.payment_info["type"] == "adver":
+                            await user.add_roles(guild.get_role(adv_ru_role_id))
+                        else:
+                            await user.add_roles(guild.get_role(vip_ru_role_id))
+                    else:
+                        if self.payment_info["type"] == "adver":
+                            await user.add_roles(guild.get_role(adv_en_role_id))
+                        else:
+                            await user.add_roles(guild.get_role(vip_en_role_id))
+                    """
+                    Добавить ограничение на вызов эфмеральных сообщений от ондого пользователя
+                    """
+                    self.write_data(
+                        dis_id=self.payment_info["comment"].split(":")[0],
+                        type=self.payment_info["type"],
+                        real_summ=self.payment_info["real_summ"],
+                        enrollment_summ=self.payment_info["enrollment_summ"],
+                        payment_id=_transaction
+                    )
+                    break
+                await asyncio.sleep(10)
+            else:
+                self.cancel_payment.disabled = False
+                button.disabled = False
+                await interaction.edit_original_message(view=self)
+            await interaction.edit_original_message(
+                content=("Успешно!" if self.lang == "ru" else "All ok!") if check else 
+                ("Что-то пошло не так. Пожалуйста создайте тикет. Укажите комментарий к платежу, сумму, роль,"
+                " которую вы покупали. А также номер платежа. <#975319189407559691>" if self.lang == "ru" else
+                "Something went wrong. Please create a ticket. Specify a comment on the payment, the amount,"
+                " the role that you bought. As well as the payment number. <#975330313112780810>")
+            )
+        except BaseException as ex:
+            from traceback import format_exception
+            result = "".join(format_exception(ex, ex, ex.__traceback__))
+            await interaction.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def cancel_payment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
