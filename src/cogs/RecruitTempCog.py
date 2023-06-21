@@ -93,7 +93,7 @@ class StafModal(nextcord.ui.Modal):
     def __init__(self, modal_name):
         self.modal_name = modal_name
         super().__init__(
-            title=f"Заявка на {modal_name}",
+            title=f'Заявка на роль "{modal_name}"',
             timeout=60 * 60,
         )
         self.text_inputs: dict = {
