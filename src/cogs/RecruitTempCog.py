@@ -144,7 +144,7 @@ class StafModal(nextcord.ui.Modal):
             "SystemAdmin": 0xD22D2D
         }
         embed = nextcord.Embed(
-            titile=f"{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
+            title=f"{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
             color=colors[self.modal_name]
         )
         for item in self.items:
