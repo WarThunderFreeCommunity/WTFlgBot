@@ -158,7 +158,7 @@ class StafModal(nextcord.ui.Modal):
                 name=self.text_inputs[self.modal_name][item[1]][0],
                 value=item[0].value
             )
-        channel = interaction.guild.get_channel()
+        channel = interaction.guild.get_channel(1121101138423451659)
         if channel:
             await channel.send(embed=embed)
         await interaction.response.send_message(
