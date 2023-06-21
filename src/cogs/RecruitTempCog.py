@@ -19,13 +19,18 @@ class DenyStafButtons(nextcord.ui.View):
             placeholder="0123456789",
             required=True,
         ))
+        modal.add_item(reason := nextcord.ui.TextInput(
+            label="Укажите причину (по желанию)",
+            placeholder="Не нравитесь модераторам",
+        ))
         async def modal_callback(interaction: nextcord.Interaction):
             modal.completed = False
             try:
                 member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
-                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\nМодератор:{interaction.user.mention}")
+                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\n"
+                                  f"Модератор: {interaction.user.mention}\n{f'Причина: {reason.value}' if reason.value else ''}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
                 modal.completed = True
             except BaseException as ex:
