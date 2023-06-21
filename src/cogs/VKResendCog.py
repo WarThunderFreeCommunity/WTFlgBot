@@ -60,7 +60,6 @@ class VKResendCog(Cog):
 
             for item in wall["items"][::-1]:
                 if item['id'] in last_id_posts:
-                    print("contunie post:", item["text"], "\n\n")
                     continue
 
                 attachments = item["attachments"]
