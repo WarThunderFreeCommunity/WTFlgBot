@@ -155,7 +155,7 @@ class StafModal(nextcord.ui.Modal):
                     "Если да, то приложите пример проекта",
                 ],
                 "skills": [
-                    "какие ключевые навыки вы   имеете",
+                    "какие ключевые навыки вы имеете",
                     "python, discord.py, SQL, bash..."
                 ],
                 "autobiography": [
