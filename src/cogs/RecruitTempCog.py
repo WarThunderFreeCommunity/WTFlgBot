@@ -1,15 +1,42 @@
-import os
-from typing import Final
-
 import nextcord
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
 
-CURRENT_DIR: Final = os.path.dirname(os.path.abspath(__file__))
-PARRENT_DIR: Final = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
 
-DATA_DIR: Final = os.path.join(PARRENT_DIR, 'data')
-DATA_MESSAGES_DIR: Final = os.path.join(DATA_DIR, 'messages')
+class DenyStafButtons(nextcord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None, prevent_update=False)
+        
+    @nextcord.ui.button(label="Отказать человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:deny_user")
+    async def deny_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        button.disabled = True
+        modal = nextcord.ui.Modal(
+            title="DM Уведомление от отказе",
+            timeout=5*60
+        )
+        modal.member_id = nextcord.ui.TextInput(
+            label="Введите id человека для уведомления",
+            placeholder="0123456789",
+            required=True,
+        )
+        async def modal_callback(interaction: nextcord.Interaction):
+            try:
+                member = await nextcord.utils.get(
+                    interaction.guild.members, id=int(modal.member_id.value)
+                )
+                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\nМодератор:{interaction.user.mention}")
+                await interaction.send("Отказ отправлен!", ephemeral=True)
+            except BaseException:
+                await interaction.send("Что-то пошло не так! Возможно заблокирвоаны DM.", ephemeral=True)
+            finally:
+                modal.stop()
+        modal.callback = modal_callback
+        await interaction.response.send_modal(modal)
+        timeout_bool = await modal.wait()
+        if not timeout_bool:
+            button.disabled = True
+            await interaction.message.edit(view=self)
+            self.stop() # хз нужно ли button.disabled, надеюсь, что кнопки останутся
 
 
 class StafModal(nextcord.ui.Modal):
@@ -17,7 +44,7 @@ class StafModal(nextcord.ui.Modal):
         self.modal_name = modal_name
         super().__init__(
             title=f"Заявка на {modal_name}",
-            timeout=5 * 60,
+            timeout=60 * 60,
         )
         self.text_inputs: dict = {
             "Moderator": {
@@ -159,12 +186,12 @@ class StafModal(nextcord.ui.Modal):
                 )
             channel = interaction.guild.get_channel(1121101138423451659)
             if channel:
-                await channel.send(embed=embed)
+                await channel.send(embed=embed, view=DenyStafButtons())
             await interaction.response.send_message(
-                content="Заявка отправлена!", ephemeral=True
+                content="Заявка отправлена! Администраторы свяжутся с вами в личные сообщения", ephemeral=True
             )
         except BaseException:
-            await interaction.send("Что-то пошло не так, напишите <#286914074422280194>")
+            await interaction.send("Что-то пошло не так, напишите в личные сообщения <#286914074422280194>", ephemeral=True)
 
 
 class StafSelect(nextcord.ui.Select):
@@ -199,12 +226,14 @@ class StafPosition(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.bot.add_view(StafSelectView())
+        self.bot.add_view(DenyStafButtons())
 
     def __del__(self):
         pass
 
     def cog_unload(self):
        self.bot.remove_view(StafSelectView())
+       self.bot.remove_view(DenyStafButtons())
 
     @commands.command()
     async def ticket_staff_messages(self, ctx: Context):
