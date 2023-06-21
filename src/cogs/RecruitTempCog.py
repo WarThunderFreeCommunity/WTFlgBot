@@ -138,27 +138,30 @@ class StafModal(nextcord.ui.Modal):
 
     # Define the callback function to handle the submission of the form
     async def callback(self, interaction: nextcord.Interaction) -> None:
-        colors = {
-            "Moderator" : 0x0079B1,
-            "Eventer": 0xF2FD00,
-            "SystemAdmin": 0xD22D2D
-        }
-        embed = nextcord.Embed(
-            description=f"```{interaction.user.mention}({interaction.user.id}) создал новую заявку на {self.modal_name}!",
-            color=colors[self.modal_name]
-        )
-        for item in self.items:
-            embed.add_field(
-                name=self.text_inputs[self.modal_name][item[1]][0],
-                value=item[0].value,
-                inline=False
+        try:
+            colors = {
+                "Moderator" : 0x0079B1,
+                "Eventer": 0xF2FD00,
+                "SystemAdmin": 0xD22D2D
+            }
+            embed = nextcord.Embed(
+                description=f"{interaction.user.mention}(`{interaction.user.id}`) создал новую заявку на `{self.modal_name}`!",
+                color=colors[self.modal_name]
             )
-        channel = interaction.guild.get_channel(1121101138423451659)
-        if channel:
-            await channel.send(embed=embed)
-        await interaction.response.send_message(
-            content="Заявка отправлена!", ephemeral=True
-        )
+            for item in self.items:
+                embed.add_field(
+                    name=self.text_inputs[self.modal_name][item[1]][0],
+                    value=f"```{item[0].value}```",
+                    inline=False
+                )
+            channel = interaction.guild.get_channel(1121101138423451659)
+            if channel:
+                await channel.send(embed=embed)
+            await interaction.response.send_message(
+                content="Заявка отправлена!", ephemeral=True
+            )
+        except BaseException:
+            await interaction.send("Что-то пошло не так, напишите <#286914074422280194>")
 
 
 class StafSelect(nextcord.ui.Select):
