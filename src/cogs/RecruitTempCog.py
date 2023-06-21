@@ -6,10 +6,50 @@ from nextcord.ext.commands import Bot, Cog, Context
 class DenyStafButtons(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout=None, prevent_update=False)
-        
+    
+    @nextcord.ui.button(label="Отправить уведомление человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:allow_user")
+    async def allow_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        modal = nextcord.ui.Modal(
+            title="DM Уведомление о принятии",
+            timeout=5*60
+        )
+        modal.add_item(member_id := nextcord.ui.TextInput(
+            label="Введите id человека для уведомления",
+            placeholder="0123456789",
+            required=True,
+        ))
+        modal.add_item(reason := nextcord.ui.TextInput(
+            label="Укажите комментарий пользователю (по желанию)",
+            placeholder="Добро пожаловать в коллектив!",
+            required=False,
+        ))
+        modal.completed = False
+        async def modal_callback(interaction: nextcord.Interaction):
+            try:
+                member = nextcord.utils.get(
+                    interaction.guild.members, id=int(member_id.value)
+                )
+                await member.send(f"Уважаемый {member.mention}, мы рассмотрели вашу заявку, с уважением команда WTCommunityDiscord\n"
+                                  f"В скором времени с вами может связаться администрация проекта.\n"
+                                  f"Модератор: {interaction.user.mention}\n{f'Комментарий: {reason.value}' if reason.value else ''}")
+                await interaction.send("Отказ отправлен!", ephemeral=True)
+                modal.completed = True
+            except BaseException as ex:
+                modal.completed = False
+                await interaction.send("Что-то пошло не так! Возможно заблокирвоаны DM.", ephemeral=True)
+                raise ex
+            finally:
+                modal.stop()
+        modal.callback = modal_callback
+        await interaction.response.send_modal(modal)
+        await modal.wait()
+        if modal.completed:
+            button.disabled = True
+            self.deny_user.disabled = True
+            await interaction.message.edit(view=self)
+
     @nextcord.ui.button(label="Отказать человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:deny_user")
     async def deny_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        button.disabled = True
         modal = nextcord.ui.Modal(
             title="DM Уведомление от отказе",
             timeout=5*60
@@ -24,8 +64,8 @@ class DenyStafButtons(nextcord.ui.View):
             placeholder="Не нравитесь модераторам",
             required=False,
         ))
+        modal.completed = False
         async def modal_callback(interaction: nextcord.Interaction):
-            modal.completed = False
             try:
                 member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
@@ -45,6 +85,7 @@ class DenyStafButtons(nextcord.ui.View):
         await modal.wait()
         if modal.completed:
             button.disabled = True
+            self.allow_user.disabled = True
             await interaction.message.edit(view=self)
 
 
