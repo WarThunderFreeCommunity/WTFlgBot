@@ -109,24 +109,23 @@ class StafModal(nextcord.ui.Modal):
         # Define the inputs using the create_input function
         self.name = create_input(
             *self.text_inputs[modal_name]["name"]
+            max_length=300,
         )
         self.time_zone = create_input(
             *self.text_inputs[modal_name]["time_zone"]
+            max_length=300,
         )
         self.experience = create_input(
             *self.text_inputs[modal_name]["experience"],
             style=nextcord.TextInputStyle.paragraph,
-            max_length=300,
         )
         self.skills = create_input(
             *self.text_inputs[modal_name]["skills"],
             style=nextcord.TextInputStyle.paragraph,
-            max_length=300,
         )
         self.autobiography = create_input(
             *self.text_inputs[modal_name]["autobiography"],
             style=nextcord.TextInputStyle.paragraph,
-            max_length=300,
         )
 
         # Store the inputs in a list
