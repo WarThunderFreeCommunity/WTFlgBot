@@ -25,13 +25,14 @@ class DenyStafButtons(nextcord.ui.View):
                 member = await nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
+                print(member.id)
                 await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\nМодератор:{interaction.user.mention}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
                 modal.completed = True
             except BaseException as ex:
-                raise ex
                 modal.completed = False
                 await interaction.send("Что-то пошло не так! Возможно заблокирвоаны DM.", ephemeral=True)
+                raise ex
             finally:
                 modal.stop()
         modal.callback = modal_callback
