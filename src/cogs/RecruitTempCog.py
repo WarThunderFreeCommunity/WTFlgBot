@@ -25,7 +25,6 @@ class DenyStafButtons(nextcord.ui.View):
                 member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
-                print(member.id)
                 await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\nМодератор:{interaction.user.mention}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
                 modal.completed = True
