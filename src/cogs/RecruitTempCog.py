@@ -29,7 +29,7 @@ class DenyStafButtons(nextcord.ui.View):
                 member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
-                await member.send(f"Уважаемый {member.mention}, мы рассмотрели вашу заявку, с уважением команда WTCommunityDiscord\n"
+                await member.send(f"Уважаемый {member.mention}, мы рассмотрели вашу заявку, с уважением, команда WTCommunityDiscord\n"
                                   f"В скором времени с вами может связаться администрация проекта.\n"
                                   f"Модератор: {interaction.user.mention}\n{f'Комментарий: {reason.value}' if reason.value else ''}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
@@ -70,7 +70,7 @@ class DenyStafButtons(nextcord.ui.View):
                 member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
-                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\n"
+                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением, команда WTCommunityDiscord\n"
                                   f"Модератор: {interaction.user.mention}\n{f'Причина: {reason.value}' if reason.value else ''}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
                 modal.completed = True
