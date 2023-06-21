@@ -70,7 +70,7 @@ class DenyStafButtons(nextcord.ui.View):
                 member = nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
-                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением, команда WTCommunityDiscord\n"
+                await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением,F команда WTCommunityDiscord\n"
                                   f"Модератор: {interaction.user.mention}\n{f'Причина: {reason.value}' if reason.value else ''}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
                 modal.completed = True
@@ -291,7 +291,7 @@ class StafPosition(Cog):
             return
         await ctx.message.delete()
         embed = nextcord.Embed(
-            title="Привет! Тут вы можете подать заявку на сотрудника сервера.",
+            title="Привет! Тут вы можете подать заявку на вступление в состав сотрудников сервера.",
             color=0xFF0000
         )
         view = StafSelectView()
