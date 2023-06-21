@@ -14,15 +14,15 @@ class DenyStafButtons(nextcord.ui.View):
             title="DM Уведомление от отказе",
             timeout=5*60
         )
-        modal.member_id = nextcord.ui.TextInput(
+        modal.add_item(member_id := nextcord.ui.TextInput(
             label="Введите id человека для уведомления",
             placeholder="0123456789",
             required=True,
-        )
+        ))
         async def modal_callback(interaction: nextcord.Interaction):
             try:
                 member = await nextcord.utils.get(
-                    interaction.guild.members, id=int(modal.member_id.value)
+                    interaction.guild.members, id=int(member_id.value)
                 )
                 await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\nМодератор:{interaction.user.mention}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
