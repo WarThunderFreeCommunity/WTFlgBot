@@ -20,20 +20,24 @@ class DenyStafButtons(nextcord.ui.View):
             required=True,
         ))
         async def modal_callback(interaction: nextcord.Interaction):
+            modal.completed = False
             try:
                 member = await nextcord.utils.get(
                     interaction.guild.members, id=int(member_id.value)
                 )
                 await member.send(f"Уважаемый {member.mention}, в вашей заявкей отказано, с уважением команда WTCommunityDiscord\nМодератор:{interaction.user.mention}")
                 await interaction.send("Отказ отправлен!", ephemeral=True)
-            except BaseException:
+                modal.completed = True
+            except BaseException as ex:
+                raise ex
+                modal.completed = False
                 await interaction.send("Что-то пошло не так! Возможно заблокирвоаны DM.", ephemeral=True)
             finally:
                 modal.stop()
         modal.callback = modal_callback
         await interaction.response.send_modal(modal)
-        timeout_bool = await modal.wait()
-        if not timeout_bool:
+        await modal.wait()
+        if :
             button.disabled = True
             await interaction.message.edit(view=self)
             self.stop() # хз нужно ли button.disabled, надеюсь, что кнопки останутся
