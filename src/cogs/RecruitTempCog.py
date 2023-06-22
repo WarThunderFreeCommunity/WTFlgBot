@@ -45,7 +45,7 @@ class DenyStafButtons(nextcord.ui.View):
         await modal.wait()
         if modal.completed:
             embed = nextcord.Embed(
-                title=f"{interaction.user.mention} отправил уведомление!"
+                description=f"{interaction.user.mention} отправил уведомление!"
             )
             embed.add_field(
                 name="уведомление: ".upper(),
@@ -95,7 +95,7 @@ class DenyStafButtons(nextcord.ui.View):
         await modal.wait()
         if modal.completed:
             embed = nextcord.Embed(
-                title=f"{interaction.user.mention} отправил отказ!"
+                description=f"{interaction.user.mention} отправил отказ!"
             )
             embed.add_field(
                 name="комментарий: ".upper(),
