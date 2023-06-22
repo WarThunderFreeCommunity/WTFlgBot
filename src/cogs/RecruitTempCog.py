@@ -44,9 +44,19 @@ class DenyStafButtons(nextcord.ui.View):
         await interaction.response.send_modal(modal)
         await modal.wait()
         if modal.completed:
+            embed = nextcord.Embed(
+                title=f"{interaction.user.mention} отправил уведомление!"
+            )
+            embed.add_field(
+                name="уведомление: ".upper(),
+                value=f"```{reason.value}```",
+                inline=False
+            )
+            embeds = interaction.message.embeds
+            embeds.append(embed)
             button.disabled = True
             self.deny_user.disabled = True
-            await interaction.message.edit(view=self)
+            await interaction.message.edit(embeds=embeds, view=self)
 
     @nextcord.ui.button(label="Отказать человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:deny_user")
     async def deny_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -84,9 +94,19 @@ class DenyStafButtons(nextcord.ui.View):
         await interaction.response.send_modal(modal)
         await modal.wait()
         if modal.completed:
+            embed = nextcord.Embed(
+                title=f"{interaction.user.mention} отправил отказ!"
+            )
+            embed.add_field(
+                name="комментарий: ".upper(),
+                value=f"```{reason.value}```",
+                inline=False
+            )
+            embeds = interaction.message.embeds
+            embeds.append(embed)
             button.disabled = True
             self.allow_user.disabled = True
-            await interaction.message.edit(view=self)
+            await interaction.message.edit(embeds=embeds, view=self)
 
 
 class StafModal(nextcord.ui.Modal):
