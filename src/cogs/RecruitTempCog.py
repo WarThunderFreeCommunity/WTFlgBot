@@ -32,7 +32,7 @@ class DenyStafButtons(nextcord.ui.View):
                 await member.send(f"Уважаемый {member.mention}, мы рассмотрели вашу заявку, с уважением, команда WTCommunityDiscord\n"
                                   f"В скором времени с вами может связаться администрация проекта.\n"
                                   f"Модератор: {interaction.user.mention}\n{f'Комментарий: {reason.value}' if reason.value else ''}")
-                await interaction.send("Отказ отправлен!", ephemeral=True)
+                await interaction.send("Комментарий отправлен!", ephemeral=True)
                 modal.completed = True
             except BaseException as ex:
                 modal.completed = False
@@ -47,11 +47,12 @@ class DenyStafButtons(nextcord.ui.View):
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention} отправил уведомление!"
             )
-            embed.add_field(
-                name="уведомление: ".upper(),
-                value=f"```{reason.value}```",
-                inline=False
-            )
+            if reason.value:
+                embed.add_field(
+                    name="уведомление: ".upper(),
+                    value=f"```{reason.value}```",
+                    inline=False
+                )
             embeds = interaction.message.embeds
             embeds.append(embed)
             button.disabled = True
@@ -97,11 +98,12 @@ class DenyStafButtons(nextcord.ui.View):
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention} отправил отказ!"
             )
-            embed.add_field(
-                name="комментарий: ".upper(),
-                value=f"```{reason.value}```",
-                inline=False
-            )
+            if reason.value:
+                embed.add_field(
+                    name="комментарий: ".upper(),
+                    value=f"```{reason.value}```",
+                    inline=False
+                )
             embeds = interaction.message.embeds
             embeds.append(embed)
             button.disabled = True
@@ -113,7 +115,7 @@ class StafModal(nextcord.ui.Modal):
     def __init__(self, modal_name):
         self.modal_name = modal_name
         super().__init__(
-            title=f'Заявка на роль "{modal_name}"',
+            title=f'Заявка на должность "{modal_name}"',
             timeout=60 * 60,
         )
         self.text_inputs: dict = {
@@ -290,10 +292,10 @@ class StafModal(nextcord.ui.Modal):
 class StafSelect(nextcord.ui.Select):
     def __init__(self):
         options = [
-            nextcord.SelectOption(label="Модератор", description="Создать заявку на роль модератора"),
-            nextcord.SelectOption(label="Ивент организатор", description="Создать заявку на роль ивент организатора"),
-            nextcord.SelectOption(label="Системный администратор", description="Создать заявку на роль системного администратора"),
-            nextcord.SelectOption(label="Дизайнер", description="Создать заявку на роль дизайнера"),
+            nextcord.SelectOption(label="Модератор", description="Создать заявку на должность модератора"),
+            nextcord.SelectOption(label="Ивент организатор", description="Создать заявку на должность ивент организатора"),
+            nextcord.SelectOption(label="Системный администратор", description="Создать заявку на должность системного администратора"),
+            nextcord.SelectOption(label="Дизайнер", description="Создать заявку на должность дизайнера"),
         ]
 
         super().__init__(
