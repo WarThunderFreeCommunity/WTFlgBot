@@ -681,11 +681,17 @@ class AuthPayWT(Cog):
                 view=MainButtons()
             )
             return
-        await self.bot.DATA['messages']['pymsg'].edit(
-            embed=deepcopy(main_embed),
-            view=MainButtons()
-        )
-
+        try:
+            await self.bot.DATA['messages']['pymsg'].edit(
+                embed=deepcopy(main_embed),
+                view=MainButtons()
+            )
+        except BaseException:
+            self.bot.DATA['messages']['pymsg'] = await ctx.channel.send(
+                embed=deepcopy(main_embed),
+                view=MainButtons()
+            )
+            return
 
 def setup(bot: Bot) -> None:
     print("QiwiPay.py loaded")
