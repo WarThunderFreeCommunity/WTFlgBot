@@ -45,7 +45,7 @@ class DenyStafButtons(nextcord.ui.View):
         await modal.wait()
         if modal.completed:
             embed = nextcord.Embed(
-                description=f"{interaction.user.mention} отправил уведомление!"
+                description=f"{interaction.user.mention} отправил уведомление на данную заявку!"
             )
             if reason.value:
                 embed.add_field(
@@ -96,7 +96,7 @@ class DenyStafButtons(nextcord.ui.View):
         await modal.wait()
         if modal.completed:
             embed = nextcord.Embed(
-                description=f"{interaction.user.mention} отправил отказ!"
+                description=f"{interaction.user.mention} отправил отказ на данную заявку!"
             )
             if reason.value:
                 embed.add_field(
