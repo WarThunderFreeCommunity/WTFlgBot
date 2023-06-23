@@ -50,16 +50,10 @@ VIP - by purchasing a subscription, you support our server in development and pu
 """
 
 main_embed = nextcord.Embed.from_dict({
-    "title": "Добро пожаловать на сервер wt",
+    "title": "Welcome to the War Thunder Сommunity Server",
     "description": main_message_text,
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -76,12 +70,6 @@ advertisement_ru_embed = nextcord.Embed.from_dict({
     "description": "Выберите нужное значение",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -98,12 +86,6 @@ advertisement_en_embed = nextcord.Embed.from_dict({
     "description": "Select the desired value",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -120,12 +102,6 @@ vip_ru_embed = nextcord.Embed.from_dict({
     "description": "Выберите нужное значение",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -142,12 +118,6 @@ vip_en_embed = nextcord.Embed.from_dict({
     "description": "Select the desired value",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -164,12 +134,6 @@ payment_ru_embed = nextcord.Embed.from_dict({
     "description": "Пожалуйста, укажите комментарий к платежу из данного сообщения",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -186,12 +150,6 @@ payment_en_embed = nextcord.Embed.from_dict({
     "description": "Please enter a comment on the payment from this message",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "author": {
-        "name": "yunik#4792",
-        "url": "",
-        "icon_url": "https://cdn.discordapp.com/avatars/286914074422280194/8f78a4313bc06862ce529291172edf8d.webp?"
-                    "size=32",
-    },
     "thumbnail": {"url": ""},
     "fields": [
 
@@ -667,7 +625,7 @@ class AuthPayWT(Cog):
             print(exception)
 
     @commands.command()
-    async def pymsg(self, ctx: Context, ):
+    async def pymsg(self, ctx: Context):
         if ctx.author.id not in self.bot.OWNERS:
             return
         await ctx.message.delete()
