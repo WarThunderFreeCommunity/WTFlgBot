@@ -135,7 +135,13 @@ class DenyStafButtons(nextcord.ui.View):
         button.disabled = True
         self.deny_user.disabled = True
         self.allow_user.disabled = True
-        await interaction.message.edit(view=self)
+        embeds = interaction.message.embeds
+        embeds.append(
+            nextcord.Embed(
+                description=f"{interaction.user.mention}(`{interaction.user.id}`) закрыл заявку!"
+            )
+        )
+        await interaction.message.edit(embeds=embeds, view=self)
         await interaction.send("Заявку спешно закрыта!", ephemeral=True)
 
 
