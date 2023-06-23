@@ -263,7 +263,7 @@ class StafModal(nextcord.ui.Modal):
             [self.time_zone, "time_zone"],
             [self.experience, "experience"],
             [self.skills, "skills"],
-            [self.autobiography, "autobiograph"],
+            [self.autobiography, "autobiography"],
         ]
 
         # Add the inputs to the view
