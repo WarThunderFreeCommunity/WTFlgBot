@@ -1,3 +1,5 @@
+from traceback import format_exception
+
 import nextcord
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
@@ -293,8 +295,9 @@ class StafModal(nextcord.ui.Modal):
             await interaction.response.send_message(
                 content="Заявка отправлена! Администраторы свяжутся с вами в личные сообщения", ephemeral=True
             )
-        except BaseException:
-            await interaction.send("Что-то пошло не так, напишите в личные сообщения <#286914074422280194>", ephemeral=True)
+        except BaseException as ex:
+            result = "".join(format_exception(ex, ex, ex.__traceback__))
+            await interaction.send(f"Что-то пошло не так, напишите в личные сообщения <@286914074422280194>\nException:\n```bash\n{result.replace('```', '`')}\n```", ephemeral=True)
 
 
 class StafSelect(nextcord.ui.Select):
