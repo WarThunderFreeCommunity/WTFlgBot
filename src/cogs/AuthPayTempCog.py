@@ -670,28 +670,11 @@ class AuthPayWT(Cog):
     async def pymsg(self, ctx: Context, ):
         if ctx.author.id not in self.bot.OWNERS:
             return
-        try:
-            self.bot.DATA['messages']['pymsg']
-        except KeyError:
-            self.bot.DATA['messages']['pymsg'] = None
         await ctx.message.delete()
-        if not self.bot.DATA['messages']['pymsg']:
-            self.bot.DATA['messages']['pymsg'] = await ctx.channel.send(
-                embed=deepcopy(main_embed),
-                view=MainButtons()
-            )
-            return
-        try:
-            await self.bot.DATA['messages']['pymsg'].edit(
-                embed=deepcopy(main_embed),
-                view=MainButtons()
-            )
-        except BaseException:
-            self.bot.DATA['messages']['pymsg'] = await ctx.channel.send(
-                embed=deepcopy(main_embed),
-                view=MainButtons()
-            )
-            return
+        await ctx.channel.send(
+            embed=deepcopy(main_embed),
+            view=MainButtons()
+        )
 
 def setup(bot: Bot) -> None:
     print("QiwiPay.py loaded")
