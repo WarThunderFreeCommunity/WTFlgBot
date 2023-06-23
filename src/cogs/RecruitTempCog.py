@@ -140,7 +140,7 @@ class DenyStafButtons(nextcord.ui.View):
                 description=f"{interaction.user.mention}(`{interaction.user.id}`) закрыл заявку!"
         ))
         await interaction.message.edit(embeds=embeds, view=self)
-        await interaction.send("Заявку спешно закрыта!", ephemeral=True)
+        await interaction.send("Заявка спешно закрыта!", ephemeral=True)
 
 
 class StafModal(nextcord.ui.Modal):
