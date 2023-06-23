@@ -47,17 +47,21 @@ class DenyStafButtons(nextcord.ui.View):
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) отправил уведомление на данную заявку!"
             )
-            if reason.value:
-                embed.add_field(
-                    name="уведомление: ".upper(),
-                    value=f"```{reason.value}```",
-                    inline=False
-                )
-            embeds = interaction.message.embeds
-            embeds.append(embed)
             button.disabled = True
             self.deny_user.disabled = True
-            await interaction.message.edit(embeds=embeds, view=self)
+        else:
+            embed = nextcord.Embed(
+                description=f"{interaction.user.mention}({interaction.user.id}) попытался отправить уведомление на данную заявку! Возможно DM заблокированы.\nВы можете попытаться отправить ещё раз..."
+            )
+        if reason.value:
+            embed.add_field(
+                name="уведомление: ".upper(),
+                value=f"```{reason.value}```",
+                inline=False
+            )
+        embeds = interaction.message.embeds
+        embeds.append(embed)
+        await interaction.message.edit(embeds=embeds, view=self)
 
     @nextcord.ui.button(label="Отказать человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:deny_user")
     async def deny_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -92,23 +96,27 @@ class DenyStafButtons(nextcord.ui.View):
             finally:
                 modal.stop()
         modal.callback = modal_callback
-        await interaction.response.send_modal(modal)
+        await interaction.response.send_modal(modal) 
         await modal.wait()
         if modal.completed:
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) отправил отказ на данную заявку!"
             )
-            if reason.value:
-                embed.add_field(
-                    name="комментарий: ".upper(),
-                    value=f"```{reason.value}```",
-                    inline=False
-                )
-            embeds = interaction.message.embeds
-            embeds.append(embed)
-            button.disabled = True
-            self.allow_user.disabled = True
-            await interaction.message.edit(embeds=embeds, view=self)
+        else:
+            embed = nextcord.Embed(
+                description=f"{interaction.user.mention}({interaction.user.id}) попытался отправить отказ на данную заявку! Возможно DM заблокированы.\nВы можете попытаться отправить ещё раз..."
+            )
+        if reason.value:
+            embed.add_field(
+                name="комментарий: ".upper(),
+                value=f"```{reason.value}```",
+                inline=False
+            )
+        embeds = interaction.message.embeds
+        embeds.append(embed)
+        button.disabled = True
+        self.allow_user.disabled = True
+        await interaction.message.edit(embeds=embeds, view=self)
 
 
 class StafModal(nextcord.ui.Modal):
@@ -253,7 +261,7 @@ class StafModal(nextcord.ui.Modal):
             [self.time_zone, "time_zone"],
             [self.experience, "experience"],
             [self.skills, "skills"],
-            [self.autobiography, "autobiography"],
+            [self.autobiography, "autobiograph"],
         ]
 
         # Add the inputs to the view
