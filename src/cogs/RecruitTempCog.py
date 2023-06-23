@@ -130,7 +130,7 @@ class DenyStafButtons(nextcord.ui.View):
             self.close_request = True
         await interaction.message.edit(embeds=embeds, view=self)
     
-    @nextcord.ui.button(label="Закрыть заявку", style=nextcord.ButtonStyle.grey, custom_id="RecruitTempCog:DenyStafButtons:close_request")
+    @nextcord.ui.button(label="Закрыть заявку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:close_request")
     async def close_request(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         button.disabled = True
         self.deny_user.disabled = True
