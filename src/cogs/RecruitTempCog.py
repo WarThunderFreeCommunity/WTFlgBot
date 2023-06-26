@@ -106,10 +106,7 @@ class DenyStafButtons(nextcord.ui.View):
                 modal.stop()
         modal.callback = modal_callback
         await interaction.response.send_modal(modal) 
-        if (await modal.wait()):
-            if not modal.ex:
-                await interaction.send("Вы не отправили ответ!", ephemeral=True)
-            return
+        await modal.wait()
         if modal.completed:
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) отправил отказ на данную заявку!"
