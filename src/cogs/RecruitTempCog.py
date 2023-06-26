@@ -79,7 +79,7 @@ class DenyStafButtons(nextcord.ui.View):
     async def deny_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         modal = nextcord.ui.Modal(
             title="DM Уведомление от отказе",
-            timeout=10
+            timeout=5*60
         )
         modal.add_item(member_id := nextcord.ui.TextInput(
             label="Введите id человека для уведомления",
