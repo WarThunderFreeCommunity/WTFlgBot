@@ -87,6 +87,7 @@ class DenyStafButtons(nextcord.ui.View):
             required=False,
         ))
         modal.completed = False
+        modal.ex = False
         async def modal_callback(interaction: nextcord.Interaction):
             try:
                 member = nextcord.utils.get(
@@ -98,13 +99,17 @@ class DenyStafButtons(nextcord.ui.View):
                 modal.completed = True
             except BaseException as ex:
                 modal.completed = False
+                modal.ex = True
                 await interaction.send("Что-то пошло не так! Возможно заблокирвоаны DM.", ephemeral=True)
                 raise ex
             finally:
                 modal.stop()
         modal.callback = modal_callback
         await interaction.response.send_modal(modal) 
-        await modal.wait()
+        if (await modal.wait()):
+            if not modal.ex:
+                await interaction.send("Вы не отправили ответ!", ephemeral=True)
+            return
         if modal.completed:
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) отправил отказ на данную заявку!"
