@@ -312,7 +312,7 @@ class StafModal(nextcord.ui.Modal):
                 "Дизайнер": 0xD22D2D,
             }
             embed = nextcord.Embed(
-                description=f"{interaction.user.mention}(`{interaction.user.id}`) создал новую заявку на должность `{self.modal_name}`!",
+                description=f"{interaction.user.mention}/{interaction.user.name}(`{interaction.user.id}`) создал новую заявку на должность `{self.modal_name}`!",
                 color=colors[self.modal_name]
             )
             for item in self.items:
