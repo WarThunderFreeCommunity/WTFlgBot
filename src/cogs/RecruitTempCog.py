@@ -4,6 +4,7 @@ import nextcord
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
 
+
 GUILDS_RECRUIT_CHANNELS = {
     691182902633037834: 1121101138423451659,
     1027302631691014215: 1122859941686951997
