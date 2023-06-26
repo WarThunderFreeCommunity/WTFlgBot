@@ -16,7 +16,7 @@ class HelperCog(Cog):
         pass
 
     @Bot.event
-    async def on_message(message):
+    async def on_message(self, message):
         if 'https://discord.gg/' in message.content and not message.author.guild_permissions.administrator:
             for role_allowed in [
                 nextcord.utils.find(lambda r: r.id == 954393422716879019, message.guild.roles), # vip1 main
