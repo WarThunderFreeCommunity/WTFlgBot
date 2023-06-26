@@ -61,8 +61,8 @@ class DenyStafButtons(nextcord.ui.View):
                 description=f"{interaction.user.mention}({interaction.user.id}) отправил уведомление на данную заявку!"
             )
             button.disabled = True
-            self.deny_user.disabled = True
-            self.close_request.disabled = True
+            #self.deny_user.disabled = True
+            #self.close_request.disabled = True
         else:
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) попытался отправить уведомление на данную заявку! Возможно DM заблокированы.\nВы можете попытаться отправить ещё раз..."
