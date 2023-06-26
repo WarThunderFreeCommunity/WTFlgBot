@@ -15,7 +15,7 @@ class HelperCog(Cog):
     def cog_unload(self):
         pass
 
-    @Bot.event
+    @commands.Cog.listener()
     async def on_message(self, message):
         if 'https://discord.gg/' in message.content and not message.author.guild_permissions.administrator:
             for role_allowed in [
