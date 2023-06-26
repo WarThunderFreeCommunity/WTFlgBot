@@ -54,7 +54,7 @@ class DenyStafButtons(nextcord.ui.View):
         await interaction.response.send_modal(modal)
         if (await modal.wait()):
             if not modal.ex:
-                await interaction.send("Вы не отправили ответ!", ephemeral=True)
+                await interaction.send("Вы не отправили ответ! И видите данное сообщение т.к. нажимали на кнопку..", ephemeral=True)
             return
         if modal.completed:
             embed = nextcord.Embed(
@@ -62,7 +62,7 @@ class DenyStafButtons(nextcord.ui.View):
             )
             button.disabled = True
             self.deny_user.disabled = True
-            self.close_request = True
+            self.close_request.disabled = True
         else:
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) попытался отправить уведомление на данную заявку! Возможно DM заблокированы.\nВы можете попытаться отправить ещё раз..."
@@ -78,7 +78,7 @@ class DenyStafButtons(nextcord.ui.View):
         if len(embeds) > 4:
             button.disabled = True
             self.deny_user.disabled = True
-            self.close_request = True
+            self.close_request.disabled = True
         await interaction.message.edit(embeds=embeds, view=self)
 
     @nextcord.ui.button(label="Отказать человеку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:deny_user")
@@ -119,7 +119,7 @@ class DenyStafButtons(nextcord.ui.View):
         await interaction.response.send_modal(modal) 
         if (await modal.wait()):
             if not modal.ex:
-                await interaction.send("Вы не отправили ответ!", ephemeral=True)
+                await interaction.send("Вы не отправили ответ! И видите данное сообщение т.к. нажимали на кнопку..", ephemeral=True)
             return
         if modal.completed:
             embed = nextcord.Embed(
@@ -127,7 +127,7 @@ class DenyStafButtons(nextcord.ui.View):
             )
             button.disabled = True
             self.allow_user.disabled = True
-            self.close_request = True
+            self.close_request.disabled = True
         else:
             embed = nextcord.Embed(
                 description=f"{interaction.user.mention}({interaction.user.id}) попытался отправить отказ на данную заявку! Возможно DM заблокированы.\nВы можете попытаться отправить ещё раз..."
@@ -143,7 +143,7 @@ class DenyStafButtons(nextcord.ui.View):
         if len(embeds) > 4:
             button.disabled = True
             self.allow_user.disabled = True
-            self.close_request = True
+            self.close_request.disabled = True
         await interaction.message.edit(embeds=embeds, view=self)
     
     @nextcord.ui.button(label="Закрыть заявку", style=nextcord.ButtonStyle.red, custom_id="RecruitTempCog:DenyStafButtons:close_request")
