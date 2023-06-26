@@ -4,6 +4,11 @@ import nextcord
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
 
+GUILDS_RECRUIT_CHANNELS = {
+    691182902633037834: 1121101138423451659,
+    1027302631691014215: 1122859941686951997
+}
+
 
 class DenyStafButtons(nextcord.ui.View):
     def __init__(self):
@@ -321,7 +326,8 @@ class StafModal(nextcord.ui.Modal):
                     value=f"```{item[0].value}```",
                     inline=False
                 )
-            channel = interaction.guild.get_channel(1121101138423451659)
+            guild = interaction.guild
+            channel = guild.get_channel(GUILDS_RECRUIT_CHANNELS[guild.id])
             if channel:
                 await channel.send(embed=embed, view=DenyStafButtons())
             await interaction.response.send_message(
