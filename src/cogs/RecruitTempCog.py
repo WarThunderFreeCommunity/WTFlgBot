@@ -53,8 +53,8 @@ class DenyStafButtons(nextcord.ui.View):
         modal.callback = modal_callback
         await interaction.response.send_modal(modal)
         if (await modal.wait()):
-            if not modal.ex:
-                await interaction.send("Вы не отправили ответ! И видите данное сообщение т.к. нажимали на кнопку..", ephemeral=True)
+            #if not modal.ex:
+                #await interaction.send("Вы не отправили ответ! И видите данное сообщение т.к. нажимали на кнопку..", ephemeral=True)
             return
         if modal.completed:
             embed = nextcord.Embed(
@@ -118,8 +118,8 @@ class DenyStafButtons(nextcord.ui.View):
         modal.callback = modal_callback
         await interaction.response.send_modal(modal) 
         if (await modal.wait()):
-            if not modal.ex:
-                await interaction.send("Вы не отправили ответ! И видите данное сообщение т.к. нажимали на кнопку..", ephemeral=True)
+            #if not modal.ex:
+            #    await interaction.send("Вы не отправили ответ! И видите данное сообщение т.к. нажимали на кнопку..", ephemeral=True)
             return
         if modal.completed:
             embed = nextcord.Embed(
