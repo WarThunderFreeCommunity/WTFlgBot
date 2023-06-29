@@ -29,6 +29,12 @@ class HelperCog(Cog):
                     return
             await message.delete()
     
+    @commands.Cog.listener()
+    async def on_message(self, message: nextcord.Message):
+        if message.author.id == 159985870458322944 and \
+        message.channel.category_id in [851708687693119508, 786488640087785492]:
+            await message.delete()
+    
 
 
 # on_ready cog!
