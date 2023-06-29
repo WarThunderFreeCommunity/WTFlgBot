@@ -42,11 +42,11 @@ You have joined the War Thunder Fan Server
 Select your language by clicking on the button: Russian / Englich
 ```
 
-Чтобы купить рекламу полка нажмите на кнопку. После оплаты подписки вам бот выдаст роль, которая даст вам возможность выкладывать рекламу в специальном канале <#955043080178909204> Если у вас другой вид рекламы то напишите главе сервера. Подробности в канале <#1095191673245532261>\n
-To buy squadron ads, click on the button. After paying for the subscription, the bot will give you a role that will give you the opportunity to advertise in a special channel <#1085546330467872889> If you have a different type of advertising, then write to the head of the server <#1095191673245532261>
+Чтобы купить рекламу полка нажмите на кнопку. После оплаты подписки вам бот выдаст роль, которая даст вам возможность выкладывать рекламу в специальном канале <#955043080178909204> Если у вас другой вид рекламы то напишите главе сервера.\n
+To buy squadron ads, click on the button. After paying for the subscription, the bot will give you a role that will give you the opportunity to advertise in a special channel <#1085546330467872889> If you have a different type of advertising, then write to the head of the server
 
-VIP - покупая подписку вы поддерживаете наш сервер в развитии и приобретаете дополнительные бонусы себе на нашем сервере. Подробности в канале <#1095191673245532261>\n
-VIP - by purchasing a subscription, you support our server in development and purchase additional bonuses for yourself on our server. You can find out about this in the channel <#1095191673245532261>
+VIP - покупая подписку вы поддерживаете наш сервер в развитии и приобретаете дополнительные бонусы себе на нашем сервере.\n
+VIP - by purchasing a subscription, you support our server in development and purchase additional bonuses for yourself on our server.
 """
 
 main_embed = nextcord.Embed.from_dict({
