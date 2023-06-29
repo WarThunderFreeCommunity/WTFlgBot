@@ -57,15 +57,6 @@ main_embed = nextcord.Embed.from_dict({
     "description": main_message_text,
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 advertisement_ru_embed = nextcord.Embed.from_dict({
