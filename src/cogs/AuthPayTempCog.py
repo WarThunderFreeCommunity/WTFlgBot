@@ -26,6 +26,7 @@ data_log_path = os.path.join(data_dir, '_data_log_payments.txt')
 guild_ids = [1064192306904846377]
 ru_role_id: int = 795232311477272576
 en_role_id: int = 795232315579564032
+
 vip_ru_role_id = 1007965606789783572
 vip_en_role_id = 1085530065707733012
 adv_ru_role_id = 1085540360173924412
@@ -41,10 +42,10 @@ You have joined the War Thunder Fan Server
 Выберите свой язык нажав на кнопку:  Russian / Englich\n
 Select your language by clicking on the button: Russian / Englich
 ```
-```
+
 Чтобы купить рекламу полка нажмите на кнопку. После оплаты подписки вам бот выдаст роль, которая даст вам возможность выкладывать рекламу в специальном канале <#955043080178909204> Если у вас другой вид рекламы то напишите главе сервера.\n
 To buy squadron ads, click on the button. After paying for the subscription, the bot will give you a role that will give you the opportunity to advertise in a special channel <#1085546330467872889> If you have a different type of advertising, then write to the head of the server
-```
+
 ```
 VIP - покупая подписку вы поддерживаете наш сервер в развитии и приобретаете дополнительные бонусы себе на нашем сервере.\n
 VIP - by purchasing a subscription, you support our server in development and purchase additional bonuses for yourself on our server.
@@ -72,15 +73,6 @@ advertisement_ru_embed = nextcord.Embed.from_dict({
     "description": "Выберите нужное значение",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 advertisement_en_embed = nextcord.Embed.from_dict({
@@ -88,15 +80,6 @@ advertisement_en_embed = nextcord.Embed.from_dict({
     "description": "Select the desired value",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 vip_ru_embed = nextcord.Embed.from_dict({
@@ -104,15 +87,6 @@ vip_ru_embed = nextcord.Embed.from_dict({
     "description": "Выберите нужное значение",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 vip_en_embed = nextcord.Embed.from_dict({
@@ -120,15 +94,6 @@ vip_en_embed = nextcord.Embed.from_dict({
     "description": "Select the desired value",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 payment_ru_embed = nextcord.Embed.from_dict({
@@ -136,15 +101,6 @@ payment_ru_embed = nextcord.Embed.from_dict({
     "description": "Пожалуйста, укажите комментарий к платежу из данного сообщения",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 payment_en_embed = nextcord.Embed.from_dict({
@@ -152,15 +108,6 @@ payment_en_embed = nextcord.Embed.from_dict({
     "description": "Please enter a comment on the payment from this message",
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
-    "thumbnail": {"url": ""},
-    "fields": [
-
-    ],
-    "image": {"url": ""},
-    "footer": {
-        "text": "Embed Footer",
-        "icon_url": "",
-    },
 })
 
 
@@ -363,14 +310,14 @@ class AdvertisementButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_day(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 # 120.0
+        self.payment_info['real_summ'] = 120.0
         self.payment_info['enrollment_summ'] = 120.0
         self.disable_buttons("one_day")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 # 3000.0
+        self.payment_info['real_summ'] = 3000.0
         self.payment_info['enrollment_summ'] = 3600
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
@@ -456,21 +403,21 @@ class VipButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 # 30.0
+        self.payment_info['real_summ'] = 30.0
         self.payment_info['enrollment_summ'] = 30.0
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def six_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 # 182.0
+        self.payment_info['real_summ'] = 82.0
         self.payment_info['enrollment_summ'] = 182.0
         self.disable_buttons("six_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_year(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 # 364.0
+        self.payment_info['real_summ'] = 364.0
         self.payment_info['enrollment_summ'] = 364.0
         self.disable_buttons("one_year")
         await interaction.response.edit_message(view=self)
