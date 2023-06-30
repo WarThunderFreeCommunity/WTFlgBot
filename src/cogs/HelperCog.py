@@ -1,3 +1,5 @@
+import asyncio
+
 import nextcord
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
@@ -35,6 +37,21 @@ class HelperCog(Cog):
         message.channel.category_id in [851708687693119508, 786488640087785492]:
             await message.delete()
     
+    @Cog.listener()
+    async def on_voice_state_update(
+        self,
+        member: nextcord.Member,
+        before: nextcord.VoiceState,
+        after: nextcord.VoiceState,
+    ):
+        try:
+            if '●' in after.channel.name and len(after.channel.members) == 0:
+                await asyncio.sleep(10) 
+                channel = self.get_channel(after.channel.id)
+                if channel is not None:
+                    await channel.delete()
+        except BaseException as e:
+            pass
 
 
 # on_ready cog!
