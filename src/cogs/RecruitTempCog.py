@@ -258,7 +258,6 @@ class StafModal(nextcord.ui.Modal):
         }
 
         def create_input(
-            self,
             label,
             placeholder,
             required=True,
