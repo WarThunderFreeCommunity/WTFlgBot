@@ -257,8 +257,8 @@ class StafModal(nextcord.ui.Modal):
             }
         }
 
-        @staticmethod
         def create_input(
+            self,
             label,
             placeholder,
             required=True,
