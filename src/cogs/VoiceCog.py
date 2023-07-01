@@ -349,7 +349,7 @@ class VoiceCog(Cog):
                 if len(voice_channel.members) == 0:
                     await voice_channel.delete()
                     await db.run_que("DELETE FROM VoiceCogChannels WHERE channelId=?", (voice_channel.id,))
-                    continue# TODO embeds
+                    continue
                 if channel_db[2] not in [member.id for member in voice_channel.members]:
                     await db.run_que(
                         "UPDATE VoiceCogChannels SET creatorId=? WHERE creatorId=?",
@@ -366,7 +366,7 @@ class VoiceCog(Cog):
                 lang = self.parrent_channel_ids[str(channel_db[0])].split(":")[0]
                 view = VoiceChannelsButtons(lang, voice_channel.members[0], message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [voice_channel.members[0].id], voice_channel)
-                await message.edit(content=None, embed=embed, view=view) # TODO embeds
+                await message.edit(content=None, embed=embed, view=view)
                 self.channel_views[voice_channel.id] = view
        
         except BaseException as ex:
