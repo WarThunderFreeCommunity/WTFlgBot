@@ -35,17 +35,9 @@ adv_en_role_id = 1085543092582625409
 main_message_text = \
 """
 ```
-Вы присоединились к Fan серверу War Thunder\n
-You have joined the War Thunder Fan Server
+Чтобы купить рекламу полка нажмите на кнопку. После оплаты подписки вам бот выдаст роль, которая даст вам возможность выкладывать рекламу в специальном канале. Если у вас другой вид рекламы то напишите главе сервера.\n
+To buy squadron ads, click on the button. After paying for the subscription, the bot will give you a role that will give you the opportunity to advertise in a special channel. If you have a different type of advertising, then write to the head of the server
 ```
-```
-Выберите свой язык нажав на кнопку:  Russian / Englich\n
-Select your language by clicking on the button: Russian / Englich
-```
-
-Чтобы купить рекламу полка нажмите на кнопку. После оплаты подписки вам бот выдаст роль, которая даст вам возможность выкладывать рекламу в специальном канале <#955043080178909204> Если у вас другой вид рекламы то напишите главе сервера.\n
-To buy squadron ads, click on the button. After paying for the subscription, the bot will give you a role that will give you the opportunity to advertise in a special channel <#1085546330467872889> If you have a different type of advertising, then write to the head of the server
-
 ```
 VIP - покупая подписку вы поддерживаете наш сервер в развитии и приобретаете дополнительные бонусы себе на нашем сервере.\n
 VIP - by purchasing a subscription, you support our server in development and purchase additional bonuses for yourself on our server.
@@ -56,7 +48,6 @@ main_embed = nextcord.Embed.from_dict({
     "title": "Welcome to the War Thunder Сommunity Server",
     "description": main_message_text,
     "color": 0xE74C3C,
-    "timestamp": datetime.datetime.now().isoformat(),
 })
 
 advertisement_ru_embed = nextcord.Embed.from_dict({
@@ -437,35 +428,30 @@ class VipButtons(nextcord.ui.View):
 class MainButtons(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout=None, prevent_update=False)
-
+    
     @nextcord.ui.button(
-        label="RUSSIAN", style=nextcord.ButtonStyle.green, custom_id="MainButtons:russian"
+        label="ИНСТРУКЦИЯ",
+        style=nextcord.ButtonStyle.green,
+        custom_id="MainButtons:ИНСТРУКЦИЯ",
+        row=0
     )
-    async def russian(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        member, guild = interaction.user, interaction.guild
-        role = guild.get_role(ru_role_id)
-        if role in member.roles:
-            await member.remove_roles(role)
-            await interaction.response.send_message("Удалена RUSSIAN роль", ephemeral=True)
-        else:
-            await member.add_roles(role)
-            await interaction.response.send_message("Добавлена RUSSIAN роль", ephemeral=True)
+    async def HELP_RU(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
 
     @nextcord.ui.button(
-        label="ENGLISH", style=nextcord.ButtonStyle.green, custom_id="MainButtons:ENGLISH"
+        label="MANUAL",
+        style=nextcord.ButtonStyle.green,
+        custom_id="MainButtons:MANUAL",
+        row=0
     )
-    async def english(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        member, guild = interaction.user, interaction.guild
-        role = guild.get_role(en_role_id)
-        if role in member.roles:
-            await member.remove_roles(role)
-            await interaction.response.send_message("Removed ENGLISH role", ephemeral=True)
-        else:
-            await member.add_roles(role)
-            await interaction.response.send_message("Added ENGLISH role", ephemeral=True)
+    async def HELP_EN(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        pass
 
     @nextcord.ui.button(
-        label="РЕКЛАМА", style=nextcord.ButtonStyle.gray, custom_id="MainButtons:РЕКЛАМА"
+        label="РЕКЛАМА",
+        style=nextcord.ButtonStyle.gray,
+        custom_id="MainButtons:РЕКЛАМА",
+        row=0
     )
     async def adver_ru(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         member = interaction.user
@@ -481,20 +467,22 @@ class MainButtons(nextcord.ui.View):
         ...
 
     @nextcord.ui.button(
-        label="ADVERTISEMENT", style=nextcord.ButtonStyle.gray, custom_id="MainButtons:ADVERTISEMENT"
+        label="ADVERTISEMENT",
+        style=nextcord.ButtonStyle.gray,
+        custom_id="MainButtons:ADVERTISEMENT",
+        row=0
     )
     async def adver_en(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await interaction.response.send_message(ephemeral=True,
                                                 embed=deepcopy(
                                                     advertisement_en_embed),
                                                 view=AdvertisementButtons(lang="en"))
-        """
-        ...
-        """
-        ...
 
     @nextcord.ui.button(
-        label="VIP", style=nextcord.ButtonStyle.blurple, custom_id="MainButtons:VIP"
+        label="VIP",
+        style=nextcord.ButtonStyle.blurple,
+        custom_id="MainButtons:VIP",
+        row=0
     )
     async def vip(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         lang = "ru" if ru_role_id in [
@@ -503,15 +491,6 @@ class MainButtons(nextcord.ui.View):
                                                 embed=deepcopy(vip_ru_embed) if lang == "ru"
                                                 else deepcopy(vip_en_embed),
                                                 view=VipButtons(lang=lang))
-        """
-        месяц 30 рублей,
-        пол года 182 рубля,
-        год 364 рубля
-        """
-        ...
-
-    ...
-
 
 class AuthPayWT(Cog):
     def __init__(self, bot: Bot) -> None:
@@ -532,7 +511,7 @@ class AuthPayWT(Cog):
         self.bot.remove_view(MainButtons())
         self.check_roles_payment.cancel()
 
-    @tasks.loop(seconds=1)
+    @tasks.loop(hours=1)
     async def check_roles_payment(self):
         try:
             for data_path, type in zip([data_adver_path, data_vip_path],
@@ -545,7 +524,7 @@ class AuthPayWT(Cog):
                     first_line, '%Y-%m-%d').date()
                 today = datetime.date.today()
                 if date_in_file < today:
-                    first_line = "2022-05-05\n"#today.strftime('%Y-%m-%d') + '\n'
+                    first_line = today.strftime('%Y-%m-%d') + '\n'
                     for i, line in enumerate(other_lines):
                         parts = line.strip().split(':')
                         new_enrollment_summ = float(parts[1]) - type[0]
@@ -565,7 +544,7 @@ class AuthPayWT(Cog):
             print(exception)
 
     @commands.command()
-    async def pymsg(self, ctx: Context):
+    async def paymentmsg(self, ctx: Context):
         if ctx.author.id not in self.bot.OWNERS:
             return
         await ctx.message.delete()
