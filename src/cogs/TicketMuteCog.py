@@ -22,13 +22,13 @@ class TicketMuteCog(Cog):
                     )
                     if len(message.content) > 4096:
                         embed.set_footer(text="Note: max message length - 4096...")
-                    if message.reference:
-                        reference_message = await message.channel.fetch_message(
-                            message.reference.message_id
-                        )
-                        new_message = await reference_message.reply(embed=embed)
-                    else:
-                        new_message = await message.channel.send(embed=embed)
+                if message.reference:
+                    reference_message = await message.channel.fetch_message(
+                        message.reference.message_id
+                    )
+                    new_message = await reference_message.reply(embed=embed)
+                else:
+                    new_message = await message.channel.send(embed=embed)
                 if message.attachments:
                     files = []
                     thread = await new_message.create_thread(name="Attachments ➡")
