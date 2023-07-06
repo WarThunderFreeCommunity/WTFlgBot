@@ -36,7 +36,7 @@ class TicketMuteCog(Cog):
                         for attachment in message.attachments:
                             attachment_file = await attachment.to_file()
                             files.append(attachment_file)
-                        await thread.send(files=files)
+                    await thread.send(files=files)
         except AttributeError:
             pass
 
