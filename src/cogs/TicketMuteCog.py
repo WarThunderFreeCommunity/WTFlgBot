@@ -5,7 +5,6 @@ from nextcord.ext.commands import Bot, Cog
 class TicketMuteCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.on_init.start()
 
     @Cog.listener()
     async def on_message_delete(self, message):
