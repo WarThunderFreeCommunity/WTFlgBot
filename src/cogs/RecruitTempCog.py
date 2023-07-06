@@ -390,8 +390,9 @@ class StafPosition(Cog):
                 title="Привет! Тут вы можете подать заявку на вступление в состав сотрудников сервера.",
                 color=0xFF0000
             )
-            embed.add_field(name="```В приоритете набор на системного администратора```", inline=True)
-            embed.add_field(name="```В приоритете набор на дизайнера```", inline=True)
+            name = "--------------------------------------------------------------------------------------------------"
+            embed.add_field(name=name, value="```В приоритете набор на системного администратора```", inline=True)
+            embed.add_field(name=name, value="```В приоритете набор на дизайнера```", inline=True)
             view = StafSelectView()
             await ctx.channel.send(embed=embed, view=view)
         except BaseException as ex:
