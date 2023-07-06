@@ -384,15 +384,18 @@ class StafPosition(Cog):
     async def ticket_staff_messages(self, ctx: Context):
         if ctx.author.id not in self.bot.OWNERS:
             return
-        await ctx.message.delete()
-        embed = nextcord.Embed(
-            title="Привет! Тут вы можете подать заявку на вступление в состав сотрудников сервера.",
-            color=0xFF0000
-        )
-        embed.add_field(value="```В приоритете набор на системного администратора```", inline=True)
-        embed.add_field(value="```В приоритете набор на дизайнера```", inline=True)
-        view = StafSelectView()
-        await ctx.channel.send(embed=embed, view=view)
+        try:
+            await ctx.message.delete()
+            embed = nextcord.Embed(
+                title="Привет! Тут вы можете подать заявку на вступление в состав сотрудников сервера.",
+                color=0xFF0000
+            )
+            embed.add_field(value="```В приоритете набор на системного администратора```", inline=True)
+            embed.add_field(value="```В приоритете набор на дизайнера```", inline=True)
+            view = StafSelectView()
+            await ctx.channel.send(embed=embed, view=view)
+        except BaseException as ex:
+            await ctx.send(ex)
 
 
 def setup(bot: Bot) -> None:
