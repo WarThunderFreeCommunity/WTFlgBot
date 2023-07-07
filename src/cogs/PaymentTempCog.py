@@ -35,12 +35,8 @@ adv_en_role_id = 1085543092582625409
 main_message_text = \
 """
 ```
-Чтобы купить рекламу полка нажмите на кнопку. После оплаты подписки вам бот выдаст роль, которая даст вам возможность выкладывать рекламу в специальном канале. Если у вас другой вид рекламы то напишите главе сервера.\n
-To buy squadron ads, click on the button. After paying for the subscription, the bot will give you a role that will give you the opportunity to advertise in a special channel. If you have a different type of advertising, then write to the head of the server
-```
-```
-VIP - покупая подписку вы поддерживаете наш сервер в развитии и приобретаете дополнительные бонусы себе на нашем сервере.\n
-VIP - by purchasing a subscription, you support our server in development and purchase additional bonuses for yourself on our server.
+В данном сообщении вы можете поддержать сервер своим донатом или заказать рекламу своего полка.\n
+In this message, you can support the server with your donation or order an advertisement for your regiment.
 ```
 """
 
