@@ -104,7 +104,7 @@ class VKResendCog(Cog):
                         try:
                             photos[0]
                         except IndexError:
-                            photos[0] = ""
+                            photos.append("")
                         embed_main = nextcord.Embed.from_dict(
                             {
                                 "description": f"{text} \n {videos_links} \n {photos_link}",
@@ -132,7 +132,9 @@ class VKResendCog(Cog):
                         used_hoocks[item['id']] = vk_tags[vk_tag]
                         async with aiohttp.ClientSession() as session:
                             webhook = nextcord.Webhook.from_url(vk_tags[vk_tag], session=session)
-                            await webhook.send(embeds=embeds)                
+                            await webhook.send(embeds=embeds)
+                            await DB.run_que("DELETE FROM VKResendCog")
+                            await DB.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps([item['id'] for item in wall["items"] ]),))
         except BaseException as ex:
             print(ex_format(ex, "vk_update"))
         finally:
