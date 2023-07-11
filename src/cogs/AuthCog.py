@@ -93,23 +93,12 @@ class MainAuthButtons(nextcord.ui.View):
             await interaction.send("Added ENGLISH role", ephemeral=True)
 
 
-
-
-
-class ColourButtons(nextcord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None, prevent_update=False)
-
-
-
-
 class AuthCog(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.obj_guild = self.bot.get_guild(691182902633037834)
         self.on_init.start()
         self.bot.add_view(MainAuthButtons())
-        self.bot.add_view(ColourButtons())
 
     def __del__(self):
         ...
@@ -119,7 +108,6 @@ class AuthCog(Cog):
         pass
 
     def cog_unload(self):
-        self.bot.remove_view(ColourButtons())
         self.bot.remove_view(MainAuthButtons())
 
     @commands.command()

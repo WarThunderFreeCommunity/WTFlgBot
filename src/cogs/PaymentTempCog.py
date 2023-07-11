@@ -581,7 +581,7 @@ class MainButtons(nextcord.ui.View):
         data = {
             "title": "Связь с администрацией"
         } if lang == "ru" else {
-
+            "title": "Связь с администрацией"
         }
         ticket_modal = nextcord.ui.Modal(title=data["title"])
         ticket_modal.add_item(tranzaction_id := nextcord.ui.TextInput(
@@ -593,8 +593,9 @@ class MainButtons(nextcord.ui.View):
         ))
         ticket_modal.add_item(tranzaction_id := nextcord.ui.TextInput(
             label="Введите комментарий, который вы указали при оплате",
-            placeholder="qwerty12345==", # 11
+            placeholder="qwerty12345==",
             required=True,
+            min_length=10,
         ))
         ticket_modal.add_item(tranzaction_id := nextcord.ui.TextInput(
             label="Опишите причину создания тикета",
@@ -602,9 +603,14 @@ class MainButtons(nextcord.ui.View):
             required=True,
             style=nextcord.TextInputStyle.paragraph,
         ))
-
-        await interaction.response.send_modal(ticket_modal)
-
+        async def modal_callback(interaction: nextcord.Interaction):
+            pass # TODO
+        #await interaction.response.send_modal(ticket_modal)
+        if lang == "ru":
+            await interaction.send("Создайте тикет, укажите номер транзакции, комменатрий, опишите ситуацию... https://discord.com/channels/691182902633037834/975319189407559691/1110882800841805846")
+        else:
+            await interaction.send("Create a ticket, specify the transaction number, comment, describe the situation... https://discord.com/channels/691182902633037834/975330313112780810/1110883199208407092")
+                                   
 
 class AuthPayWT(Cog):
     def __init__(self, bot: Bot) -> None:
