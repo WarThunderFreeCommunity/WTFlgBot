@@ -55,9 +55,7 @@ class VKResendCog(Cog):
             await DB.connect()
             last_id_posts = await DB.get_one("SELECT * FROM VKResendCog")
             last_id_posts = json.loads(last_id_posts[0])
-            await DB.run_que("DELETE FROM VKResendCog")
-            await DB.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps([item['id'] for item in wall["items"] ]),))
-
+            
             for item in wall["items"][::-1]:
                 if item['id'] in last_id_posts:
                     continue
@@ -103,6 +101,10 @@ class VKResendCog(Cog):
                             print(ex)
                             videos_links = ""
                             photos_link = ""
+                        try:
+                            photos[0]
+                        except IndexError:
+                            photos[0] = ""
                         embed_main = nextcord.Embed.from_dict(
                             {
                                 "description": f"{text} \n {videos_links} \n {photos_link}",
