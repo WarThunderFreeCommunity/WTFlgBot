@@ -129,15 +129,6 @@ class AuthCog(Cog):
         await ctx.message.delete()
         await ctx.channel.send(embed=deepcopy(main_embed), view=MainAuthButtons())
     
-    @commands.command()
-    async def rolesmsg(self, ctx: Context):
-        if ctx.author.id not in self.bot.OWNERS:
-            return
-        await ctx.message.delete()
-        embed = nextcord.Embed(title="Vip nickname colors", description="```Выбери свой цвет\nSelect your color```")
-        await ctx.channel.send(embed=embed, view=ColourButtons())
-
-
 
 def setup(bot: Bot) -> None:
     print("AuthCog.py loaded")

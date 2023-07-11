@@ -222,10 +222,8 @@ class PaymentButtons(nextcord.ui.View):
                 await interaction.edit_original_message(view=self)
             await interaction.edit_original_message(
                 content=("Успешно!" if self.lang == "ru" else "All ok!") if check else 
-                ("Что-то пошло не так. Пожалуйста создайте тикет. Укажите комментарий к платежу, сумму, роль,"
-                " которую вы покупали. А также номер платежа. <#975319189407559691>" if self.lang == "ru" else
-                "Something went wrong. Please create a ticket. Specify a comment on the payment, the amount,"
-                " the role that you bought. As well as the payment number. <#975330313112780810>")
+                ("Что-то пошло не так. Пожалуйста создайте тикет." if self.lang == "ru" else
+                "Something went wrong. Please create a ticket.")
             )
         except BaseException as ex:
             from traceback import format_exception
@@ -569,6 +567,44 @@ class MainButtons(nextcord.ui.View):
         view = nextcord.ui.View()
         view.add_item(Dropdown("EN"))
         await interaction.send("Select the desired color..", view=view, ephemeral=True)
+    
+    @nextcord.ui.button(
+        label="HELP",
+        style=nextcord.ButtonStyle.red,
+        custom_id="MainButtons:ticket_create"
+    )
+    async def ticket_create(
+        self, button: nextcord.ui.Button, interaction: nextcord.Interaction
+    ):
+        lang = "ru" if ru_role_id in [
+            role.id for role in interaction.user.roles] else "en"
+        data = {
+            "title": "Связь с администрацией"
+        } if lang == "ru" else {
+
+        }
+        ticket_modal = nextcord.ui.Modal(title=data["title"])
+        ticket_modal.add_item(tranzaction_id := nextcord.ui.TextInput(
+            label="Введите номер транзакции",
+            placeholder="0123456789",
+            required=True,
+            min_length=9,
+            max_length=20,
+        ))
+        ticket_modal.add_item(tranzaction_id := nextcord.ui.TextInput(
+            label="Введите комментарий, который вы указали при оплате",
+            placeholder="qwerty12345==", # 11
+            required=True,
+        ))
+        ticket_modal.add_item(tranzaction_id := nextcord.ui.TextInput(
+            label="Опишите причину создания тикета",
+            placeholder="Неверно указал комментарий, помогите",
+            required=True,
+            style=nextcord.TextInputStyle.paragraph,
+        ))
+
+        await interaction.response.send_modal(ticket_modal)
+
 
 class AuthPayWT(Cog):
     def __init__(self, bot: Bot) -> None:
