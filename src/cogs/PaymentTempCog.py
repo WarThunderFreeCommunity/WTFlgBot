@@ -550,7 +550,6 @@ class MainButtons(nextcord.ui.View):
     async def color_ru(
         self, button: nextcord.ui.Button, interaction: nextcord.Interaction
     ):
-        print(1)
         view = nextcord.ui.View()
         view.add_item(Dropdown("RU"))
         await interaction.send("Выберите нужный цвет..", view=view, ephemeral=True)
@@ -607,9 +606,9 @@ class MainButtons(nextcord.ui.View):
             pass # TODO
         #await interaction.response.send_modal(ticket_modal)
         if lang == "ru":
-            await interaction.send("Создайте тикет, укажите номер транзакции, комменатрий, опишите ситуацию... https://discord.com/channels/691182902633037834/975319189407559691/1110882800841805846")
+            await interaction.send("Создайте тикет, укажите номер транзакции, комменатрий, опишите ситуацию... https://discord.com/channels/691182902633037834/975319189407559691/1110882800841805846", ephemeral=True)
         else:
-            await interaction.send("Create a ticket, specify the transaction number, comment, describe the situation... https://discord.com/channels/691182902633037834/975330313112780810/1110883199208407092")
+            await interaction.send("Create a ticket, specify the transaction number, comment, describe the situation... https://discord.com/channels/691182902633037834/975330313112780810/1110883199208407092", ephemeral=True)
                                    
 
 class AuthPayWT(Cog):
