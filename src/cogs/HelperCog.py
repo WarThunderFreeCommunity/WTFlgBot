@@ -158,7 +158,7 @@ class HelperCog(Cog):
 
     @commands.command()
     async def image(self, ctx: Context, url: Optional[str] = None):
-        if ctx.author.id not in self.bot.OWNERS or 814807573890465822 in [role.id for role in ctx.author.roles]:
+        if ctx.author.id not in self.bot.OWNERS or 814807573890465822 not in [role.id for role in ctx.author.roles]:
             return
         await ctx.message.delete()
         message = await ctx.channel.send("loading...")
