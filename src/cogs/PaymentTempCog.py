@@ -442,6 +442,7 @@ class Dropdown(nextcord.ui.Select):
                 "blue": "Синий",
                 "brown": "Коричневый",
                 "color": "Твой любимый цвет это...",
+                "placeholder": "Выберите свой любимый цвет...",
             } if lang == "RU" else {
                 "white": "White",
                 "yellow": "Yellow",
@@ -452,6 +453,7 @@ class Dropdown(nextcord.ui.Select):
                 "blue": "Blue",
                 "brown": "Brown",
                 "color": "Your favourite colour is ...",
+                "placeholder": "Choose your favourite colour...",
             }
         options = [
             nextcord.SelectOption(
@@ -464,7 +466,7 @@ class Dropdown(nextcord.ui.Select):
         ]
 
         super().__init__(
-            placeholder="Choose your favourite colour...",
+            placeholder=self.data["placeholder"],
             min_values=1,
             max_values=1,
             options=options,
