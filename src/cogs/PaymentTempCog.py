@@ -477,7 +477,7 @@ class Dropdown(nextcord.ui.Select):
             for role_id in self.emojies.values():
                 role_id = role_id.split(':')[1]
                 if user_role == role_id:
-                    interaction.user.remove_roles(role_id=user_role)
+                    await interaction.user.remove_roles(role_id=user_role)
         
         role = interaction.guild.get_role(role_id=selected_role_id)
         await interaction.user.add_roles(role)
