@@ -523,8 +523,8 @@ class MainButtons(nextcord.ui.View):
     )
     async def HELP_RU(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         embed = nextcord.Embed(
-            description="Для оплаты без комиссии используйте киви кошелёк. Для этого на свой киви кошелёк переводите" 
-                        " нужную сумму по СБП и далее оплачиваете нужную услугу.")
+            description="Для оплаты без комиссии используйте свой киви кошелёк. Для этого переводите" 
+                        " на него нужную сумму по СБП и далее оплачиваете нужную услугу.")
         await interaction.send(embed=embed, ephemeral=True)
 
     @nextcord.ui.button(
