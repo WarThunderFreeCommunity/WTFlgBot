@@ -514,7 +514,6 @@ class MainButtons(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout=None, prevent_update=False)
         self.HELP_EN.disabled = True
-        self.HELP_RU.disabled = True
     
     @nextcord.ui.button(
         label="ИНСТРУКЦИЯ",
@@ -523,7 +522,10 @@ class MainButtons(nextcord.ui.View):
         row=0
     )
     async def HELP_RU(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        pass
+        embed = nextcord.Embed(
+            description="Для оплаты без комиссии используйте киви кошелёк. Для этого на свой киви кошелёк переводите" 
+                        " нужную сумму по СБП и далее оплачиваете нужную услугу.")
+        await interaction.send(embed=embed, ephemeral=True)
 
     @nextcord.ui.button(
         label="MANUAL",
