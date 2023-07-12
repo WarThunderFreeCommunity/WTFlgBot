@@ -425,7 +425,7 @@ class Dropdown(nextcord.ui.Select):
             "white": "⬜:937593712391901184",
             "yellow": "🟨:937593431591641100",
             "green": "🟩:937593680750080030",
-            "purple": "🟪:937593682620719164",
+            "purple": "🟪: 937593682620719164",
             "black": "⬛:939886116113350706",
             "orange": "🟧:939889190924075018",
             "blue": "🟦:939888364994330674",
@@ -469,6 +469,15 @@ class Dropdown(nextcord.ui.Select):
 
     async def callback(self, interaction: nextcord.Interaction):
         # TODO выдача ролей
+        selected_role_id = self.emojies[self.values[0]].split(':')[1]
+        if selected_role_id in interaction.user.roles:
+            interaction.user.remove_roles(role_id=selected_role_id)
+        for user_role in interaction.user.roles:
+            if user_role in self.emojies.values():
+                interaction.user.remove_roles(role_id=user_role)
+        
+        role = interaction.guild.get_role(role_id=self.emojies[self.values[0]])
+        await interaction.user.add_roles(role)
         await interaction.response.send_message(
             f"Your favourite colour is {self.values[0]}",
             ephemeral=True
@@ -511,7 +520,7 @@ class MainButtons(nextcord.ui.View):
                                                 view=AdvertisementButtons(lang="ru"))
         """
         120р один день если брать подневно
-        Если брать пакетом на месяц 3000к
+        Если брать пакетом на месяц 3000
         Зачисляется сумма большая чем сумма оплаты при покупки месяца
         """
         ...
