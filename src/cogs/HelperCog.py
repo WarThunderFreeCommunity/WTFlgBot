@@ -160,9 +160,11 @@ class HelperCog(Cog):
     async def image(self, ctx: Context, url: Optional[str] = None):
         if ctx.author.id not in self.bot.OWNERS and 814807573890465822 not in [role.id for role in ctx.author.roles]:
             return
-        await ctx.message.delete()
-        message = await ctx.channel.send("loading...")
-        view = AnimeView(url, message)
+        if "http" in url:
+            message = await ctx.reply("loading...")
+            view = AnimeView(url, message)
+        else:
+            await ctx.reply("неверный url")
 
 # on_ready cog!
 def setup(bot: Bot):
