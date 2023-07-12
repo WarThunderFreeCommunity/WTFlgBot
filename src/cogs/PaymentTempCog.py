@@ -287,14 +287,14 @@ class AdvertisementButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_day(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1#120.0
+        self.payment_info['real_summ'] = 120.0
         self.payment_info['enrollment_summ'] = 120.0
         self.disable_buttons("one_day")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1#3000.0
+        self.payment_info['real_summ'] = 3000.0
         self.payment_info['enrollment_summ'] = 3600
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
@@ -380,21 +380,21 @@ class VipButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1 #30.0
+        self.payment_info['real_summ'] = 30.0
         self.payment_info['enrollment_summ'] = 30.0
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def six_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1#82.0
+        self.payment_info['real_summ'] = 82.0
         self.payment_info['enrollment_summ'] = 182.0
         self.disable_buttons("six_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_year(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 1#364.0
+        self.payment_info['real_summ'] = 364.0
         self.payment_info['enrollment_summ'] = 364.0
         self.disable_buttons("one_year")
         await interaction.response.edit_message(view=self)
@@ -445,7 +445,7 @@ class Dropdown(nextcord.ui.Select):
             "placeholder": "Выберите свой любимый цвет...",
             "interaction_removed": "Успешно удалён цвет",
             "interaction_added": "Успешно добавлен цвет",
-            "error_msg": "У вас нет нужной роли!",
+            "error_msg": "У вас нет нужной роли! (VIP)",
         } if lang == "RU" else {
             "white": "White",
             "yellow": "Yellow",
@@ -459,7 +459,7 @@ class Dropdown(nextcord.ui.Select):
             "placeholder": "Choose your favourite colour...",
             "interaction_removed": "Succesfully deleted colour",
             "interaction_added": "Succesfully added colour",
-            "error_msg": "You don't have the right role!",
+            "error_msg": "You don't have the right role! (VIP)",
         }
         options = [
             nextcord.SelectOption(
