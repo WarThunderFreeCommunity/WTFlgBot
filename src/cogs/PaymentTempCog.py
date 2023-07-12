@@ -490,6 +490,8 @@ class Dropdown(nextcord.ui.Select):
 class MainButtons(nextcord.ui.View):
     def __init__(self):
         super().__init__(timeout=None, prevent_update=False)
+        self.HELP_EN.disabled = True
+        self.HELP_RU.disabled = True
     
     @nextcord.ui.button(
         label="ИНСТРУКЦИЯ",
