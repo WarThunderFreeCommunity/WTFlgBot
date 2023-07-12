@@ -88,8 +88,10 @@ class AnimeView(nextcord.ui.View):
 
     @tasks.loop(count=1)
     async def on_init(self):
-        await self.message.edit(content=None, embed=self.embeds[0], view=self)        
+        await self.message.edit(content=None, embed=self.embeds[0], view=self)   
 
+    async def on_timeout(self):
+        await self.message.edit(content="timeout...", view=None)
 
 class HelperCog(Cog):
     def __init__(self, bot: Bot):
