@@ -430,36 +430,37 @@ class Dropdown(nextcord.ui.Select):
             "black": "⬛:939886116113350706",
             "orange": "🟧:939889190924075018",
             "blue": "🟦:939888364994330674",
-            "brown": "🟫:939895587422208020"
+            "brown": "🟫:939895587422208020",
         }
         self.data = {
-            "white": "Белый",
-            "yellow": "Желтый",
-            "green": "Зелёный",
-            "purple": "Фиолетовый",
-            "black": "Чёрный",
-            "orange": "Оранжевый",
-            "blue": "Синий",
-            "brown": "Коричневый",
-            "color": "Твой любимый цвет это..."
-        } if lang == "RU" else {
-            "white": "White",
-            "yellow": "Yellow",
-            "green": "Green",
-            "purple": "Purple",
-            "black": "Black",
-            "orange": "Orange",
-            "blue": "Blue",
-            "brown": "Brown",
-            "color": "Your favourite colour is ..."
-        }
+                "white": "Белый",
+                "yellow": "Желтый",
+                "green": "Зелёный",
+                "purple": "Фиолетовый",
+                "black": "Чёрный",
+                "orange": "Оранжевый",
+                "blue": "Синий",
+                "brown": "Коричневый",
+                "color": "Твой любимый цвет это...",
+            } if lang == "RU" else {
+                "white": "White",
+                "yellow": "Yellow",
+                "green": "Green",
+                "purple": "Purple",
+                "black": "Black",
+                "orange": "Orange",
+                "blue": "Blue",
+                "brown": "Brown",
+                "color": "Your favourite colour is ...",
+            }
         options = [
             nextcord.SelectOption(
                 label=self.data[emoji],
                 description=self.data["color"],
-                emoji=self.emojies[emoji].split(':')[0],
-                value=emoji
-            ) for emoji in self.emojies
+                emoji=self.emojies[emoji].split(":")[0],
+                value=emoji,
+            )
+            for emoji in self.emojies
         ]
 
         super().__init__(
@@ -470,46 +471,38 @@ class Dropdown(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
-        # TODO выдача ролей
+        await interaction.response.defer(with_message=True, ephemeral=True)
         try:
-            selected_role_id = int(self.emojies[self.values[0]].split(':')[1])
-            #print(interaction.user.roles)
-            interaction_roles_list = []
-            all_colours_list = []
+            selected_role_id = int(self.emojies[self.values[0]].split(":")[1]) # Id выбранной роли
+            interaction_roles_list = [] # Все id роли участника
+            all_colours_list = [] # Все id цветов
             for interaction_roles in interaction.user.roles:
                 interaction_roles_list.append(interaction_roles.id)
-            
+
             for all_colours in self.emojies.values():
-                    all_colours = all_colours.split(':')[1]
-                    all_colours_list.append(int(all_colours))
-            
+                all_colours = all_colours.split(":")[1]
+                all_colours_list.append(int(all_colours))
+
             if selected_role_id in interaction_roles_list:
-                #print(selected_role_id)
                 role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
                 await interaction.user.remove_roles(role)
-                await interaction.response.send_message(
-                f"Removed {self.values[0]} colour",
-                ephemeral=True
-            )
-                
-            
-            
+                await interaction.send(
+                    f"Removed {self.values[0]} colour", ephemeral=True
+                )
             else:
-                for colour in all_colours_list:
-                    print(colour, selected_role_id)
-                    role = nextcord.utils.get(interaction.guild.roles, id=colour)
-                    await interaction.user.remove_roles(role) 
+                for role_member in interaction_roles_list:
+                    if role_member in all_colours_list:
+                        role = nextcord.utils.get(interaction.guild.roles, id=role_member)
+                        await interaction.user.remove_roles(role)
                 member, guild = interaction.user, interaction.guild
                 role_set = guild.get_role(selected_role_id)
-                #print(selected_role_id)
                 await member.add_roles(role_set)
-                await interaction.response.send_message(
-                f"Added {self.values[0]} colour",
-                ephemeral=True
-                )
-            
+                await interaction.send(f"Added {self.values[0]} colour", ephemeral=True)
+        except nextcord.errors.NotFound as ex:
+            await interaction.send("Unknown interaction")
         except BaseException as ex:
             print(ex_format(ex, "Dropdown_callback_roles"))
+
 
 class MainButtons(nextcord.ui.View):
     def __init__(self):
