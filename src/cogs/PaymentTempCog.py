@@ -505,7 +505,7 @@ class Dropdown(nextcord.ui.Select):
                 await member.add_roles(role_set)
                 await interaction.send(f"{self.data['interaction_added']} :{self.values[0]}", ephemeral=True)
         except nextcord.errors.NotFound as ex:
-            await interaction.send("Unknown interaction")
+            await interaction.send("```error: Unknown interaction```")
         except BaseException as ex:
             print(ex_format(ex, "Dropdown_callback_roles"))
 
