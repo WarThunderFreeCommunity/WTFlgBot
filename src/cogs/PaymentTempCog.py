@@ -493,7 +493,7 @@ class Dropdown(nextcord.ui.Select):
                 role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
                 await interaction.user.remove_roles(role)
                 await interaction.send(
-                    f"{self.data['interaction_removed']} : {self.data[self.values[0]]}", ephemeral=True
+                    f"{self.data['interaction_removed']}: {self.data[self.values[0]]}", ephemeral=True
                 )
             else:
                 for role_member in interaction_roles_list:
@@ -503,7 +503,7 @@ class Dropdown(nextcord.ui.Select):
                 member, guild = interaction.user, interaction.guild
                 role_set = guild.get_role(selected_role_id)
                 await member.add_roles(role_set)
-                await interaction.send(f"{self.data['interaction_added']} : {self.data[self.values[0]]}", ephemeral=True)
+                await interaction.send(f"{self.data['interaction_added']}: {self.data[self.values[0]]}", ephemeral=True)
         except nextcord.errors.NotFound as ex:
             await interaction.send("```error: Unknown interaction```")
         except BaseException as ex:
