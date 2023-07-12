@@ -229,7 +229,7 @@ class PaymentButtons(nextcord.ui.View):
         except BaseException as ex:
             from traceback import format_exception
             result = "".join(format_exception(ex, ex, ex.__traceback__))
-            await interaction.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")
+            await interaction.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```", ephemeral=True)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def cancel_payment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -287,14 +287,14 @@ class AdvertisementButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_day(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 120.0
+        self.payment_info['real_summ'] = 1#120.0
         self.payment_info['enrollment_summ'] = 120.0
         self.disable_buttons("one_day")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 3000.0
+        self.payment_info['real_summ'] = 1#3000.0
         self.payment_info['enrollment_summ'] = 3600
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
@@ -380,21 +380,21 @@ class VipButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 30.0
+        self.payment_info['real_summ'] = 1 #30.0
         self.payment_info['enrollment_summ'] = 30.0
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def six_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 82.0
+        self.payment_info['real_summ'] = 1#82.0
         self.payment_info['enrollment_summ'] = 182.0
         self.disable_buttons("six_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_year(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 364.0
+        self.payment_info['real_summ'] = 1#364.0
         self.payment_info['enrollment_summ'] = 364.0
         self.disable_buttons("one_year")
         await interaction.response.edit_message(view=self)
@@ -698,8 +698,8 @@ class AuthPayWT(Cog):
                         data_file.write(first_line)
                         data_file.writelines(
                             [line if "to_delete" not in line else "" for line in other_lines])
-        except Exception as exception:
-            print(exception)
+        except Exception as ex:
+            print(ex_format(ex, "AuthCog"))
 
     @commands.command()
     async def paymentmsg(self, ctx: Context):
