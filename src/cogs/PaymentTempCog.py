@@ -12,6 +12,7 @@ from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
 from glQiwiApi import QiwiWrapper
 
+from ..extensions.EXFormatExtension import ex_format
 import configuration as cnfg
 
 # Создать путь к папке "data" в директории выше
@@ -469,25 +470,27 @@ class Dropdown(nextcord.ui.Select):
 
     async def callback(self, interaction: nextcord.Interaction):
         # TODO выдача ролей
-        selected_role_id = self.emojies[self.values[0]].split(':')[1]
-        if selected_role_id in interaction.user.roles:
-            role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
-            await interaction.user.remove_roles(role)
-        
-        for user_role in interaction.user.roles:
-            for role_id in self.emojies.values():
-                role_id = role_id.split(':')[1]
-                if user_role == role_id:
-                    role = nextcord.utils.get(interaction.guild.roles, id=user_role)
-                    await interaction.user.remove_roles(role)
-        
-        role = interaction.guild.get_role(role_id=selected_role_id)
-        await interaction.user.add_roles(role)
-        await interaction.response.send_message(
-            f"Your favourite colour is {self.values[0]}",
-            ephemeral=True
-        )
-
+        try:
+            selected_role_id = self.emojies[self.values[0]].split(':')[1]
+            if selected_role_id in interaction.user.roles:
+                role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
+                await interaction.user.remove_roles(role)
+            
+            for user_role in interaction.user.roles:
+                for role_id in self.emojies.values():
+                    role_id = role_id.split(':')[1]
+                    if user_role == role_id:
+                        role = nextcord.utils.get(interaction.guild.roles, id=user_role)
+                        await interaction.user.remove_roles(role)
+            
+            role = interaction.guild.get_role(role_id=selected_role_id)
+            await interaction.user.add_roles(role)
+            await interaction.response.send_message(
+                f"Your favourite colour is {self.values[0]}",
+                ephemeral=True
+            )
+        except BaseException as ex:
+            print(ex_format(ex, "Dropdown_callback_roles"))
 
 class MainButtons(nextcord.ui.View):
     def __init__(self):
