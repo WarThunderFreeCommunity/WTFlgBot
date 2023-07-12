@@ -70,6 +70,7 @@ EOL
 
 if [ "$actual_hash" = "$expected_hash" ]
 then
+    apt install python3.10-venv
     python3 -m venv Venv
     source Venv/bin/activate
     pip install -r requirements.txt

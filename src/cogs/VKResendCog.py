@@ -55,12 +55,9 @@ class VKResendCog(Cog):
             await DB.connect()
             last_id_posts = await DB.get_one("SELECT * FROM VKResendCog")
             last_id_posts = json.loads(last_id_posts[0])
-            await DB.run_que("DELETE FROM VKResendCog")
-            await DB.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps([item['id'] for item in wall["items"] ]),))
-
+            
             for item in wall["items"][::-1]:
                 if item['id'] in last_id_posts:
-                    print("contunie post:", item["text"], "\n\n")
                     continue
 
                 attachments = item["attachments"]
@@ -88,8 +85,8 @@ class VKResendCog(Cog):
 
                 for vk_tag in vk_tags:
                     if vk_tag in text and used_hoocks.get(item['id']) != vk_tags[vk_tag]:
-                        if len(text) > 3500:
-                            text = text[:3500] + f"\n[Текст был обрезан, оригинал смотрите в группе]({url})"
+                        if len(text) > 2000:
+                            text = text[:2000] + f"\n[Текст был обрезан, оригинал смотрите в группе]({url})"
 
                         embeds = []
                         # TODO: Можно заменить ссылку на видео на имя видео
@@ -104,6 +101,10 @@ class VKResendCog(Cog):
                             print(ex)
                             videos_links = ""
                             photos_link = ""
+                        try:
+                            photos[0]
+                        except IndexError:
+                            photos.append("")
                         embed_main = nextcord.Embed.from_dict(
                             {
                                 "description": f"{text} \n {videos_links} \n {photos_link}",
@@ -131,7 +132,9 @@ class VKResendCog(Cog):
                         used_hoocks[item['id']] = vk_tags[vk_tag]
                         async with aiohttp.ClientSession() as session:
                             webhook = nextcord.Webhook.from_url(vk_tags[vk_tag], session=session)
-                            await webhook.send(embeds=embeds)                
+                            await webhook.send(embeds=embeds)
+                            await DB.run_que("DELETE FROM VKResendCog")
+                            await DB.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps([item['id'] for item in wall["items"] ]),))
         except BaseException as ex:
             print(ex_format(ex, "vk_update"))
         finally:

@@ -172,6 +172,9 @@ nextcord.zip
 test.py
 
 # DataBases
+data_vip.txt
+data_adver.txt
+_data_log_payments.txt
 WarThunder.db
 
 # Errors, logs...
