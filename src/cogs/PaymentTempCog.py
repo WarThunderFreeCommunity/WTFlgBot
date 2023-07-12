@@ -472,24 +472,42 @@ class Dropdown(nextcord.ui.Select):
     async def callback(self, interaction: nextcord.Interaction):
         # TODO выдача ролей
         try:
-            selected_role_id = self.emojies[self.values[0]].split(':')[1]
-            if selected_role_id in interaction.user.roles:
+            selected_role_id = int(self.emojies[self.values[0]].split(':')[1])
+            #print(interaction.user.roles)
+            interaction_roles_list = []
+            all_colours_list = []
+            for interaction_roles in interaction.user.roles:
+                interaction_roles_list.append(interaction_roles.id)
+            
+            for all_colours in self.emojies.values():
+                    all_colours = all_colours.split(':')[1]
+                    all_colours_list.append(int(all_colours))
+            
+            if selected_role_id in interaction_roles_list:
+                #print(selected_role_id)
                 role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
                 await interaction.user.remove_roles(role)
-            
-            for user_role in interaction.user.roles:
-                for role_id in self.emojies.values():
-                    role_id = role_id.split(':')[1]
-                    if user_role == role_id:
-                        role = nextcord.utils.get(interaction.guild.roles, id=user_role)
-                        await interaction.user.remove_roles(role)
-            
-            role = interaction.guild.get_role(role_id=selected_role_id)
-            await interaction.user.add_roles(role)
-            await interaction.response.send_message(
-                f"Your favourite colour is {self.values[0]}",
+                await interaction.response.send_message(
+                f"Removed {self.values[0]} colour",
                 ephemeral=True
             )
+                
+            
+            
+            else:
+                for colour in all_colours_list:
+                    print(colour, selected_role_id)
+                    role = nextcord.utils.get(interaction.guild.roles, id=colour)
+                    await interaction.user.remove_roles(role) 
+                member, guild = interaction.user, interaction.guild
+                role_set = guild.get_role(selected_role_id)
+                #print(selected_role_id)
+                await member.add_roles(role_set)
+                await interaction.response.send_message(
+                f"Added {self.values[0]} colour",
+                ephemeral=True
+                )
+            
         except BaseException as ex:
             print(ex_format(ex, "Dropdown_callback_roles"))
 
