@@ -148,9 +148,9 @@ class HelperCog(Cog):
         after: nextcord.VoiceState,
     ):
         try:
-            if "●" in after.channel.name and len(after.channel.members) == 0:
+            if "●" in before.channel.name and len(before.channel.members) == 0:
                 await asyncio.sleep(60)
-                channel = self.get_channel(after.channel.id)
+                channel = self.get_channel(before.channel.id)
                 if channel is not None:
                     await channel.delete()
         except BaseException as e:

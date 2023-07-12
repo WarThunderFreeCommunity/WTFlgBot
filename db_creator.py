@@ -11,7 +11,7 @@ from src.extensions.DBWorkerExtension import DataBase
 
 
 smiles_channel = ['➕', '●']
-afk_channel_id = '1049384644669354014'
+afk_channel_id = '691184292830904399'
 parrent_channel_ids = {
     '1128735946288930940': 'RU:СБ:SB:1119274677274153090',
     '1128735907118338178': 'RU:РБ:RB:1119275461038575716',
@@ -34,8 +34,6 @@ nation_ids = {
     '1': "⚒",
     '2': "🍣",
 }
-
-
 
 async def main():
     db = DataBase("WarThunder.db")
