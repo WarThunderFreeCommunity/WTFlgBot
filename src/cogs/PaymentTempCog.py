@@ -445,6 +445,7 @@ class Dropdown(nextcord.ui.Select):
             "placeholder": "Выберите свой любимый цвет...",
             "interaction_removed": "Успешно удалён цвет",
             "interaction_added": "Успешно добавлен цвет",
+            "error_msg": "У вас нет нужной роли!",
         } if lang == "RU" else {
             "white": "White",
             "yellow": "Yellow",
@@ -458,6 +459,7 @@ class Dropdown(nextcord.ui.Select):
             "placeholder": "Choose your favourite colour...",
             "interaction_removed": "Succesfully deleted colour",
             "interaction_added": "Succesfully added colour",
+            "error_msg": "You don't have the right role!",
         }
         options = [
             nextcord.SelectOption(
@@ -477,6 +479,8 @@ class Dropdown(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
+        if vip_ru_role_id or vip_en_role_id not in [role.id for role in interaction.user.roles]:
+            await interaction.send(self.data["error_msg"], ephemeral=True)
         await interaction.response.defer(with_message=True, ephemeral=True)
         try:
             selected_role_id = int(self.emojies[self.values[0]].split(":")[1]) # Id выбранной роли
