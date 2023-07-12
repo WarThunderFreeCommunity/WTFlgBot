@@ -46,13 +46,13 @@ class MainAuthButtons(nextcord.ui.View):
         self.add_item(
             nextcord.ui.Button(
                 label="#Выбор-ролей",
-                url="https://discord.com/channels/691182902633037834/1126098284952436806/",
+                url="https://discord.com/channels/691182902633037834/1012522502230114374",
             )
         )
         self.add_item(
             nextcord.ui.Button(
                 label="#Select-Roles",
-                url="https://discord.com/channels/691182902633037834/1126098284952436806/",
+                url="https://discord.com/channels/691182902633037834/1012522502230114374",
             )
         )
 
