@@ -457,7 +457,8 @@ class Dropdown(nextcord.ui.Select):
             nextcord.SelectOption(
                 label=self.data[emoji],
                 description=self.data["color"],
-                emoji=self.emojies[emoji].split(':')[0]
+                emoji=self.emojies[emoji].split(':')[0],
+                value=emoji
             ) for emoji in self.emojies
         ]
 
