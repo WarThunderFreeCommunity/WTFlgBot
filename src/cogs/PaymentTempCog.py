@@ -443,6 +443,8 @@ class Dropdown(nextcord.ui.Select):
                 "brown": "Коричневый",
                 "color": "Твой любимый цвет это...",
                 "placeholder": "Выберите свой любимый цвет...",
+                "interaction_removed": "Успешно удалён цвет",
+                "interaction_added": "Успешно добавлен цвет",
             } if lang == "RU" else {
                 "white": "White",
                 "yellow": "Yellow",
@@ -454,6 +456,8 @@ class Dropdown(nextcord.ui.Select):
                 "brown": "Brown",
                 "color": "Your favourite colour is ...",
                 "placeholder": "Choose your favourite colour...",
+                "interaction_removed": "Succesfully deleted colour",
+                "interaction_added": "Succesfully added colour",
             }
         options = [
             nextcord.SelectOption(
@@ -489,7 +493,7 @@ class Dropdown(nextcord.ui.Select):
                 role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
                 await interaction.user.remove_roles(role)
                 await interaction.send(
-                    f"Removed {self.values[0]} colour", ephemeral=True
+                    f"{self.data['interaction_removed']} :{self.values[0]}", ephemeral=True
                 )
             else:
                 for role_member in interaction_roles_list:
@@ -499,7 +503,7 @@ class Dropdown(nextcord.ui.Select):
                 member, guild = interaction.user, interaction.guild
                 role_set = guild.get_role(selected_role_id)
                 await member.add_roles(role_set)
-                await interaction.send(f"Added {self.values[0]} colour", ephemeral=True)
+                await interaction.send(f"{self.data['interaction_added']} :{self.values[0]}", ephemeral=True)
         except nextcord.errors.NotFound as ex:
             await interaction.send("Unknown interaction")
         except BaseException as ex:
