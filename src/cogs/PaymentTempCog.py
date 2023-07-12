@@ -471,13 +471,15 @@ class Dropdown(nextcord.ui.Select):
         # TODO выдача ролей
         selected_role_id = self.emojies[self.values[0]].split(':')[1]
         if selected_role_id in interaction.user.roles:
-            await interaction.user.remove_roles(role_id=selected_role_id)
+            role = nextcord.utils.get(interaction.guild.roles, id=selected_role_id)
+            await interaction.user.remove_roles(role)
         
         for user_role in interaction.user.roles:
             for role_id in self.emojies.values():
                 role_id = role_id.split(':')[1]
                 if user_role == role_id:
-                    await interaction.user.remove_roles(role_id=user_role)
+                    role = nextcord.utils.get(interaction.guild.roles, id=user_role)
+                    await interaction.user.remove_roles(role)
         
         role = interaction.guild.get_role(role_id=selected_role_id)
         await interaction.user.add_roles(role)
