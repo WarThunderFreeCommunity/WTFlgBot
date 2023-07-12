@@ -147,7 +147,7 @@ class HelperCog(Cog):
     ):
         try:
             if "●" in after.channel.name and len(after.channel.members) == 0:
-                await asyncio.sleep(10)
+                await asyncio.sleep(60)
                 channel = self.get_channel(after.channel.id)
                 if channel is not None:
                     await channel.delete()
@@ -156,10 +156,10 @@ class HelperCog(Cog):
 
     @commands.command()
     async def image(self, ctx: Context, url: Optional[str] = None):
-        if ctx.author.id not in self.bot.OWNERS:
+        if ctx.author.id not in self.bot.OWNERS or 814807573890465822 in [role.id for role in ctx.author.roles]:
             return
         await ctx.message.delete()
-        message = await ctx.channel.send("loading..")
+        message = await ctx.channel.send("loading...")
         view = AnimeView(url, message)
 
 # on_ready cog!
