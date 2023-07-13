@@ -857,10 +857,15 @@ class VoiceCog(Cog):
                 )
                 await member.move_to(voice_channel)
                 await voice_channel.edit(sync_permissions=True)
-                message = await voice_channel.send(f"{member.name} created voice")
+                message = await voice_channel.send(f"{member.mention} created voice")
                 view = VoiceChannelsButtons(lang, member, message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [member.id], voice_channel)
-                await message.edit(content=None, embed=embed, view=view)
+                await message.edit(
+                    content=f"{member.mention} created voice\nread instructions: "
+                        "https://discord.com/channels/691182902633037834/813575222288187454/1129024795523153930",
+                    embed=embed,
+                    view=view
+                )
                 self.channel_views[voice_channel.id] = view
                 await db.run_que(
                     "INSERT INTO VoiceCogChannels (parrentId, channelId, creatorId, channelTime, messageId) \
