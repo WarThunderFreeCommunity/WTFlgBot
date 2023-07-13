@@ -386,10 +386,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.close_channel.label = self.data["close_channel"]
         self.add_member.label = self.data["add_member"]
         self.del_member.label = self.data["del_member"]
-
+        self.rename_channel.disabled = True # так и должно быть!
+        
         # TODO
-        self.set_cmbr.disabled = True
-        self.rename_channel.disabled = True
         self.close_channel.disabled = True
         self.add_member.disabled = True
         self.del_member.disabled = True
@@ -491,6 +490,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
+        # Первым делом требуется получить инфу о cmbr с бд, if None то назначаем если уже есть меняем
+        # TODO: запись инфы о канале в бд
+        # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
+        if not await self.check_admin_rules(interaction):
+            return
         modal = nextcord.ui.modal(
             title="Выбор боевого рейтинга",
             timeout=5*60,
@@ -498,29 +502,36 @@ class VoiceChannelsButtons(nextcord.ui.View):
         modal.add_item(cmbr := nextcord.ui.TextInput(
             label="Введите боевой рейтинг",
             placeholder='5.3',
+            max_length=4,
             required=True,
         ))
-
         async def modal_callback(interaction: nextcord.interactions):
-            cmbr = str(cmbr.value)
+            cmbr = cmbr.value
             pattern = r"^\d{2}\.\d$"
             result = re.match(pattern, cmbr)
-            if result:
-                cmbr = cmbr
-
-            else:
-                await interaction.send(f"Вы ввели неправильное число: {cmbr}, пример верного: 10.3")
-                
-
-
-        modal.callback = modal_callback
-
-        if not await self.check_admin_rules(interaction):
-            return
-        # Первым делом требуется получить инфу о cmbr с бд, if None то назначаем если уже есть меняем
-        # TODO: запись инфы о канале в бд
-        # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
-        ...
+            if not result:
+                await interaction.send(f"Вы ввели неверное значение: {cmbr}, пример верного: 10.3")
+                return
+            true_nums = int(cmbr.split(".")[0]) in range(1, 12+1) and int(cmbr.split(".")[1]) in [0, 3, 7]
+            if not true_nums:
+                await interaction.send(f"Такого бр не существует!: {cmbr}, пример верного: 6.7")
+                return
+            try:
+                db = DataBase("WarThunder.db")
+                await db.connect()
+                await db.run_que(
+                    "UPDATE VoiceCogChannelsSaves SET cmbrVar=? WHERE creatorId=?",
+                    (float(cmbr), interaction.user.id)
+                )
+                await self.update_message(pos="name_update", other={"interaction": interaction})
+            except BaseException as ex:
+                ex = ex_format(ex, "set_cmbr_modal_ex")
+                await interaction.send(f"Что-то пошло не так!\nEx: ```{ex}```", ephemeral=True)
+                print(ex)
+            finally:
+                await db.close()
+            modal.callback = modal_callback
+            await interaction.response.send_modal(modal)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.green, row=2)
     async def set_limit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -686,7 +697,7 @@ class VoiceCog(Cog):
     async def update_consts(self):
         """Обновляет данные поля раз в сутки:
         * self.smiles_channel = None
-        * self.afk_channel_id = None
+        * self.afk_channel_id = Nonation_idsself.update_messagene
         * self.parrent_channel_ids = None
         """
         try:
