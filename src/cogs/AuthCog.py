@@ -22,7 +22,7 @@ main_message_text = """
 You have joined the War Thunder Fan Server
 ```
 ```
-Выберите свой язык нажав на кнопку:  Russian / Englich\n
+Выберите свой язык нажав на кнопку:  Russian / English\n
 Select your language by clicking on the button: Russian / English
 ```
 ```
