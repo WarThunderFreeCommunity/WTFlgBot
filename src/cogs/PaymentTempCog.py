@@ -113,6 +113,18 @@ class PaymentButtons(nextcord.ui.View):
             label=self.data[0]["link_to_pay"], url=self._generate_url()))
         self.check_payment.label = self.data[0]["check_payment"]
         self.cancel_payment.label = self.data[0]["cancel_payment"]
+        #self.logger() TODO !!!
+
+        @staticmethod
+        def logger():
+            try:
+                logger = logging.getLogger('nextcord')
+                logger.setLevel(logging.DEBUG)
+                handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
+                handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+                logger.addHandler(handler)
+            except BaseException as ex:
+                print(ex_format(ex, "logger_payment"))
 
     def _generate_url(self) -> str:
         params = {
@@ -170,14 +182,7 @@ class PaymentButtons(nextcord.ui.View):
             lines.append(f"{dis_id}:{enrollment_summ:.2f}\n")
         with open(data_path, 'w') as data_file:
             data_file.writelines(lines)
-    
-    @staticmethod
-    def logger():
-        logger = logging.getLogger('nextcord')
-        logger.setLevel(logging.DEBUG)
-        handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
-        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-        logger.addHandler(handler)
+
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def check_payment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
