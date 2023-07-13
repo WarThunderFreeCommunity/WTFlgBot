@@ -149,26 +149,23 @@ class ChooseGameNationSelect(nextcord.ui.Select):
         }
         options = [
             nextcord.SelectOption(
-                label=data["label_usa"],
-                description=data["description_usa"],
-                emoji="🦅",
+                label=self.data["label_usa"],
+                description=self.data["description_usa"],
                 value=0
             ),
             nextcord.SelectOption(
-                label=data["label_ussr"],
-                description=data["description_ussr"],
-                emoji="⚒",
+                label=self.data["label_ussr"],
+                description=self.data["description_ussr"],
                 value=1
             ),
             nextcord.SelectOption(
-                label=data["label_japan"],
-                description=data["description_japan"],
-                emoji="🍣",
+                label=self.data["label_japan"],
+                description=self.data["description_japan"],
                 value=2
             ),
             nextcord.SelectOption(
-                label=data["remove_mode"],
-                description=data["description_mode"],
+                label=self.data["remove_mode"],
+                description=self.data["description_mode"],
                 emoji=TECH_IDS['-'],
                 value='-'
             )
