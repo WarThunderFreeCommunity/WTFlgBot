@@ -643,7 +643,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 return
             roles_id = [role.id for role in interaction.user.roles]
             if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
-                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
+                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707", ephemeral=True)
                 return
             modal_add = nextcord.ui.Modal(
                 title="Добавить доступ к каналу",
@@ -663,9 +663,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         overwrite = nextcord.PermissionOverwrite()
                         overwrite.connect = True
                         await channel.set_permissions(member, overwrite=overwrite)
-
                     else:
-                        interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
+                        await interaction.send("Введите правильный Id пользователя, состоящий только из цифр", ephemeral=True)
                 except BaseException as ex:
                     print(ex_format(ex, "add_member_callback"))
             modal_add.callback = modal_callback
@@ -682,7 +681,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 return
             roles_id = [role.id for role in interaction.user.roles]
             if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
-                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
+                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707", ephemeral=True)
                 return
             modal_remove = nextcord.ui.Modal(
                 title="Удалить доступ к каналу",
@@ -702,7 +701,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         overwrite.connect = False
                         await channel.set_permissions(member, overwrite=overwrite)
                     else:
-                        interaction.send("Введите правильный Id пользователя, состоящий только из цифр", ephemeral=True)
+                        await interaction.send("Введите правильный Id пользователя, состоящий только из цифр", ephemeral=True)
                 except BaseException as ex:
                     await interaction.send("Ой, какая то ошибка!", ephemeral=True)
                     print(ex_format(ex, "del_member_callback"))
