@@ -495,43 +495,45 @@ class VoiceChannelsButtons(nextcord.ui.View):
         # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         if not await self.check_admin_rules(interaction):
             return
-        modal = nextcord.ui.modal(
-            title="Выбор боевого рейтинга",
-            timeout=5*60,
-        )
-        modal.add_item(cmbr := nextcord.ui.TextInput(
-            label="Введите боевой рейтинг",
-            placeholder='5.3',
-            max_length=4,
-            required=True,
-        ))
-        async def modal_callback(interaction: nextcord.interactions):
-            cmbr = cmbr.value
-            pattern = r"^\d{2}\.\d$"
-            result = re.match(pattern, cmbr)
-            if not result:
-                await interaction.send(f"Вы ввели неверное значение: {cmbr}, пример верного: 10.3")
-                return
-            true_nums = int(cmbr.split(".")[0]) in range(1, 12+1) and int(cmbr.split(".")[1]) in [0, 3, 7]
-            if not true_nums:
-                await interaction.send(f"Такого бр не существует!: {cmbr}, пример верного: 6.7")
-                return
-            try:
-                db = DataBase("WarThunder.db")
-                await db.connect()
-                await db.run_que(
-                    "UPDATE VoiceCogChannelsSaves SET cmbrVar=? WHERE creatorId=?",
-                    (float(cmbr), interaction.user.id)
-                )
-                await self.update_message(pos="name_update", other={"interaction": interaction})
-            except BaseException as ex:
-                ex = ex_format(ex, "set_cmbr_modal_ex")
-                await interaction.send(f"Что-то пошло не так!\nEx: ```{ex}```", ephemeral=True)
-                print(ex)
-            finally:
-                await db.close()
-            modal.callback = modal_callback
-            await interaction.response.send_modal(modal)
+        try:
+            modal_cmbr = nextcord.ui.Modal(
+                title="Выбор боевого рейтинга",
+                timeout=5*60,
+            )
+            modal_cmbr.add_item(command_br := nextcord.ui.TextInput(
+                label="Введите боевой рейтинг",
+                placeholder='5.3',
+                max_length=4,
+                required=True,
+            ))
+            async def modal_callback(interaction: nextcord.Interaction):
+                try:
+                    pattern = r"^\d{2}\.\d$"
+                    result = re.match(pattern, command_br.value)
+                    if not result:
+                        await interaction.send(f"Вы ввели неверное значение: {command_br.value}, пример верного: 10.3", ephemeral=True)
+                        return
+                    true_nums = int(command_br.value.split(".")[0]) in range(1, 12+1) and int(command_br.value.split(".")[1]) in [0, 3, 7]
+                    if not true_nums:
+                        await interaction.send(f"Такого бр не существует!: {command_br.value}, пример верного: 6.7", ephemeral=True)
+                        return
+                    db = DataBase("WarThunder.db")
+                    await db.connect()
+                    await db.run_que(
+                        "UPDATE VoiceCogChannelsSaves SET cmbrVar=? WHERE creatorId=?",
+                        (float(command_br.value), interaction.user.id)
+                    )
+                    await self.update_message(pos="name_update", other={"interaction": interaction})
+                except BaseException as ex:
+                    ex = ex_format(ex, "set_cmbr_modal_ex")
+                    await interaction.send(f"Что-то пошло не так!\nEx: ```{ex}```", ephemeral=True)
+                    print(ex)
+                finally:
+                    await db.close()
+            modal_cmbr.callback = modal_callback
+            await interaction.response.send_modal(modal_cmbr)
+        except BaseException as ex:
+            print(ex_format(ex, "set_cmbr_func"))
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.green, row=2)
     async def set_limit(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
