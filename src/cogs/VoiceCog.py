@@ -389,7 +389,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.add_member.label = self.data["add_member"]
         self.del_member.label = self.data["del_member"]
         self.rename_channel.disabled = True # так и должно быть!
-        
+        self.channel_closed = False
         # TODO easy_buttons !!!
         self.add_member.disabled = True
         self.del_member.disabled = True
@@ -491,6 +491,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
+        # TODO
         if not await self.check_admin_rules(interaction):
             return
         try:
@@ -506,8 +507,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
             ))
             async def modal_callback(interaction: nextcord.Interaction):
                 try:
-                    pattern = r"^\d{2}\.\d$"
-                    result = re.match(pattern, command_br.value)
+                    pattern = r"^\d{1,2}\.\d$"
+                    result = re.match(pattern, str(command_br.value))
                     if not result:
                         await interaction.send(f"Вы ввели неверное значение: {command_br.value}, пример верного: 10.3", ephemeral=True)
                         return
@@ -521,7 +522,15 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         "UPDATE VoiceCogChannelsSaves SET cmbrVar=? WHERE creatorId=?",
                         (float(command_br.value), interaction.user.id)
                     )
-                    await self.update_message(pos="name_update", other={"interaction": interaction})
+                    await interaction.send(
+                        "Настройки сохранены, не забудьте применить их для данного канала!\n" \
+                        "Будьте внимательны, настройки можно применить раз в пять минут к одному каналу.\n" \
+                        "Если вы не хотите ждать, можете просто пересоздать канал, ограничение идёт со стороны "\
+                        "Discord'а",
+                        ephemeral=True
+                    )
+                    self.rename_channel.disabled = False
+                    await self.message.edit(view=self)
                 except BaseException as ex:
                     ex = ex_format(ex, "set_cmbr_modal_ex")
                     await interaction.send(f"Что-то пошло не так!\nEx: ```{ex}```", ephemeral=True)
@@ -585,36 +594,51 @@ class VoiceChannelsButtons(nextcord.ui.View):
         button.disabled = True
         await self.update_message(pos="name_update", other={"interaction": interaction})
         await interaction.send("Настройки применены к каналу!", ephemeral=True)
-        ...
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def change_connect_rules(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Закрывает чат для вступления других людей (только премиум)
         """
-        
-        if not await self.check_admin_rules(interaction):
-            return
-        channel = interaction.channel
-        ru_role = interaction.guild.get_role(RU_ROLE_ID)
-        en_role = interaction.guild.get_role(EN_ROLE_ID)
-        await channel.set_permissions(ru_role, connect=self.channel_closed)
-        await channel.set_permissions(en_role, connect=self.channel_closed)
-        if self.channel_closed:
-            self.change_connect_rules.label = self.data["open_channel"]
-        else:
-            self.change_connect_rules.label = self.data["close_channel"]
-        self.channel_closed = not self.channel_closed
-        await channel.send("Права доступа в этот канал изменены!", ephemeral=True)        
-        await interaction.message.edit(view=self)
-    
+        try:
+            if not await self.check_admin_rules(interaction):
+                return
+            channel = interaction.channel
+            ru_role = interaction.guild.get_role(RU_ROLE_ID)
+            en_role = interaction.guild.get_role(EN_ROLE_ID)
+            if not self.channel_closed:
+                overwrite = nextcord.PermissionOverwrite()
+                overwrite.view_channel = True
+                overwrite.connect = False
+                await channel.set_permissions(ru_role, overwrite=overwrite)
+                await channel.set_permissions(en_role, overwrite=overwrite)
+                for member in channel.members:
+                    overwrite.connect = True
+                    overwrite.stream = True
+                    overwrite.send_messages = True
+                    overwrite.attach_files = True
+                    overwrite.embed_links = True
+                    overwrite.add_reactions = True
+                    overwrite.read_message_history = True
+                    await channel.set_permissions(member, overwrite=overwrite)
+                button.label = self.data["open_channel"]
+                await interaction.send("Канал закрыт для вступления!", ephemeral=True)
+            else:
+                await channel.edit(sync_permissions=True)
+                button.label = self.data["close_channel"]
+                await interaction.send("Канал открыт для вступления!", ephemeral=True)
+            self.channel_closed = not self.channel_closed   
+            await self.message.edit(view=self)
+        except BaseException as ex:
+            print(ex_format(ex, "change_connect_rules_voice_cog"))
+
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Добавление людей в права канала (только премиум)
         """
         if not await self.check_admin_rules(interaction):
             return
-        # TODO переделать на управление правами (для доната)
-        ...
+        # TODO modal c id member, получаем его объект переопределяем права для него как выше (добавляет доступ человеку для общения)
+
         
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -622,8 +646,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
-        # TODO переделать на управление правами (для доната)
-        ...
+        # TODO тоже самое только наоборот (удаляет доступ человку для подключения)
+
+        
 
 
 class VoiceCog(Cog):

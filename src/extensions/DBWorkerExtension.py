@@ -61,7 +61,7 @@ class DataBase:
                 await self.db_connection.commit()
             return {"id": cursor.lastrowid}
         except BaseException as ex:
-            print(ex_format(ex, "run_que"))
+            print(ex_format(ex, f"run_que, {sql}"))
             return False
 
     async def get_one(self, sql, params=None):
