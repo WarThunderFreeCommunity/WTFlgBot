@@ -1,5 +1,6 @@
 import asyncio
 from contextlib import contextmanager
+import logging
 
 import aeval
 import nextcord
@@ -205,7 +206,12 @@ async def eval_string(ctx, *, content):
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
-
+def logger():
+    logger = logging.getLogger('nextcord')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
 
 if __name__ == "__main__":
     bot.run(configuration.discord_token)

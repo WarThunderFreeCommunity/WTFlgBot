@@ -6,6 +6,8 @@ import asyncio
 import datetime
 from copy import deepcopy
 from urllib.parse import urlencode
+import logging
+
 
 import nextcord
 from nextcord.ext import commands, tasks
@@ -90,6 +92,8 @@ payment_en_embed = nextcord.Embed.from_dict({
 })
 
 
+
+
 class PaymentButtons(nextcord.ui.View):
     def __init__(self, payment_info: dict, lang: str, member: nextcord.Interaction.user):
         super().__init__()
@@ -166,6 +170,14 @@ class PaymentButtons(nextcord.ui.View):
             lines.append(f"{dis_id}:{enrollment_summ:.2f}\n")
         with open(data_path, 'w') as data_file:
             data_file.writelines(lines)
+    
+    @staticmethod
+    def logger():
+        logger = logging.getLogger('nextcord')
+        logger.setLevel(logging.DEBUG)
+        handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
+        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        logger.addHandler(handler)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def check_payment(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
