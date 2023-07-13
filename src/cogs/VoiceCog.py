@@ -120,11 +120,12 @@ class ChooseGameModeSelect(nextcord.ui.Select):
         finally:
             await db.close()
 
-# TODO переписать на один класс и два наследника
+
 class ChooseGameNationSelect(nextcord.ui.Select):
     def __init__(self, admins, lang):
         self.admins = admins
         self.lang = lang
+        # TODO ПЕРЕВОД, Олежа)) плиз
         self.data = {
             "options_clear": "Очистить выбор",
             "label_usa": "Америка",
