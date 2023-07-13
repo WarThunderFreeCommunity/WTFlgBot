@@ -391,9 +391,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.del_member.label = self.data["del_member"]
         self.rename_channel.disabled = True # так и должно быть!
         self.channel_closed = False
-        # TODO easy_buttons !!!
-        self.add_member.disabled = True
-        self.del_member.disabled = True
 
     @staticmethod
     async def __check_timeout(channel_id):
