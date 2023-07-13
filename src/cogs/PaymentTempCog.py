@@ -387,7 +387,7 @@ class VipButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def six_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 82.0
+        self.payment_info['real_summ'] = 182.0
         self.payment_info['enrollment_summ'] = 182.0
         self.disable_buttons("six_month")
         await interaction.response.edit_message(view=self)
