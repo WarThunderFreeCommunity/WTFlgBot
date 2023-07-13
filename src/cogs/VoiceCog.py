@@ -604,7 +604,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             if not await self.check_admin_rules(interaction):
                 return
             roles_id = [role.id for role in interaction.user.roles]
-            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id:
+            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
                 await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
                 return
             channel = interaction.channel
@@ -643,11 +643,33 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if not await self.check_admin_rules(interaction):
             return
         roles_id = [role.id for role in interaction.user.roles]
-        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id:
+        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
             await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
             return
         # TODO modal c id member, получаем его объект переопределяем права для него как выше (добавляет доступ человеку для общения)
 
+
+        modal = nextcord.ui.Modal(
+            title="Добавить доступ к каналу",
+            timeout=5*60,
+        )
+        modal.add_item(member_id := nextcord.ui.TextInput(
+        label="Введите id человека для добавления доступа",
+        placeholder="404512224837894155",
+        required=True,
+        ))
+        async def modal_callback(interaction: nextcord.Interaction):
+            if member_id.isdigit():
+                member = nextcord.utils.get(interaction.guild.members, id=member_id)
+                channel = interaction.channel
+
+                overwrite = nextcord.PermissionOverwrite()
+                overwrite.connect = True
+                await channel.set_permissions(member, overwrite=overwrite)
+
+            else:
+                interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
+        modal.callback = modal_callback
         
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -656,11 +678,31 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if not await self.check_admin_rules(interaction):
             return
         roles_id = [role.id for role in interaction.user.roles]
-        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id:
+        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
             await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
             return
-        # TODO тоже самое только наоборот (удаляет доступ человку для подключения)
 
+        modal = nextcord.ui.Modal(
+            title="Добавить доступ к каналу",
+            timeout=5*60,
+        )
+        modal.add_item(member_id := nextcord.ui.TextInput(
+        label="Введите id человека для добавления доступа",
+        placeholder="404512224837894155",
+        required=True,
+        ))
+        async def modal_callback(interaction: nextcord.Interaction):
+            if member_id.isdigit():
+                member = nextcord.utils.get(interaction.guild.members, id=member_id)
+                channel = interaction.channel
+
+                overwrite = nextcord.PermissionOverwrite()
+                overwrite.connect = False
+                await channel.set_permissions(member, overwrite=overwrite)
+
+            else:
+                interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
+        modal.callback = modal_callback
         
 
 
