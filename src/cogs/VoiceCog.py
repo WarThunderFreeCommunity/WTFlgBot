@@ -486,8 +486,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
         await interaction.send("Вы не администратор", ephemeral=True)
         return False
     
-    # TODO: Переделать логику для назначения дополнительных администраторов
-
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.green, row=2)
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
