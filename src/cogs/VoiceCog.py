@@ -776,7 +776,7 @@ class VoiceCog(Cog):
                 lang = self.parrent_channel_ids[str(channel_db[0])].split(":")[0]
                 view = VoiceChannelsButtons(lang, voice_channel.members[0], message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [voice_channel.members[0].id], voice_channel)
-                await message.edit(content=None, embed=embed, view=view)
+                await message.edit(embed=embed, view=view)
                 self.channel_views[voice_channel.id] = view
        
         except BaseException as ex:
