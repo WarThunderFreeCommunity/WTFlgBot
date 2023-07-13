@@ -23,7 +23,7 @@ You have joined the War Thunder Fan Server
 ```
 ```
 Выберите свой язык нажав на кнопку:  Russian / Englich\n
-Select your language by clicking on the button: Russian / Englich
+Select your language by clicking on the button: Russian / English
 ```
 ```
 Вы также можете купить рекламу или дополнительные возможности, используя канал #Выбор-ролей\n
