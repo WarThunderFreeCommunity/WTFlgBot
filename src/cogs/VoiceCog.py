@@ -15,7 +15,8 @@ TECH_IDS = None
 NATION_IDS = None
 RU_ROLE_ID: int = 795232311477272576
 EN_ROLE_ID: int = 795232315579564032
-
+VIP_RU_ROLE_ID = 1007965606789783572
+VIP_EN_ROLE_ID = 1085530065707733012
 
 class AfterKickUserButtons(nextcord.ui.View):
     def __init__(self, lang, members, message) -> None:
@@ -602,6 +603,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
         try:
             if not await self.check_admin_rules(interaction):
                 return
+            roles_id = [role.id for role in interaction.user.roles]
+            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id:
+                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
+                return
             channel = interaction.channel
             ru_role = interaction.guild.get_role(RU_ROLE_ID)
             en_role = interaction.guild.get_role(EN_ROLE_ID)
@@ -637,6 +642,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
+        roles_id = [role.id for role in interaction.user.roles]
+        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id:
+            await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
+            return
         # TODO modal c id member, получаем его объект переопределяем права для него как выше (добавляет доступ человеку для общения)
 
         
@@ -645,6 +654,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """Удаление людей в правах канала (только премиум)
         """
         if not await self.check_admin_rules(interaction):
+            return
+        roles_id = [role.id for role in interaction.user.roles]
+        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id:
+            await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
             return
         # TODO тоже самое только наоборот (удаляет доступ человку для подключения)
 
