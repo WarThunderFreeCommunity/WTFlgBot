@@ -127,31 +127,47 @@ class ChooseGameNationSelect(nextcord.ui.Select):
         self.lang = lang
         self.data = {
             "options_clear": "Очистить выбор",
+            "label_usa": "Америка",
+            "description_usa": "Выбрать Америку",
+            "label_ussr": "Советский союз",
+            "description_ussr": "Выбрать Советский союз",
+            "label_japan": "Япония",
+            "description_japan": "Выбрать Японию",
+            "remove_mode": "Убрать режим...",
+            "description_mode": "Убрать режим игры...",
         } if self.lang == "RU" else {
             "options_clear": "Clear selection",
+            "label_usa": "USA",
+            "description_usa": "Choose USA",
+            "label_ussr": "USSR",
+            "description_ussr": "Choose USSR",
+            "label_japan": "Japan",
+            "description_japan": "Choose Japan",
+            "remove_mode": "Remove mode...",
+            "description_mode": "Remove game mode...",
         }
         options = [
             nextcord.SelectOption(
-                label="Америка",
-                description="Выбрать Америку",
+                label=data["label_usa"],
+                description=data["description_usa"],
                 emoji="🦅",
                 value=0
             ),
             nextcord.SelectOption(
-                label="Советский союз",
-                description="Выбрать Советский союз",
+                label=data["label_ussr"],
+                description=data["description_ussr"],
                 emoji="⚒",
                 value=1
             ),
             nextcord.SelectOption(
-                label="Япония",
-                description="Выбрать Японию",
+                label=data["label_japan"],
+                description=data["description_japan"],
                 emoji="🍣",
                 value=2
             ),
             nextcord.SelectOption(
-                label="Убрать режим",
-                description="Убрать режим игры...",
+                label=data["remove_mode"],
+                description=data["description_mode"],
                 emoji=TECH_IDS['-'],
                 value='-'
             )
