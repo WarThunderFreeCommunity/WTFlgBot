@@ -643,11 +643,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
             await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
             return
-        modal = nextcord.ui.Modal(
+        modal_add = nextcord.ui.Modal(
             title="Добавить доступ к каналу",
             timeout=5*60,
         )
-        modal.add_item(member_id := nextcord.ui.TextInput(
+        modal_add.add_item(member_id := nextcord.ui.TextInput(
         label="Введите id человека для добавления доступа",
         placeholder="404512224837894155",
         required=True,
@@ -663,8 +663,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             else:
                 interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
-        modal.callback = modal_callback
-        await interaction.response.send_modal(modal)
+        modal_add.callback = modal_callback
+        await interaction.response.send_modal(modal_add)
         
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -676,11 +676,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
             await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
             return
-        modal = nextcord.ui.Modal(
+        modal_remove = nextcord.ui.Modal(
             title="Удалить доступ к каналу",
             timeout=5*60,
         )
-        modal.add_item(member_id := nextcord.ui.TextInput(
+        modal_remove.add_item(member_id := nextcord.ui.TextInput(
         label="Введите id человека для удаления доступа",
         placeholder="404512224837894155",
         required=True,
@@ -696,8 +696,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             else:
                 interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
-        modal.callback = modal_callback
-        await interaction.response.send_modal(modal)
+        modal_remove.callback = modal_callback
+        await interaction.response.send_modal(modal_remove)
 
 
 class VoiceCog(Cog):
