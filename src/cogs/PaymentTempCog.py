@@ -92,8 +92,6 @@ payment_en_embed = nextcord.Embed.from_dict({
 })
 
 
-
-
 class PaymentButtons(nextcord.ui.View):
     def __init__(self, payment_info: dict, lang: str, member: nextcord.Interaction.user):
         super().__init__()
