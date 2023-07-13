@@ -1,6 +1,7 @@
 import time
 import json
 import asyncio
+import re
 
 import nextcord
 from nextcord.ext import tasks, application_checks
@@ -490,6 +491,30 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
+        modal = nextcord.ui.modal(
+            title="Выбор боевого рейтинга",
+            timeout=5*60,
+        )
+        modal.add_item(cmbr := nextcord.ui.TextInput(
+            label="Введите боевой рейтинг",
+            placeholder='5.3',
+            required=True,
+        ))
+
+        async def modal_callback(interaction: nextcord.interactions):
+            cmbr = str(cmbr.value)
+            pattern = r"^\d{2}\.\d$"
+            result = re.match(pattern, cmbr)
+            if result:
+                cmbr = cmbr
+
+            else:
+                await interaction.send(f"Вы ввели неправильное число: {cmbr}, пример верного: 10.3")
+                
+
+
+        modal.callback = modal_callback
+
         if not await self.check_admin_rules(interaction):
             return
         # Первым делом требуется получить инфу о cmbr с бд, if None то назначаем если уже есть меняем
