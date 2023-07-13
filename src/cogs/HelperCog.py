@@ -7,6 +7,8 @@ import nextcord
 from nextcord.ext import commands, tasks
 from nextcord.ext.commands import Bot, Cog, Context
 
+from ..extensions.EXFormatExtension import ex_format
+
 """
 self.return_back = nextcord.ui.Button(label="return_back")
 async def return_back_callback(button, interaction):
@@ -149,12 +151,14 @@ class HelperCog(Cog):
     ):
         try:
             if "●" in before.channel.name and len(before.channel.members) == 0:
-                await asyncio.sleep(60)
+                await asyncio.sleep(10)
                 channel = self.bot.get_channel(before.channel.id)
                 if channel is not None:
                     await channel.delete()
-        except BaseException as e:
+        except AttributeError:
             pass
+        except BaseException as ex:
+            print(ex_format(ex, "on_voice_helper"))
 
     @commands.command()
     async def image(self, ctx: Context, url: Optional[str] = None):
