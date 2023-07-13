@@ -63,25 +63,26 @@ class ChooseGameModeSelect(nextcord.ui.Select):
             nextcord.SelectOption(
                 label="Танковые",
                 description="Выбрать танковые бои",
-                emoji=TECH_IDS['0'],
                 value=0
             ),
             nextcord.SelectOption(
                 label="Воздушные",
                 description="Выбрать воздушные бои",
-                emoji=TECH_IDS['1'],
                 value=1
             ),
             nextcord.SelectOption(
                 label="Морские",
                 description="Выбрать морские бои",
-                emoji=TECH_IDS['2'],
                 value=2
+            ),
+            nextcord.SelectOption(
+                label="Вертолётные",
+                description="Выбрать вортолётные бои",
+                value=3
             ),
             nextcord.SelectOption(
                 label="Убрать режим",
                 description="Убрать режим игры...",
-                emoji=TECH_IDS['-'],
                 value='-'
             )
         ]
@@ -164,11 +165,45 @@ class ChooseGameNationSelect(nextcord.ui.Select):
                 value=2
             ),
             nextcord.SelectOption(
+                label="Германия",
+                description="-",
+                value=3
+            ),
+            nextcord.SelectOption(
+                label="Великобритания",
+                description="-",
+                value=4
+            ),
+            nextcord.SelectOption(
+                label="Италия",
+                description="-",
+                value=5
+            ),
+            nextcord.SelectOption(
+                label="Франция",
+                description="-",
+                value=6
+            ),
+            nextcord.SelectOption(
+                label="Китай",
+                description="-",
+                value=7
+            ),
+            nextcord.SelectOption(
+                label="Швеция",
+                description="-",
+                value=8
+            ),
+            nextcord.SelectOption(
+                label="Израиль",
+                description=self.data["description_japan"],
+                value=9
+            ),
+            nextcord.SelectOption(
                 label=self.data["remove_mode"],
-                description=self.data["description_mode"],
-                emoji=TECH_IDS['-'],
+                description="-",
                 value='-'
-            )
+            )# TODO !!!!!
         ]
         super().__init__(
             placeholder="Выберите нацию игры..",
@@ -422,9 +457,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
                     )
                     tech = TECH_IDS[str(channel_settings[0])] if channel_settings[0] != None else TECH_IDS['-'] 
                     nation = NATION_IDS[str(channel_settings[1])] if channel_settings[1] != None else NATION_IDS['-'] 
-                    print(tech, nation)
-                    cmbr = channel_settings[2] if channel_settings[2] else NATION_IDS['-'] 
-                    channel_name = f"{tech} {nation} {self.channel.name.split(' ')[2]} {cmbr}"
+                    cmbr = channel_settings[2] if channel_settings[2] else TECH_IDS['-'] 
+                    channel_name = f"{nation} {tech} {self.channel.name.split(' ')[3]} {cmbr}"
                     await self.channel.edit(name=channel_name)
                     self.rename_channel.disabled = True
                 except BaseException as ex:
@@ -597,7 +631,7 @@ class VoiceCog(Cog):
                 if len(voice_channel.members) == 0:
                     await voice_channel.delete()
                     await db.run_que("DELETE FROM VoiceCogChannels WHERE channelId=?", (voice_channel.id,))
-                    continue# TODO embeds
+                    continue
                 if channel_db[2] not in [member.id for member in voice_channel.members]:
                     await db.run_que(
                         "UPDATE VoiceCogChannels SET creatorId=? WHERE creatorId=?",
@@ -614,7 +648,7 @@ class VoiceCog(Cog):
                 lang = self.parrent_channel_ids[str(channel_db[0])].split(":")[0]
                 view = VoiceChannelsButtons(lang, voice_channel.members[0], message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [voice_channel.members[0].id], voice_channel)
-                await message.edit(content=None, embed=embed, view=view) # TODO embeds
+                await message.edit(content=None, embed=embed, view=view)
                 self.channel_views[voice_channel.id] = view
        
         except BaseException as ex:
@@ -693,13 +727,13 @@ class VoiceCog(Cog):
                         "INSERT INTO VoiceCogChannelsSaves (creatorId) VALUES (?)",
                         (member.id,)
                     )
-                    channel_name = f"❌ ❌ {channel_options[1]} ❌"
+                    channel_name = f"● - - {channel_options[1]} -"
                 else:
                     limit_var = channel_save_data[4] # user_limit
                     channel_name = \
-                        f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '❌'} " \
-                        f"{self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '❌'} " \
-                        f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '❌'}"
+                        f"{self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '● -'} " \
+                        f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '-'} " \
+                        f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
                 voice_channel = await member.guild.create_voice_channel(
                     name=channel_name,
                     #position=position,  # создаём канал под последним по времени
