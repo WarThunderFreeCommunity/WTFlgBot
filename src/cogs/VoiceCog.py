@@ -2,6 +2,7 @@ import time
 import json
 import asyncio
 import re
+from typing import List
 
 import nextcord
 from nextcord.ext import tasks, application_checks
@@ -112,6 +113,7 @@ class ChooseGameModeSelect(nextcord.ui.Select):
                 (None if self.values[0] == '-' else self.values[0] , interaction.user.id)
             )
             self.view.rename_channel.disabled = False
+            self.view.changed_names.append("tech")
             await self.view.update_message()
             await interaction.send(
                 "Настройки сохранены, не забудьте применить их для данного канала!\n" \
@@ -231,6 +233,7 @@ class ChooseGameNationSelect(nextcord.ui.Select):
                 (None if self.values[0] == '-' else self.values[0] , interaction.user.id)
             )
             self.view.rename_channel.disabled = False
+            self.view.changed_names.append("nation")
             await self.view.update_message()
             await interaction.send(
                 "Настройки сохранены, не забудьте применить их для данного канала!\n" \
@@ -344,6 +347,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.channel = channel
         self.message = message
         self.admins = [admin.id]
+        self.changed_names = []
         self.lang = lang
         self.data = {
             "set_cmbr": "Установить боевой рейтинг",
@@ -424,7 +428,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             print(ex_format(ex, "__check_timeout"))
             await db.close()
 
-    async def update_message(self, member=None, pos=None, other=None):
+    async def update_message(self, member = None, pos = None, other = None, names: List[str] = None):
         # Вызывается при изменении on_voice_state_update для канала с данным сообщением
         try:
             db = DataBase("WarThunder.db")
@@ -432,6 +436,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
 
             # Новый человек в канале
             if pos == "in":
+                # TODO чекнуть if member т.к. там скорее всего обновляется то, что может тут.
                 # тут слишком мало, что то забыл 💀
                 ...
             
@@ -458,7 +463,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
                     tech = TECH_IDS[str(channel_settings[0])] if channel_settings[0] != None else TECH_IDS['-'] 
                     nation = NATION_IDS[str(channel_settings[1])] if channel_settings[1] != None else NATION_IDS['-'] 
                     cmbr = channel_settings[2] if channel_settings[2] else TECH_IDS['-'] 
-                    channel_name = f"{nation} {tech} {self.channel.name.split(' ')[3]} {cmbr}"
+                    channel_name = \
+                        f"{nation if 'nation' in names else self.channel.name.split(' ')[1]} " \
+                        f"{tech if 'tech' in names else self.channel.name.split(' ')[2]} " \
+                        f"{self.channel.name.split(' ')[3]} {cmbr if 'cmbr' in names else self.channel.name.split(' ')[4]}"
                     await self.channel.edit(name=channel_name)
                     self.rename_channel.disabled = True
                 except BaseException as ex:
@@ -515,6 +523,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                     if not true_nums:
                         await interaction.send(f"Такого бр не существует!: {command_br.value}, пример верного: 6.7", ephemeral=True)
                         return
+                    # Добавить if == 0 or - TODO
                     db = DataBase("WarThunder.db")
                     await db.connect()
                     await db.run_que(
@@ -528,6 +537,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                         "Discord'а",
                         ephemeral=True
                     )
+                    self.changed_names.append("cmbr")
                     self.rename_channel.disabled = False
                     await self.message.edit(view=self)
                 except BaseException as ex:
@@ -591,7 +601,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             )
             return
         button.disabled = True
-        await self.update_message(pos="name_update", other={"interaction": interaction})
+        await self.update_message(pos="name_update", other={"interaction": interaction}, names=self.changed_names)
         await interaction.send("Настройки применены к каналу!", ephemeral=True)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
@@ -832,21 +842,27 @@ class VoiceCog(Cog):
                 tech_id = nation_id = cmbr_var = limit_var = None
                 channel_options = self.parrent_channel_ids[str(after.channel.id)].split(":")
                 lang = channel_options[0]
-                if not (channel_save_data := await db.get_one(
-                        "SELECT * FROM VoiceCogChannelsSaves WHERE creatorId=?",
-                        (member.id,)
-                    )):
-                    await db.run_que(
-                        "INSERT INTO VoiceCogChannelsSaves (creatorId) VALUES (?)",
-                        (member.id,)
-                    )
-                    channel_name = f"● - - {channel_options[1]} -"
+                if channel_type[4] == "-":
+                    if not (channel_save_data := await db.get_one(
+                            "SELECT * FROM VoiceCogChannelsSaves WHERE creatorId=?",
+                            (member.id,)
+                        )):
+                        await db.run_que(
+                            "INSERT INTO VoiceCogChannelsSaves (creatorId) VALUES (?)",
+                            (member.id,)
+                        )
+                        channel_name = f"● - - {channel_options[1]} -"
+                    else:
+                        limit_var = channel_save_data[4] # user_limit
+                        channel_name = \
+                            f"{self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '● -'} " \
+                            f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '-'} " \
+                            f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
                 else:
-                    limit_var = channel_save_data[4] # user_limit
-                    channel_name = \
-                        f"{self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '● -'} " \
-                        f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '-'} " \
-                        f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
+                    channel_name = f"● - {TECH_IDS[channel_type[4]]} {channel_options[1]} -"
+
+
+                
                 voice_channel = await member.guild.create_voice_channel(
                     name=channel_name,
                     #position=position,  # создаём канал под последним по времени
