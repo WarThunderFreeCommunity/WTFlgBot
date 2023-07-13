@@ -13,6 +13,8 @@ from ..extensions.EXFormatExtension import ex_format
 
 TECH_IDS = None
 NATION_IDS = None
+RU_ROLE_ID: int = 795232311477272576
+EN_ROLE_ID: int = 795232315579564032
 
 
 class AfterKickUserButtons(nextcord.ui.View):
@@ -20,7 +22,7 @@ class AfterKickUserButtons(nextcord.ui.View):
         super().__init__(timeout=5*60)
         self.members = members
         self.message = message
-        self.data = { # TODO
+        self.data = { # TODO translate
             ...
         } if lang == "RU" else { 
             ...
@@ -28,8 +30,8 @@ class AfterKickUserButtons(nextcord.ui.View):
         self.close_for_all.label = "close_for_all"
         self.close_for_user.label = "close_for_user"
 
-        self.close_for_all.disabled = True # TODO
-        self.close_for_user.disabled = True # TODO
+        self.close_for_all.disabled = True # TODO button_easy
+        self.close_for_user.disabled = True # TODO button_easy
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def close_for_all(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -50,7 +52,7 @@ class AfterKickUserButtons(nextcord.ui.View):
             pass
 
 
-# TODO переписать на один класс и два наследника
+# TODO переписать на один класс и два наследника (делать в последнюю очередь)
 class ChooseGameModeSelect(nextcord.ui.Select):
     def __init__(self, admins, lang):
         self.admins = admins
@@ -127,7 +129,7 @@ class ChooseGameNationSelect(nextcord.ui.Select):
     def __init__(self, admins, lang):
         self.admins = admins
         self.lang = lang
-        # TODO ПЕРЕВОД, Олежа)) плиз
+        # TODO доделать перевод :)
         self.data = {
             "options_clear": "Очистить выбор",
             "label_usa": "Америка",
@@ -204,7 +206,7 @@ class ChooseGameNationSelect(nextcord.ui.Select):
                 label=self.data["remove_mode"],
                 description="-",
                 value='-'
-            )# TODO !!!!!
+            )# TODO translate
         ]
         super().__init__(
             placeholder="Выберите нацию игры..",
@@ -312,7 +314,7 @@ class KickUserSelect(nextcord.ui.Select):
 
 class VoiceInfoEmbed(nextcord.Embed):
     def __init__(self, lang, admins, channel: nextcord.VoiceChannel):
-        # TODO ...
+        # TODO translate
         self.data = {
             "user_designation": "Учатник ",
             "admin": "с правами администратора:",
@@ -383,13 +385,12 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.set_cmbr.label = self.data["set_cmbr"]
         self.set_limit.label = self.data["set_limit"]
         self.rename_channel.label = self.data["rename_channel"]
-        self.close_channel.label = self.data["close_channel"]
+        self.change_connect_rules.label = self.data["close_channel"]
         self.add_member.label = self.data["add_member"]
         self.del_member.label = self.data["del_member"]
         self.rename_channel.disabled = True # так и должно быть!
         
-        # TODO
-        self.close_channel.disabled = True
+        # TODO easy_buttons !!!
         self.add_member.disabled = True
         self.del_member.disabled = True
 
@@ -490,9 +491,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def set_cmbr(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Установка БР для голосового (только премиум)
         """
-        # Первым делом требуется получить инфу о cmbr с бд, if None то назначаем если уже есть меняем
-        # TODO: запись инфы о канале в бд
-        # TODO Modal с выборов боевого рейтинга (только float, длина(len) от 1(1.0) до 4(10.7))
         if not await self.check_admin_rules(interaction):
             return
         try:
@@ -587,17 +585,27 @@ class VoiceChannelsButtons(nextcord.ui.View):
         button.disabled = True
         await self.update_message(pos="name_update", other={"interaction": interaction})
         await interaction.send("Настройки применены к каналу!", ephemeral=True)
-        # TODO переделать на управление правами (для доната)
         ...
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
-    async def close_channel(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+    async def change_connect_rules(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Закрывает чат для вступления других людей (только премиум)
         """
+        
         if not await self.check_admin_rules(interaction):
             return
-        # TODO переделать на управление правами (для доната)
-        ...
+        channel = interaction.channel
+        ru_role = interaction.guild.get_role(RU_ROLE_ID)
+        en_role = interaction.guild.get_role(EN_ROLE_ID)
+        await channel.set_permissions(ru_role, connect=self.channel_closed)
+        await channel.set_permissions(en_role, connect=self.channel_closed)
+        if self.channel_closed:
+            self.change_connect_rules.label = self.data["open_channel"]
+        else:
+            self.change_connect_rules.label = self.data["close_channel"]
+        self.channel_closed = not self.channel_closed
+        await channel.send("Права доступа в этот канал изменены!", ephemeral=True)        
+        await interaction.message.edit(view=self)
     
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.blurple, row=3)
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
@@ -615,22 +623,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
         if not await self.check_admin_rules(interaction):
             return
         # TODO переделать на управление правами (для доната)
-        ...
-
-
-class VoiceFindButtons(nextcord.ui.View):
-    def __init__(self, lang, message, channel):
-        self.lang = lang
-        self.message = message
-        self.channel = channel
-        super().__init__(timeout=None)
-    
-    @nextcord.ui.button(label="none_button", style=nextcord.ButtonStyle.grey, row=0)
-    async def none_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        """Нужно спланировать поиск игроков, возможно будет через команду..
-        Также можно дублировать кнопки командами =)
-        """
-        
         ...
 
 
@@ -742,7 +734,6 @@ class VoiceCog(Cog):
 
             # Connected to creater new channel (channel with ➕ in name)
             if after.channel and (str(after.channel.id) in self.parrent_channel_ids):
-                #  TODO Когда основной функционал будет готов и отлажен, добавить сортировку..
                 channel_type = self.parrent_channel_ids[str(after.channel.id)].split(':')
                 channel_category = nextcord.utils.get(
                     member.guild.categories, id=int(channel_type[3])
