@@ -512,25 +512,26 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 required=True,
             ))
             async def modal_callback(interaction: nextcord.Interaction):
+                await interaction.response.defer(ephemeral=True, with_message=True)
                 try:
                     if command_br.value not in ["0", "-"]:
                         pattern = r"^\d{1,2}\.\d$"
                         result = re.match(pattern, str(command_br.value))
                         if not result:
-                            await interaction.send(f"Вы ввели неверное значение: {command_br.value}, пример верного: 10.3", ephemeral=True)
+                            await interaction.send(f"Вы ввели неверное значение: {command_br.value}, пример верного: 10.3. '0' или '-' чтобы убрать", ephemeral=True)
                             return
                         true_nums = int(command_br.value.split(".")[0]) in range(1, 12+1) and int(command_br.value.split(".")[1]) in [0, 3, 7]
                         if not true_nums:
-                            await interaction.send(f"Такого бр не существует!: {command_br.value}, пример верного: 6.7", ephemeral=True)
+                            await interaction.send(f"Такого бр не существует!: {command_br.value}, пример верного: 6.7. '0' или '-' чтобы убрать", ephemeral=True)
                             return
-                        command_br.value = float(command_br.value)
+                        cmbr_value = float(command_br.value)
                     else:
-                        command_br.value = None
+                        cmbr_value = None
                     db = DataBase("WarThunder.db")
                     await db.connect()
                     await db.run_que(
                         "UPDATE VoiceCogChannelsSaves SET cmbrVar=? WHERE creatorId=?",
-                        (command_br.value, interaction.user.id)
+                        (cmbr_value, interaction.user.id)
                     )
                     await interaction.send(
                         "Настройки сохранены, не забудьте применить их для данного канала!\n" \
@@ -542,12 +543,12 @@ class VoiceChannelsButtons(nextcord.ui.View):
                     self.changed_names.append("cmbr")
                     self.rename_channel.disabled = False
                     await self.message.edit(view=self)
-                    await db.close()
                 except BaseException as ex:
-                    await db.close()
                     ex = ex_format(ex, "set_cmbr_modal_ex")
                     await interaction.send(f"Что-то пошло не так!\nEx: ```{ex}```", ephemeral=True)
                     print(ex)
+                finally:
+                    await db.close()
                     
             modal_cmbr.callback = modal_callback
             await interaction.response.send_modal(modal_cmbr)
