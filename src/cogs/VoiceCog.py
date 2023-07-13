@@ -18,6 +18,7 @@ EN_ROLE_ID: int = 795232315579564032
 VIP_RU_ROLE_ID = 1007965606789783572
 VIP_EN_ROLE_ID = 1085530065707733012
 
+
 class AfterKickUserButtons(nextcord.ui.View):
     def __init__(self, lang, members, message) -> None:
         super().__init__(timeout=5*60)
@@ -637,14 +638,13 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def add_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Добавление людей в права канала (только премиум)
         """
-        if not await self.check_admin_rules(interaction):
-            return
-        roles_id = [role.id for role in interaction.user.roles]
-        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
-            await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
-            return
-
         try:
+            if not await self.check_admin_rules(interaction):
+                return
+            roles_id = [role.id for role in interaction.user.roles]
+            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
+                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
+                return
             modal_add = nextcord.ui.Modal(
                 title="Добавить доступ к каналу",
                 timeout=5*60,
@@ -655,16 +655,19 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 required=True,
             ))
             async def modal_callback(interaction: nextcord.Interaction):
-                if member_id.isdigit():
-                    member = nextcord.utils.get(interaction.guild.members, id=member_id)
-                    channel = interaction.channel
+                try:
+                    if member_id.value.isdigit():
+                        member = nextcord.utils.get(interaction.guild.members, id=int(member_id.value))
+                        channel = interaction.channel
 
-                    overwrite = nextcord.PermissionOverwrite()
-                    overwrite.connect = True
-                    await channel.set_permissions(member, overwrite=overwrite)
+                        overwrite = nextcord.PermissionOverwrite()
+                        overwrite.connect = True
+                        await channel.set_permissions(member, overwrite=overwrite)
 
-                else:
-                    interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
+                    else:
+                        interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
+                except BaseException as ex:
+                    print(ex_format(ex, "add_member_callback"))
             modal_add.callback = modal_callback
             await interaction.response.send_modal(modal_add)
         except BaseException as ex:
@@ -674,13 +677,13 @@ class VoiceChannelsButtons(nextcord.ui.View):
     async def del_member(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         """Удаление людей в правах канала (только премиум)
         """
-        if not await self.check_admin_rules(interaction):
-            return
-        roles_id = [role.id for role in interaction.user.roles]
-        if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
-            await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
-            return
         try:
+            if not await self.check_admin_rules(interaction):
+                return
+            roles_id = [role.id for role in interaction.user.roles]
+            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
+                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707")
+                return
             modal_remove = nextcord.ui.Modal(
                 title="Удалить доступ к каналу",
                 timeout=5*60,
@@ -691,16 +694,18 @@ class VoiceChannelsButtons(nextcord.ui.View):
             required=True,
             ))
             async def modal_callback(interaction: nextcord.Interaction):
-                if member_id.isdigit():
-                    member = nextcord.utils.get(interaction.guild.members, id=member_id)
-                    channel = interaction.channel
-
-                    overwrite = nextcord.PermissionOverwrite()
-                    overwrite.connect = False
-                    await channel.set_permissions(member, overwrite=overwrite)
-
-                else:
-                    interaction.send("Введите правильный Id пользователя, состоящий только из цифр")
+                try:
+                    if member_id.value.isdigit():
+                        member = nextcord.utils.get(interaction.guild.members, id=int(member_id.value))
+                        channel = interaction.channel
+                        overwrite = nextcord.PermissionOverwrite()
+                        overwrite.connect = False
+                        await channel.set_permissions(member, overwrite=overwrite)
+                    else:
+                        interaction.send("Введите правильный Id пользователя, состоящий только из цифр", ephemeral=True)
+                except BaseException as ex:
+                    await interaction.send("Ой, какая то ошибка!", ephemeral=True)
+                    print(ex_format(ex, "del_member_callback"))
             modal_remove.callback = modal_callback
             await interaction.response.send_modal(modal_remove)
         except BaseException as ex:
