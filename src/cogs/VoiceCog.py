@@ -464,7 +464,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                     nation = NATION_IDS[str(channel_settings[1])] if channel_settings[1] != None else NATION_IDS['-'] 
                     cmbr = channel_settings[2] if channel_settings[2] else TECH_IDS['-'] 
                     channel_name = \
-                        f"●{nation if 'nation' in names else self.channel.name.split(' ')[1]} " \
+                        f"● {nation if 'nation' in names else self.channel.name.split(' ')[1]} " \
                         f"{tech if 'tech' in names else self.channel.name.split(' ')[2]} " \
                         f"{self.channel.name.split(' ')[3]} {cmbr if 'cmbr' in names else self.channel.name.split(' ')[4]}"
                     await self.channel.edit(name=channel_name)
