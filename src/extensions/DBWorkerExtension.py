@@ -22,6 +22,20 @@ class DataBase:
         self.db_connection = None
         self.connected: bool = False
     
+    async def debug_base(self, command, inter, view=None, db=None):
+        """_summary_
+        
+        Args:
+            command (_type): _description_
+            inter (_type): _description_
+            view (_type): _description_. Defaults to []
+            db (_type): _description_. Defaults to []
+        """
+        try:
+            await self.run_que(command, inter)
+        except:
+            await aeval.aeval(command, standart_args, {})
+
     async def connect(self):
         """_summary_
         """
