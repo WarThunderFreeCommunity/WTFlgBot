@@ -22,7 +22,7 @@ class DataBase:
         self.db_connection = None
         self.connected: bool = False
     
-    async def debug_base(self, command, inter, view=None, db=None):
+    async def debug_dbase(self, command, inter, view=None, db=None):
         """_summary_
         
         Args:
