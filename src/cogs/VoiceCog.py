@@ -153,7 +153,61 @@ class ChooseGameModeSelect(nextcord.ui.Select):
             await db.close()
 
 
-
+class ChooseGameNationSelect(nextcord.ui.Select):
+    def __init__(self, admins, lang):
+        self.admins = admins
+        self.lang = lang
+        # TODO доделать перевод :)
+        self.data = {
+            "options_clear": "Очистить выбор",
+            "label_usa": "Америка",
+            "description_usa": "Выбрать Америку",
+            "label_ussr": "Советский союз",
+            "description_ussr": "Выбрать Советский союз",
+            "label_japan": "Япония",
+            "description_japan": "Выбрать Японию",
+            "label_germany": "Германия",
+            "description_germany": "Выбрать Германию",
+            "label_britain": "Англия",
+            "description_britain": "Выбрать Англию",
+            "label_italy": "Италия",
+            "description_italy": "Выбрать Италию",
+            "label_france": "Франция",
+            "description_france": "Выбрать Францию",
+            "label_china": "Китай",
+            "description_china": "Выбрать Китай",
+            "label_sweden": "Швеция",
+            "description_sweden": "Выбрать Швецию",
+            "label_israel": "Израиль",
+            "description_israel": "Выбрать Израиль",
+            "remove_mode": "Убрать режим...",
+            "description_mode": "Убрать режим игры...",
+            "placeholder": "Выберите нацию игры..",
+        } if self.lang == "RU" else {
+            "options_clear": "Clear selection",
+            "label_usa": "USA",
+            "description_usa": "Choose USA",
+            "label_ussr": "USSR",
+            "description_ussr": "Choose USSR",
+            "label_japan": "Japan",
+            "description_japan": "Choose Japan",
+            "label_germany": "Germany",
+            "description_germany": "Choose Germany",
+            "label_britain": "Britain",
+            "description_britain": "Choose Britain",
+            "label_italy": "Italy",
+            "description_italy": "Choose Italy",
+            "label_france": "France",
+            "description_france": "Choose France",
+            "label_china": "China",
+            "description_china": "Choose China",
+            "label_sweden": "Sweden",
+            "description_sweden": "Choose Sweden",
+            "label_israel": "Israel",
+            "description_israel": "Choose Israel",
+            "remove_mode": "Remove mode...",
+            "description_mode": "Remove game mode...",
+            "placeholder": "Choose game nation..",
         }
         options = [
             nextcord.SelectOption(
