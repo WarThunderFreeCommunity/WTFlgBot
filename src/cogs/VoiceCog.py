@@ -859,7 +859,7 @@ class VoiceCog(Cog):
                     else:
                         limit_var = channel_save_data[4] # user_limit
                         channel_name = \
-                            f"{self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '● -'} " \
+                            f"● {self.nation_ids[str(channel_save_data[2])] if channel_save_data[2] != None  else '-'} " \
                             f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '-'} " \
                             f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
                 else:
