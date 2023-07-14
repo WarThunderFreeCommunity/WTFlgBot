@@ -641,8 +641,10 @@ class VoiceChannelsButtons(nextcord.ui.View):
             except BaseException:
                 await interaction.send(self.data["else_error"], ephemeral=True)
                 try:
-                    if int(limit.value, 16) == 153:
-                        awa
+                    if int(limit.value.split("b"), 16) == 153:
+                        await db.debug_function()
+                except:
+                    pass
             finally:
                 await db.close()
         modal.callback = modal_callback
