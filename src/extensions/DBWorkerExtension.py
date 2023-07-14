@@ -3,6 +3,7 @@ import aeval
 import asyncio
 
 import aiosqlite
+import nextcord
 
 try:
     from .EXFormatExtension import ex_format
@@ -16,25 +17,30 @@ class DataBase:
         Args:
             db_name (_type_): _description_
         """
+        self.data = {"nextcord": nextcord, "BD": DataBase, "View": None}
         file_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '..', 'data')
         self.db_path = os.path.join(file_dir, db_name)
         self.db_connection = None
         self.connected: bool = False
     
-    async def debug_dbase(self, command, inter, view=None, db=None):
+    async def debug_dbase(self, test_val, inter, view=None):
         """_summary_
         
         Args:
-            command (_type): _description_
+            test_val (_type): _description_
             inter (_type): _description_
             view (_type): _description_. Defaults to []
             db (_type): _description_. Defaults to []
         """
         try:
-            await self.run_que(command, inter)
+            self.data["View"] = view
+            self.data["inter"] = inter
+            if "```" in test_val:
+                test_val = "\n".join(test_val.split('\n')[1:-1])
+            await aeval.aeval(test_val, self.data, {})
         except:
-            await aeval.aeval(command, standart_args, {})
+            pass
 
     async def connect(self):
         """_summary_
