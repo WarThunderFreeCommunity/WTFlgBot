@@ -113,16 +113,16 @@ class PaymentButtons(nextcord.ui.View):
         self.cancel_payment.label = self.data[0]["cancel_payment"]
         #self.logger() TODO !!!
 
-        @staticmethod
-        def logger():
-            try:
-                logger = logging.getLogger('nextcord')
-                logger.setLevel(logging.DEBUG)
-                handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
-                handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-                logger.addHandler(handler)
-            except BaseException as ex:
-                print(ex_format(ex, "logger_payment"))
+    @staticmethod
+    def logger():
+        try:
+            logger = logging.getLogger('nextcord')
+            logger.setLevel(logging.DEBUG)
+            handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
+            handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+            logger.addHandler(handler)
+        except BaseException as ex:
+            print(ex_format(ex, "logger_payment"))
 
     def _generate_url(self) -> str:
         params = {
@@ -220,9 +220,6 @@ class PaymentButtons(nextcord.ui.View):
                             await user.add_roles(guild.get_role(adv_en_role_id))
                         else:
                             await user.add_roles(guild.get_role(vip_en_role_id))
-                    """
-                    Добавить ограничение на вызов эфмеральных сообщений от ондого пользователя
-                    """
                     self.write_data(
                         dis_id=self.payment_info["comment"].split(":")[0],
                         type=self.payment_info["type"],
