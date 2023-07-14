@@ -1,3 +1,4 @@
+# Переписать по нормальному !
 import os
 import base64
 import random
@@ -34,6 +35,8 @@ vip_ru_role_id = 1007965606789783572
 vip_en_role_id = 1085530065707733012
 adv_ru_role_id = 1085540360173924412
 adv_en_role_id = 1085543092582625409
+booster_role_id = 753919549484564521
+junior_moderator = 1038135072353689671
 
 main_message_text = \
 """
@@ -111,7 +114,6 @@ class PaymentButtons(nextcord.ui.View):
             label=self.data[0]["link_to_pay"], url=self._generate_url()))
         self.check_payment.label = self.data[0]["check_payment"]
         self.cancel_payment.label = self.data[0]["cancel_payment"]
-        #self.logger() TODO !!!
 
     @staticmethod
     def logger():
@@ -527,10 +529,13 @@ class Dropdown(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
-        if vip_ru_role_id not in [role.id for role in interaction.user.roles] and vip_en_role_id not in [role.id for role in interaction.user.roles]:
-            await interaction.send(self.data["error_msg"], ephemeral=True)
-        await interaction.response.defer(with_message=True, ephemeral=True)
         try:
+            user_roles_id = [role.id for role in interaction.user.roles]
+            allower_roles_id = [junior_moderator, booster_role_id, vip_en_role_id, vip_ru_role_id]
+            if not any(role_id in user_roles_id for role_id in allower_roles_id):
+                await interaction.send(self.data["error_msg"], ephemeral=True)
+                return
+            await interaction.response.defer(with_message=True, ephemeral=True)
             selected_role_id = int(self.emojies[self.values[0]].split(":")[1]) # Id выбранной роли
             interaction_roles_list = [] # Все id роли участника
             all_colours_list = [] # Все id цветов

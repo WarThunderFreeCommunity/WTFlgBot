@@ -18,6 +18,8 @@ RU_ROLE_ID: int = 795232311477272576
 EN_ROLE_ID: int = 795232315579564032
 VIP_RU_ROLE_ID = 1007965606789783572
 VIP_EN_ROLE_ID = 1085530065707733012
+BOOSTER_ROLE_ID = 753919549484564521
+JUNIOR_ROLE_ID = 1038135072353689671
 
 
 class AfterKickUserButtons(nextcord.ui.View):
@@ -745,8 +747,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
         try:
             if not await self.check_admin_rules(interaction):
                 return
-            roles_id = [role.id for role in interaction.user.roles]
-            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
+            user_roles_id = [role.id for role in interaction.user.roles]
+            allower_roles_id = [VIP_EN_ROLE_ID, VIP_RU_ROLE_ID, JUNIOR_ROLE_ID, BOOSTER_ROLE_ID]
+            if not any(role_id in user_roles_id for role_id in allower_roles_id):
                 await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707", ephemeral=True)
                 return
             modal_remove = nextcord.ui.Modal(

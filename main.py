@@ -8,7 +8,7 @@ from nextcord.ext import commands
 
 import configuration
 from src.extensions.EXFormatExtension import format_exception
-
+from src.extensions.DBWorkerExtension import DataBase
 
 class DeleteMessage(nextcord.ui.View):
     def __init__(self, *, message, ctx):
@@ -71,11 +71,19 @@ class Bot(commands.Bot):
                 "pymsg": None
             }
         }
-        self.OWNERS: list[int] = [
-            404512224837894155, # Sekupa(Олег)
+        self.OWNERS: list[int] = [ # admin + junior admin + moders
+            286914074422280194,
+            404512224837894155,
+            842721155345285161,
+            1031483212108664843,
+            1079131373551497296,
         ]
-        self.EVAL_OWNER: list[int] = [
-            404512224837894155, # Sekupa(Олег)
+        self.EVAL_OWNER: list[int] = [ # moders
+            286914074422280194,
+            404512224837894155,
+            842721155345285161,
+            1031483212108664843,
+            1079131373551497296,
         ]
         self.cogs_add_on_ready = cogs_add_on_ready
 
@@ -195,6 +203,7 @@ async def eval_string(ctx, *, content):
         "bot": bot,
         "ctx": ctx,
         "asyncio": asyncio,
+        "DataBase": DataBase,
     }
     if "```" in content:
         content = "\n".join(content.split('\n')[1:-1])
@@ -205,13 +214,6 @@ async def eval_string(ctx, *, content):
         message = await ctx.channel.send(f"Exception:\n```bash\n{result.replace('```', '`')}\n```")
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
-
-def logger():
-    logger = logging.getLogger('nextcord')
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(filename='nextcord.log', encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-    logger.addHandler(handler)
 
 if __name__ == "__main__":
     bot.run(configuration.discord_token)
