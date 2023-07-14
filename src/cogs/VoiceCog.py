@@ -89,33 +89,33 @@ class ChooseGameModeSelect(nextcord.ui.Select):
         }
         options = [
             nextcord.SelectOption(
-                label=data["tank_label"],
-                description=data["tank_description"],
+                label=self.data["tank_label"],
+                description=self.data["tank_description"],
                 value=0
             ),
             nextcord.SelectOption(
-                label=data["air_label"],
-                description=data["air_description"],
+                label=self.data["air_label"],
+                description=self.data["air_description"],
                 value=1
             ),
             nextcord.SelectOption(
-                label=data["ship_label"],
-                description=data["ship_description"],
+                label=self.data["ship_label"],
+                description=self.data["ship_description"],
                 value=2
             ),
             nextcord.SelectOption(
-                label=data["heli_label"],
-                description=data["heli_description"],
+                label=self.data["heli_label"],
+                description=self.data["heli_description"],
                 value=3
             ),
             nextcord.SelectOption(
-                label=data["remove_selection_label"],
-                description=data["remove_selection_description"],
+                label=self.data["remove_selection_label"],
+                description=self.data["remove_selection_description"],
                 value='-'
             )
         ]
         super().__init__(
-            placeholder=data["placeholder"],
+            placeholder=self.data["placeholder"],
             min_values=1, 
             max_values=1,
             options=options,
@@ -164,8 +164,23 @@ class ChooseGameNationSelect(nextcord.ui.Select):
             "description_ussr": "Выбрать Советский союз",
             "label_japan": "Япония",
             "description_japan": "Выбрать Японию",
+            "label_germany": "Германия",
+            "description_germany": "Выбрать Германию",
+            "label_britain": "Англия",
+            "description_britain": "Выбрать Англию",
+            "label_italy": "Италия",
+            "description_italy": "Выбрать Италию",
+            "label_france": "Франция",
+            "description_france": "Выбрать Францию",
+            "label_china": "Китай",
+            "description_china": "Выбрать Китай",
+            "label_sweden": "Швеция",
+            "description_sweden": "Выбрать Швецию",
+            "label_israel": "Израиль",
+            "description_israel": "Выбрать Израиль",
             "remove_mode": "Убрать режим...",
             "description_mode": "Убрать режим игры...",
+            "placeholder": "Выберите нацию игры..",
         } if self.lang == "RU" else {
             "options_clear": "Clear selection",
             "label_usa": "USA",
@@ -174,8 +189,23 @@ class ChooseGameNationSelect(nextcord.ui.Select):
             "description_ussr": "Choose USSR",
             "label_japan": "Japan",
             "description_japan": "Choose Japan",
+            "label_germany": "Germany",
+            "description_germany": "Choose Germany",
+            "label_britain": "Britain",
+            "description_britain": "Choose Britain",
+            "label_italy": "Italy",
+            "description_italy": "Choose Italy",
+            "label_france": "France",
+            "description_france": "Choose France",
+            "label_china": "China",
+            "description_china": "Choose China",
+            "label_sweden": "Sweden",
+            "description_sweden": "Choose Sweden",
+            "label_israel": "Israel",
+            "description_israel": "Choose Israel",
             "remove_mode": "Remove mode...",
             "description_mode": "Remove game mode...",
+            "placeholder": "Choose game nation..",
         }
         options = [
             nextcord.SelectOption(
@@ -194,48 +224,48 @@ class ChooseGameNationSelect(nextcord.ui.Select):
                 value=2
             ),
             nextcord.SelectOption(
-                label="Германия",
-                description="-",
+                label=self.data["label_germany"],
+                description=self.data["description_germany"],
                 value=3
             ),
             nextcord.SelectOption(
-                label="Великобритания",
-                description="-",
+                label=self.data["label_britain"],
+                description=self.data["description_britain"],
                 value=4
             ),
             nextcord.SelectOption(
-                label="Италия",
-                description="-",
+                label=self.data["label_italy"],
+                description=self.data["description_italy"],
                 value=5
             ),
             nextcord.SelectOption(
-                label="Франция",
-                description="-",
+                label=self.data["label_france"],
+                description=self.data["description_france"],
                 value=6
             ),
             nextcord.SelectOption(
-                label="Китай",
-                description="-",
+                label=self.data["label_china"],
+                description=self.data["description_china"],
                 value=7
             ),
             nextcord.SelectOption(
-                label="Швеция",
-                description="-",
+                label=self.data["label_sweden"],
+                description=self.data["description_sweden"],
                 value=8
             ),
             nextcord.SelectOption(
-                label="Израиль",
-                description=self.data["description_japan"],
+                label=self.data["label_israel"],
+                description=self.data["description_israel"],
                 value=9
             ),
             nextcord.SelectOption(
                 label=self.data["remove_mode"],
-                description="-",
+                description=self.data["description_mode"],
                 value='-'
             )# TODO translate
         ]
         super().__init__(
-            placeholder="Выберите нацию игры..",
+            placeholder=self.data["placeholder"],
             min_values=1, 
             max_values=1,
             options=options,
