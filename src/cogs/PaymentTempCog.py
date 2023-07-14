@@ -494,7 +494,7 @@ class Dropdown(nextcord.ui.Select):
         )
 
     async def callback(self, interaction: nextcord.Interaction):
-        if vip_ru_role_id or vip_en_role_id not in [role.id for role in interaction.user.roles]:
+        if vip_ru_role_id not in [role.id for role in interaction.user.roles] and vip_en_role_id not in [role.id for role in interaction.user.roles]:
             await interaction.send(self.data["error_msg"], ephemeral=True)
         await interaction.response.defer(with_message=True, ephemeral=True)
         try:
