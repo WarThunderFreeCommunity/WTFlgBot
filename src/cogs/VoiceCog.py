@@ -62,38 +62,60 @@ class ChooseGameModeSelect(nextcord.ui.Select):
         self.lang = lang
         self.data = {
             "options_clear": "Очистить выбор",
+            "tank_label": "Танковые",
+            "tank_description": "Выбрать танковые бои",
+            "ship_label": "Морские",
+            "ship_description": "Выбрать морские бои",
+            "air_label": "Воздушные",
+            "air_description": "Выбрать воздушные бои",
+            "heli_label": "Вертолётные",
+            "heli_description": "Выбрать вортолётные бои",
+            "remove_selection_label": "Убрать режим",
+            "remove_selection_description": "Убрать режим игры...",
+            "placeholder": "Выберите режим игры...",
         } if self.lang == "RU" else {
             "options_clear": "Clear selection",
+            "tank_label": "Tanks",
+            "tank_description": "Choose tanks battles",
+            "ship_label": "Ship",
+            "ship_description": "Choose ship battles",
+            "air_label": "Air",
+            "air_description": "Choose air battles",
+            "heli_label": "Helicopter",
+            "heli_description": "Choose helicopter battles",
+            "remove_selection_label": "Remove selection",
+            "remove_selection_description": "Remove battles selection...",
+            "placeholder": "Choose game selection...",
         }
         options = [
             nextcord.SelectOption(
-                label="Танковые",
-                description="Выбрать танковые бои",
+                label=data["tank_label"],
+                description=data["tank_description"],
                 value=0
             ),
             nextcord.SelectOption(
-                label="Воздушные",
-                description="Выбрать воздушные бои",
+                label=data["air_label"],
+                description=data["air_description"],
                 value=1
             ),
             nextcord.SelectOption(
-                label="Морские",
-                description="Выбрать морские бои",
+                label=data["ship_label"],
+                description=data["ship_description"],
                 value=2
             ),
             nextcord.SelectOption(
-                label="Вертолётные",
-                description="Выбрать вортолётные бои",
+                label=data["heli_label"],
+                description=data["heli_description"],
                 value=3
             ),
             nextcord.SelectOption(
-                label="Убрать режим",
-                description="Убрать режим игры...",
+                label=data["remove_selection_label"],
+                description=data["remove_selection_description"],
                 value='-'
             )
         ]
         super().__init__(
-            placeholder="Выберите режим игры..",
+            placeholder=data["placeholder"],
             min_values=1, 
             max_values=1,
             options=options,
@@ -364,7 +386,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "after_limit_error": "Максимум 99, 0 для удаления ограничения",
             "else_error": "Что-то пошло не так...",
         } if lang == "RU" else {
-            "set_cmbr": "Set combat rating",
+            "set_cmbr": "Set battle rating",
             "set_tech": "Set game nation",
             "set_limit": "Set limit users",
             "rename_channel": "Accept changes",
