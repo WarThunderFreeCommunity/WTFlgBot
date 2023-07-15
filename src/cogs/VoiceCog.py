@@ -810,11 +810,7 @@ class VoiceCog(Cog):
         self.nation_ids = None
         self.update_consts.start()
         self.on_init.start()
-        self.data = {
-                "created_voice": "Создал(а) голосовой канал",
-            } if lang == "RU" else {
-                "created_voice": "Created voice",
-            }
+    
     @tasks.loop(count=1, reconnect=False)
     async def on_init(self):
         # Чекер активных каналов
@@ -946,9 +942,14 @@ class VoiceCog(Cog):
                 )
                 await member.move_to(voice_channel)
                 await voice_channel.edit(sync_permissions=True)
-                message = await voice_channel.send(f"{member.mention} created voice")
+                message = await voice_channel.send(f"{member.mention}")
                 view = VoiceChannelsButtons(lang, member, message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [member.id], voice_channel)
+                self.data = {
+                    "created_voice": "Создал(а) голосовой канал",
+                } if lang == "RU" else {
+                    "created_voice": "Created voice",
+                }
                 await message.edit(
                     content=f"{member.mention} {self.data['created_voice']}",
                     embed=embed,
