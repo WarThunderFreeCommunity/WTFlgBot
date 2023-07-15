@@ -810,7 +810,11 @@ class VoiceCog(Cog):
         self.nation_ids = None
         self.update_consts.start()
         self.on_init.start()
-    
+        self.data = {
+                "created_voice": "Создал(а) голосовой канал",
+            } if lang == "RU" else {
+                "created_voice": "Created voice",
+            }
     @tasks.loop(count=1, reconnect=False)
     async def on_init(self):
         # Чекер активных каналов
