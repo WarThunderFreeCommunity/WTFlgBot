@@ -170,6 +170,7 @@ nextcord.zip
 
 # Project test files
 test.py
+test[0-9].py
 
 # DataBases
 data_vip.txt
@@ -180,6 +181,5 @@ WarThunder.db
 # Errors, logs...
 errors_from_ex_format.txt
 
-src/data/_data_log_payments.txt
-src/data/data_vip.txt
-src/data/data_adver.txt
+# Ignore files with only digits in the name
+*[0-9].ps
