@@ -594,7 +594,7 @@ class MainButtons(nextcord.ui.View):
         pass
 
     @nextcord.ui.button(
-        label="РЕКЛАМА",
+        label="КУПИТЬ РЕКЛАМУ",
         style=nextcord.ButtonStyle.gray,
         custom_id="MainButtons:РЕКЛАМА",
         row=0
