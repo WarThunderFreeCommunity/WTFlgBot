@@ -182,4 +182,4 @@ WarThunder.db
 errors_from_ex_format.txt
 
 # Ignore files with only digits in the name
-*[0-9].ps
+*[0-9]
