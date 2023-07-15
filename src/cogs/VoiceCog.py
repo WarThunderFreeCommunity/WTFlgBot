@@ -417,6 +417,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "after_limit_message": "Лимит установлен на: ",
             "after_limit_error": "Максимум 99, 0 для удаления ограничения",
             "else_error": "Что-то пошло не так...",
+            "created_voice": "Создал(а) голосовой канал",
         } if lang == "RU" else {
             "set_cmbr": "Set battle rating",
             "set_tech": "Set game nation",
@@ -430,7 +431,8 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "set_limit_modal_input": "Limit...",
             "after_limit_message": "Limit set to: ",
             "after_limit_error": "Maximum of 99, 0 to remove the restriction",
-            "else_error": "Something went wrong"
+            "else_error": "Something went wrong",
+            "created_voice": "Created voice",
         }
         """self.add_item(
             ChooseGameModeSelect(self.admins, self.lang)
@@ -944,8 +946,7 @@ class VoiceCog(Cog):
                 view = VoiceChannelsButtons(lang, member, message, voice_channel)
                 embed = VoiceInfoEmbed(lang, [member.id], voice_channel)
                 await message.edit(
-                    content=f"{member.mention} created voice\nread instructions: "
-                        "https://discord.com/channels/691182902633037834/813575222288187454/1129024795523153930",
+                    content=f"{member.mention} {self.data['created_voice']}",
                     embed=embed,
                     view=view
                 )
