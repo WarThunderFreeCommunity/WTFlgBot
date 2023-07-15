@@ -432,12 +432,12 @@ class VoiceChannelsButtons(nextcord.ui.View):
             "after_limit_error": "Maximum of 99, 0 to remove the restriction",
             "else_error": "Something went wrong"
         }
-        self.add_item(
+        """self.add_item(
             ChooseGameModeSelect(self.admins, self.lang)
         )
         self.add_item(
             ChooseGameNationSelect(self.admins, self.lang)
-        )
+        )"""
         self.select = KickUserSelect(
             self.admins, self.channel.members, self.lang
         )
@@ -450,6 +450,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.del_member.label = self.data["del_member"]
         self.rename_channel.disabled = True # так и должно быть!
         self.channel_closed = False
+
+        self.set_cmbr.disabled = True
+        self.rename_channel.disabled = True
+
+
 
     @staticmethod
     async def __check_timeout(channel_id):
@@ -508,7 +513,7 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 ...
             
             # Обновление имени 
-            if pos == "name_update":
+            if pos == "name_update" and 1 == 2:
                 try:
                     channel_settings = await db.get_one(
                         "SELECT techId, nationId, cmbrVar FROM VoiceCogChannelsSaves WHERE creatorId=?",
@@ -907,7 +912,7 @@ class VoiceCog(Cog):
                 tech_id = nation_id = cmbr_var = limit_var = None
                 channel_options = self.parrent_channel_ids[str(after.channel.id)].split(":")
                 lang = channel_options[0]
-                if channel_type[4] == "-":
+                """if channel_type[4] == "-":
                     if not (channel_save_data := await db.get_one(
                             "SELECT * FROM VoiceCogChannelsSaves WHERE creatorId=?",
                             (member.id,)
@@ -924,10 +929,8 @@ class VoiceCog(Cog):
                             f"{self.tech_ids[str(channel_save_data[1])] if channel_save_data[1] != None  else '-'} " \
                             f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
                 else:
-                    channel_name = f"● - {TECH_IDS[channel_type[4]]} {channel_options[1]} -"
-
-
-                
+                    channel_name = f"● - {TECH_IDS[channel_type[4]]} {channel_options[1]} -"""
+                channel_name = after.channel.name.replace("➕", "● ")
                 voice_channel = await member.guild.create_voice_channel(
                     name=channel_name,
                     #position=position,  # создаём канал под последним по времени
