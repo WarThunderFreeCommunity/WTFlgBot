@@ -37,6 +37,8 @@ adv_ru_role_id = 1085540360173924412
 adv_en_role_id = 1085543092582625409
 booster_role_id = 753919549484564521
 junior_moderator = 1038135072353689671
+permanent_moderator = 812630017556742145
+
 
 main_message_text = \
 """
@@ -531,7 +533,7 @@ class Dropdown(nextcord.ui.Select):
     async def callback(self, interaction: nextcord.Interaction):
         try:
             user_roles_id = [role.id for role in interaction.user.roles]
-            allower_roles_id = [junior_moderator, booster_role_id, vip_en_role_id, vip_ru_role_id]
+            allower_roles_id = [permanent_moderator, junior_moderator, booster_role_id, vip_en_role_id, vip_ru_role_id]
             if not any(role_id in user_roles_id for role_id in allower_roles_id):
                 await interaction.send(self.data["error_msg"], ephemeral=True)
                 return
