@@ -174,6 +174,12 @@ class HelperCog(Cog):
             view = AnimeView(url, message)
         except BaseException as ex:
             print(ex_format(ex, "image_helper"))
+        
+    @commands.command()
+    async def helper(self, ctx: Context):
+        if ctx.author.id not in self.bot.OWNERS:
+            return
+        await ctx.reply("123")
 
             
 
