@@ -84,14 +84,14 @@ vip_en_embed = nextcord.Embed.from_dict({
 
 payment_ru_embed = nextcord.Embed.from_dict({
     "title": "Оплата",
-    "description": "Пожалуйста, укажите комментарий к платежу из данного сообщения",
+    "description": 'Пожалуйста, укажите комментарий к платежу из данного сообщения. Не забудьте нажать кнопку "Проверить платёж" после оплаты!',
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
 })
 
 payment_en_embed = nextcord.Embed.from_dict({
     "title": "Payment",
-    "description": "Please enter a comment on the payment from this message",
+    "description": 'Please provide a comment on the payment from this message. Dont forget to click the "Check payment" button after the payment!',
     "color": 0xE74C3C,
     "timestamp": datetime.datetime.now().isoformat(),
 })
@@ -191,7 +191,7 @@ class PaymentButtons(nextcord.ui.View):
         self.cancel_payment.disabled = True
         button.disabled = True
         await interaction.response.edit_message(
-            content="Проверка платежа, пожалуйста, подождите, это может идти около минуты.\n"
+            content="Проверка платежа, пожалуйста, подождите, это может занять около минуты.\n"
                     "> **Не удаляйте данной сообщение.**" if self.lang == "ru" else 
                     "Payment verification, please wait, it may take about a minute.\n"
                     "> **Do not delete this message.**",
@@ -239,8 +239,8 @@ class PaymentButtons(nextcord.ui.View):
                 await interaction.edit_original_message(view=self)
             await interaction.edit_original_message(
                 content=("Успешно!" if self.lang == "ru" else "All ok!") if check else 
-                ("Что-то пошло не так. Пожалуйста создайте тикет." if self.lang == "ru" else
-                "Something went wrong. Please create a ticket.")
+                ("Что-то пошло не так. Пожалуйста, создайте тикет." if self.lang == "ru" else
+                "Something went wrong. Please, create a ticket.")
             )
         except BaseException as ex:
             from traceback import format_exception
@@ -357,7 +357,7 @@ class VipButtons(nextcord.ui.View):
             "one_month": "One month 30 RUB",
             "six_month": "Six month 182 RUB",
             "one_year": "One year 364 RUB",
-            "to_pay": "Move o pay",
+            "to_pay": "Move to pay",
             "to_pay_embed": deepcopy(payment_en_embed)
         }, None]
         self.to_pay.disabled, self.to_pay.label = True, self.data[0]["to_pay"]
@@ -583,7 +583,7 @@ class MainButtons(nextcord.ui.View):
     async def HELP_RU(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         embed = nextcord.Embed(
             description="Для оплаты без комиссии используйте свой киви кошелёк. Для этого переводите" 
-                        " на него нужную сумму по СБП и далее оплачиваете нужную услугу.")
+                        " на него нужную сумму по СБП и далее оплачивайте нужную услугу.")
         await interaction.send(embed=embed, ephemeral=True)
 
     @nextcord.ui.button(
