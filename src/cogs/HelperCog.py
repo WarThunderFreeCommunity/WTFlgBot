@@ -164,11 +164,18 @@ class HelperCog(Cog):
     async def image(self, ctx: Context, url: Optional[str] = None):
         if ctx.author.id not in self.bot.OWNERS and 814807573890465822 not in [role.id for role in ctx.author.roles]:
             return
-        if "http" in url:
+        try:
+            if "http" not in str(url) and len(ctx.message.attachments) == 0:
+                await ctx.reply("неверный url или attachments")
+                return
+            if ctx.message.attachments:
+                url = ctx.message.attachments[0].url
             message = await ctx.reply("loading...")
             view = AnimeView(url, message)
-        else:
-            await ctx.reply("неверный url")
+        except BaseException as ex:
+            print(ex_format(ex, "image_helper"))
+
+            
 
 # on_ready cog!
 def setup(bot: Bot):
