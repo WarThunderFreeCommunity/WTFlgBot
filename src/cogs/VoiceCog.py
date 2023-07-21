@@ -376,7 +376,7 @@ class VoiceInfoEmbed(nextcord.Embed):
     def __init__(self, lang, admins, channel: nextcord.VoiceChannel):
         # TODO translate
         self.data = {
-            "user_designation": "Учатник ",
+            "user_designation": "Участник ",
             "admin": "с правами администратора:",
             "not_admin": "без прав администратора:",
         } if lang == "RU" else {
