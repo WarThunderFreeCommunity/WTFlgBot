@@ -297,7 +297,7 @@ class AdvertisementButtons(nextcord.ui.View):
             })
         elif button == "one_month":
             self.update_buttons({
-                self.one_day: {"disabled": False, "style": nextcord.ButtonStyle.grey},
+                self.one_day: {"disabled": True, "style": nextcord.ButtonStyle.grey},
                 self.one_month: {"disabled": True, "style": nextcord.ButtonStyle.green},
                 self.to_pay: {"disabled": False, "style": nextcord.ButtonStyle.green},
             })
