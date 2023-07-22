@@ -110,7 +110,7 @@ class HelperCog(Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if (
-            "https://nextcord.gg/" in message.content
+            "https://discord.gg/" in message.content
             and not message.author.guild_permissions.administrator
         ):
             for role_allowed in [
