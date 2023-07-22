@@ -268,17 +268,18 @@ class AdvertisementButtons(nextcord.ui.View):
         }
         self.data = [{
             "one_day": "Одинь день 120 RUB",
-            "one_month": "Один месяц 3000 RUB",
+            "one_month": "Один месяц 250 RUB",
             "to_pay": "Перейти к оплате",
             "to_pay_embed": deepcopy(payment_ru_embed)
         }, None] if lang == "ru" else [{
             "one_day": "One day 120 RUB",
-            "one_month": "One month 3000 RUB",
+            "one_month": "One month 250 RUB",
             "to_pay": "Move to pay",
             "to_pay_embed": deepcopy(payment_en_embed)
         }, None]
         self.to_pay.disabled, self.to_pay.label = True, self.data[0]["to_pay"]
         self.one_day.label = self.data[0]["one_day"]
+        self.one_day.disabled = True
         self.one_month.label = self.data[0]["one_month"]
 
     @staticmethod
@@ -310,7 +311,7 @@ class AdvertisementButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 3000.0
+        self.payment_info['real_summ'] = 250.0
         self.payment_info['enrollment_summ'] = 3600
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
@@ -348,15 +349,15 @@ class VipButtons(nextcord.ui.View):
             'type': "vip"
         }
         self.data = [{
-            "one_month": "Один месяц 30 RUB",
-            "six_month": "Шесть месяцев 182 RUB",
-            "one_year": "Один год 364 RUB",
+            "one_month": "Один месяц 50 RUB",
+            "six_month": "Шесть месяцев 50*6 RUB",
+            "one_year": "Один год 50*12 RUB",
             "to_pay": "Перейти к оплате",
             "to_pay_embed": deepcopy(payment_ru_embed)
         }, None] if self.lang == "ru" else [{
-            "one_month": "One month 30 RUB",
-            "six_month": "Six month 182 RUB",
-            "one_year": "One year 364 RUB",
+            "one_month": "One month 50 RUB",
+            "six_month": "Six month 50*6 RUB",
+            "one_year": "One year 50*12 RUB",
             "to_pay": "Move to pay",
             "to_pay_embed": deepcopy(payment_en_embed)
         }, None]
@@ -396,21 +397,21 @@ class VipButtons(nextcord.ui.View):
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 30.0
+        self.payment_info['real_summ'] = 50.0
         self.payment_info['enrollment_summ'] = 30.0
         self.disable_buttons("one_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def six_month(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 182.0
+        self.payment_info['real_summ'] = 300.0
         self.payment_info['enrollment_summ'] = 182.0
         self.disable_buttons("six_month")
         await interaction.response.edit_message(view=self)
 
     @nextcord.ui.button(label=None, style=nextcord.ButtonStyle.grey)
     async def one_year(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
-        self.payment_info['real_summ'] = 364.0
+        self.payment_info['real_summ'] = 600.0
         self.payment_info['enrollment_summ'] = 364.0
         self.disable_buttons("one_year")
         await interaction.response.edit_message(view=self)
