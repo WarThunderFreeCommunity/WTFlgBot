@@ -80,7 +80,7 @@ class VKResendCog(Cog):
                         "edLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",  # wt events
                     "#CDK@warthunderevents" : "https://discord.com/api/webhooks/1117021162313109544/16LCbmNEmhnkSITdgPJ"
                         "RZrE9PC3dWC2dtT95nVHBtVo6cSn2n7bRIBETH5bV_8Eel65c", # cdk
-                } # TODO: Возможна фича с двойной отправкой в один канал, если указываешь два тега идущие к одному вебхуку
+                } # Возможна фича с двойной отправкой в один канал, если указываешь два тега идущие к одному вебхуку
                 used_hoocks = {}
 
                 for vk_tag in vk_tags:
