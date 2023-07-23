@@ -74,7 +74,7 @@ class VKResendCog(Cog):
                         "wkl4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
                     "#видео@warthunderevents": "https://discord.com/api/webhooks/1116993460516429914/kNBfNlNqalyfPTwkl"
                         "4Z37xruoHoBw9mq0Jszner5ij8gmJV0qpD7FS5qCMjCxzA9igKh", # wt main
-                    "#events_discord@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6B"
+                    "#ивенты@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6B"
                         "sY2YWasAedLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",# wt events
                     "#конкурс@warthunderevents" : "https://discord.com/api/webhooks/1117022288768929812/ZEVph6BsY2YWasA"
                         "edLte_42YMwYiiyTbfW8SXSvqFhD_p6GGHw_GkHeu99c8EF45Lhcv",  # wt events
