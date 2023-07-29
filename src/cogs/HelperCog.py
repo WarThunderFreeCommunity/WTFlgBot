@@ -9,29 +9,6 @@ from nextcord.ext.commands import Bot, Cog, Context
 
 from ..extensions.EXFormatExtension import ex_format
 
-"""
-self.return_back = nextcord.ui.Button(label="return_back")
-async def return_back_callback(button, interaction):
-    self.add_item(self.dropdown)
-    self.remove_item(self.return_back)
-    await self.message.edit(content=None, embed=self.embeds[0], view=self)
-self.dropdown = nextcord.ui.Select(
-    placeholder="Select the search result...",
-    options=[
-        nextcord.SelectOption(
-            label=embed.title,
-            description=embed.footer,
-            value=self.embeds.index(embed)
-        ) for embed in self.embeds[:25]
-    ]
-)
-async def dropdown_callback(interaction):
-    self.add_item(self.return_back)
-    self.remove_item(self.dropdown)
-    await self.message.edit(embed=self.embeds[self.dropdown.values[0]], view=self)
-self.dropdown.callback = dropdown_callback 
-self.add_item(self.dropdown)
-"""
 
 class AnimeView(nextcord.ui.View):
     def __init__(self, url, message):
@@ -181,7 +158,6 @@ class HelperCog(Cog):
             return
         await ctx.reply("123")
 
-            
 
 # on_ready cog!
 def setup(bot: Bot):
