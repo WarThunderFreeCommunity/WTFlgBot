@@ -14,10 +14,10 @@ from ..extensions.EXFormatExtension import ex_format
 
 TECH_IDS = None
 NATION_IDS = None
-RU_ROLE_ID: int = 795232311477272576
-EN_ROLE_ID: int = 795232315579564032
-VIP_RU_ROLE_ID = 1007965606789783572
-VIP_EN_ROLE_ID = 1085530065707733012
+RU_ROLE_ID: int = 1133732418126348380
+EN_ROLE_ID: int = 1133732458962104390
+VIP_RU_ROLE_ID = 1133732418126348380
+VIP_EN_ROLE_ID = 1133732458962104390
 BOOSTER_ROLE_ID = 753919549484564521
 JUNIOR_ROLE_ID = 1038135072353689671
 PERMAMENT_ROLE_ID = 812630017556742145
@@ -912,7 +912,7 @@ class VoiceCog(Cog):
                 )
                 # Костыль для того, чтоб очумелые ручки не успевали выходить из канала до создания нового
                 await member.move_to(afk_channel)
-                tech_id = nation_id = cmbr_var = limit_var = None
+                tech_id = nation_id = cmbr_var = limit_var = 4
                 channel_options = self.parrent_channel_ids[str(after.channel.id)].split(":")
                 lang = channel_options[0]
                 """if channel_type[4] == "-":
