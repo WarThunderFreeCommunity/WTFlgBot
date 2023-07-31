@@ -77,12 +77,14 @@ class HelperCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.on_init.start()
+        self.online_members.start()
 
     @tasks.loop(count=1)
     async def on_init(self):
         pass
 
     def cog_unload(self):
+        self.online_members.stop()
         pass
 
     @tasks.loop(minutes=6) # таск на онлайн на сервере
