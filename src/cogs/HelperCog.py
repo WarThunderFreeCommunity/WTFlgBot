@@ -72,6 +72,7 @@ class AnimeView(nextcord.ui.View):
     async def on_timeout(self):
         await self.message.edit(content="timeout...", view=None)
 
+
 class HelperCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
@@ -83,6 +84,16 @@ class HelperCog(Cog):
 
     def cog_unload(self):
         pass
+
+    @tasks.loop(minutes=6) # таск на онлайн на сервере
+    async def online_members(self):
+        mbrs = self.bot.get_guild(407187066582204427).members
+        online = len(list(filter(lambda x: x.status == nextcord.Status.online, mbrs)))
+        idle = len(list(filter(lambda x: x.status == nextcord.Status.idle, mbrs)))
+        dnd = len(list(filter(lambda x: x.status == nextcord.Status.dnd, mbrs)))
+        all_online = online+idle+dnd
+        await self.bot.get_channel(int(1135290097584046110)).edit(name=f'online-{all_online}')
+        await self.bot.get_channel(int(1135289860530372669)).edit(name=f'members-{len(mbrs)}')
 
     @commands.Cog.listener()
     async def on_message(self, message):
