@@ -3,6 +3,7 @@ import urllib.parse
 import requests
 import concurrent.futures
 import html
+from urllib.parse import urlparse
 
 import nextcord
 from nextcord.ext import commands, tasks
@@ -52,6 +53,8 @@ class TranslaterCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.on_init.start()
+        self.finded_users = {}
+        self.ignore_my_message_id = []
         self.message_responses = {}
 
     @tasks.loop(count=1)
@@ -62,15 +65,40 @@ class TranslaterCog(Cog):
     def cog_unload(self):
         ...
     
-    """"
-    @commands.command(alias=["t"])
-    async def translate(self, ctx: Context):
-        await ctx.send()
+    async def text_processing(self, text: str):      
+        # links
+        #re.sub(r'^(https?:\/\/)?([\w-]{1,32}\.[\w-]{1,32})[^\s@]*$', "", text)
+        def remove_urls(_text):
+            words = _text.split()
+            without_urls = [word for word in words if not urlparse(word).scheme]
+            return ' '.join(without_urls)
+        text = remove_urls(text)
 
-    @nextcord.slash_command(guild_ids=[407187066582204427])
-    async def translate(self, interaction: nextcord.Interaction):
-        await interaction.send()
-    """
+        # mentions
+        mentions = re.findall(r'<@(\d+)>', text)
+        for mention in mentions:
+            user_id = int(mention)               
+            if user_id in self.finded_users:
+                name = self.finded_users[user_id]
+            else:
+                name = (await self.bot.fetch_user(user_id)).name 
+                self.finded_users[user_id] = name
+            text = text.replace(f'<@{mention}>', name)
+
+        # stickers
+        text = re.sub(r":[^:]+:", "", text)
+        text = re.sub(r'<(\d+)>', "",  text)
+
+        return text
+
+    @commands.command(aliases=["tig"])
+    async def tignore(self, ctx: Context):
+        if ctx.author.id in self.ignore_my_message_id:
+            self.ignore_my_message_id.remove(ctx.author.id)
+            await ctx.reply("unignore translations", mention_author=False)
+        else: 
+            self.ignore_my_message_id.append(ctx.author.id)
+            await ctx.reply("ignore translations", mention_author=False)
 
     @Cog.listener()
     async def on_message(self, message: nextcord.Message):
@@ -78,12 +106,15 @@ class TranslaterCog(Cog):
             return
         if message.author.bot:
             return
+        if message.author.id in self.ignore_my_message_id:
+            return
         if message.content.isdigit() or len(message.content) < 10:
             return
         if message.content.startswith("-t"):
             return
-
-        # Save the bot's response for this message
+        if message.content.startswith(">"):
+            return
+        
         response = await self.translate_and_reply(message)
         self.message_responses[message.id] = response
 
@@ -93,6 +124,8 @@ class TranslaterCog(Cog):
             return
         if before.author.bot:
             return
+        if before.author.id in self.ignore_my_message_id:
+            return
         if before.content.startswith("-t"):
             return
 
@@ -101,7 +134,6 @@ class TranslaterCog(Cog):
         if old_response:
             await old_response.edit(
                 content=await self.translate_and_reply(after, get_embed=True),
-                mention_author=False,
             )
 
     @Cog.listener()
@@ -116,7 +148,7 @@ class TranslaterCog(Cog):
             del self.message_responses[message.id]
 
     async def translate_and_reply(self, message: nextcord.Message, get_embed=False):
-        text = message.content.replace("@", "")
+        text = await self.text_processing(message.content)
         link = "https://discordapp.com/users/"
         source_language = "en" if is_en_language(text) else "ru"
         target_language = "ru" if is_en_language(text) else "en"
