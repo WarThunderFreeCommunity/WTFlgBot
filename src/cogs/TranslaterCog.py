@@ -86,7 +86,8 @@ class TranslaterCog(Cog):
             text = text.replace(f'<@{mention}>', name)
 
         # stickers
-        text = re.sub(r":[^:]+:", "", text)
+        text = re.sub(r"<[^:\s]+>", "", text)
+        text = re.sub(r":[^:\s]+:", "", text)
         text = re.sub(r'<(\d+)>', "",  text)
 
         return text
@@ -115,8 +116,8 @@ class TranslaterCog(Cog):
         if message.content.startswith(">"):
             return
         
-        response = await self.translate_and_reply(message)
-        self.message_responses[message.id] = response
+        if response := await self.translate_and_reply(message):
+            self.message_responses[message.id] = response
 
     @Cog.listener()
     async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message):
@@ -149,6 +150,7 @@ class TranslaterCog(Cog):
 
     async def translate_and_reply(self, message: nextcord.Message, get_embed=False):
         text = await self.text_processing(message.content)
+        if len(text) < 10: return False
         link = "https://discordapp.com/users/"
         source_language = "en" if is_en_language(text) else "ru"
         target_language = "ru" if is_en_language(text) else "en"
