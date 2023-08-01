@@ -5,7 +5,7 @@ vk_api
 aiosqlite
 sphinx
 sphinx_rtd_theme
-
+nextcord
 typing-extensions
 multidict
 idna

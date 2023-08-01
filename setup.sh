@@ -44,9 +44,9 @@ then
     fi
 fi
 
-expected_hash="b7a710cd995b244f7cf0f9165894900e"
-wget http://84.252.74.222:9000/nextcord.zip
-actual_hash=$(md5sum nextcord.zip | cut -d " " -f 1)
+#expected_hash="b7a710cd995b244f7cf0f9165894900e"
+#wget http://84.252.74.222:9000/nextcord.zip
+#actual_hash=$(md5sum nextcord.zip | cut -d " " -f 1)
 
 cat > configuration.py << EOL
 
@@ -68,18 +68,18 @@ test_guild_ids: list[int] = []
 
 EOL
 
-if [ "$actual_hash" = "$expected_hash" ]
-then
-    apt install python3.10-venv
-    python3 -m venv Venv
-    source Venv/bin/activate
-    pip install -r requirements.txt
-    sudo unzip nextcord.zip -d "Venv/lib/python3.8/site-packages/"
-    deactivate
-    rm nextcord.zip
-    echo "unzip installation completed!"
-else
-    rm nextcord.zip
-    echo "Hash does not match, exiting..."
-    exit 1
-fi
+#if [ "$actual_hash" = "$expected_hash" ]
+#then
+#    apt install python3.10-venv
+#    python3 -m venv Venv
+#    source Venv/bin/activate
+#    pip install -r requirements.txt
+#    sudo unzip nextcord.zip -d "Venv/lib/python3.8/site-packages/"
+#    deactivate
+#    rm nextcord.zip
+#    echo "unzip installation completed!"
+#else
+#    rm nextcord.zip
+#    echo "Hash does not match, exiting..."
+#    exit 1
+#fi
