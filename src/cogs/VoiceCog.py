@@ -454,11 +454,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
         self.rename_channel.disabled = True # так и должно быть!
         self.channel_closed = False
 
-        self.set_cmbr.disabled = True
-        self.rename_channel.disabled = True
-
-
-
     @staticmethod
     async def __check_timeout(channel_id):
         """Проверяет timeout дискорда на переименование каналов
@@ -562,6 +557,38 @@ class VoiceChannelsButtons(nextcord.ui.View):
         """
         if not await self.check_admin_rules(interaction):
             return
+        try:
+            modal_cmbr = nextcord.ui.Modal(
+                title="Выбор боевого рейтинга",
+                timeout=5*60,
+            )
+            modal_cmbr.add_item(command_br := nextcord.ui.TextInput(
+                label="Введите боевой рейтинг",
+                placeholder='5.3',
+                max_length=9,
+                required=True,
+            ))
+            async def modal_callback(interaction: nextcord.Interaction):
+                await interaction.response.defer(ephemeral=True, with_message=True)
+                try:
+                    permission, period = await self.__check_timeout(interaction.channel.id)
+                    if not permission:
+                        await interaction.send(
+                            f"Discord timeout error, please wait {round(period/60, 1)} minutes",
+                            ephemeral=True
+                        )
+                        return
+                    pieces = interaction.channel.name.split(" ")
+                    name = f"{pieces[0]} {pieces[1]} {command_br.value.replace(' ', '')}"
+                    await interaction.channel.edit(name=name)
+                    await interaction.send("Установили бр!", ephemeral=True)
+                except:
+                    await interaction.send("Что-то пошло не так", ephemeral=True)
+            modal_cmbr.callback = modal_callback
+            await interaction.response.send_modal(modal_cmbr)
+        except:
+            await interaction.send("Что-то пошло не так", ephemeral=True)
+        return
         try:
             modal_cmbr = nextcord.ui.Modal(
                 title="Выбор боевого рейтинга",
@@ -684,9 +711,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
             if not await self.check_admin_rules(interaction):
                 return
             roles_id = [role.id for role in interaction.user.roles]
-            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
-                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1121538471052447844/1132279659216785518", ephemeral=True)
-                return
             channel = interaction.channel
             ru_role = interaction.guild.get_role(RU_ROLE_ID)
             en_role = interaction.guild.get_role(EN_ROLE_ID)
@@ -724,9 +748,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
             if not await self.check_admin_rules(interaction):
                 return
             roles_id = [role.id for role in interaction.user.roles]
-            if VIP_RU_ROLE_ID not in roles_id and VIP_EN_ROLE_ID not in roles_id and not interaction.user.guild_permissions.administrator:
-                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707", ephemeral=True)
-                return
             modal_add = nextcord.ui.Modal(
                 title="Добавить доступ к каналу",
                 timeout=5*60,
@@ -763,9 +784,6 @@ class VoiceChannelsButtons(nextcord.ui.View):
                 return
             user_roles_id = [role.id for role in interaction.user.roles]
             allower_roles_id = [PERMAMENT_ROLE_ID, VIP_EN_ROLE_ID, VIP_RU_ROLE_ID, JUNIOR_ROLE_ID, BOOSTER_ROLE_ID]
-            if not any(role_id in user_roles_id for role_id in allower_roles_id):
-                await interaction.send("У вас нет роли VIP! Тут вы можете её приобрести: https://discord.com/channels/691182902633037834/1012522502230114374/1128956079229894707", ephemeral=True)
-                return
             modal_remove = nextcord.ui.Modal(
                 title="Удалить доступ к каналу",
                 timeout=5*60,
@@ -933,7 +951,7 @@ class VoiceCog(Cog):
                             f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
                 else:
                     channel_name = f"● - {TECH_IDS[channel_type[4]]} {channel_options[1]} -"""
-                channel_name = after.channel.name.replace("➕", "● ")
+                channel_name = after.channel.name.replace("➕ ", "")
                 voice_channel = await member.guild.create_voice_channel(
                     name=channel_name,
                     #position=position,  # создаём канал под последним по времени
