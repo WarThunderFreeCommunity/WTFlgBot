@@ -128,6 +128,49 @@ async def main():
     await db.run_que("INSERT INTO VKResendCog (valId) VALUES (?)", (json.dumps(ids),))
     
 
+    # admincog
+
+    # Создание таблицы для хранения изменяемых данных о пользователе
+    """
+    0 userId INTEGER - id человека с наказанием
+    1 adminId INTEGER - id админа, выдавшего наказание
+    2 punishmentId INTEGER - id наказания (варн, мут, бан)
+    3 punihsmentTime INTEGER - время на которое выдали наказание в секундах
+    4 punihsmentComment TEXT - комментарий который указали при наказании
+    5 punihsmentSetTime INTEGER - время когда выдали наказание
+    6 punihsmentEndTime INTEGER - время конца наказания (для удобства)
+    7 randomHash TEXT - индивидуальный id каждого наказания
+    8 statusId INTEGER - статус заявления 0 - Ошибка, 1 - В ожидании, 2 - Выполнено
+    """
+    await db.run_que(
+        "CREATE TABLE AdminPunishmentUsers "
+        "(userId INTEGER, adminId INTEGER, "
+        "punishmentId INTEGER, punihsmentTime INTEGER, "
+        "punihsmentComment TEXT, punihsmentSetTime INTEGER, "
+        "punihsmentEndTime INTEGER, randomHash TEXT, "
+        "statusId INTEGER)" 
+    )
+    # Создание таблицы для хранения неизменяемых данных о пользователе
+    """
+    0 userId INTEGER - id человека с наказанием
+    1 adminId INTEGER - id админа, выдавшего наказание
+    2 punishmentId INTEGER - id наказания (варн, мут, бан)
+    3 punihsmentTime INTEGER - время на которое выдали наказание в секундах
+    4 punihsmentComment TEXT - комментарий который указали при наказании
+    5 punihsmentSetTime INTEGER - время когда выдали наказание
+    6 punihsmentEndTime INTEGER - время конца наказания (для удобства)
+    7 randomHash TEXT - индивидуальный id каждого наказания
+    8 statusId INTEGER - статус заявления 0 - Ошибка, 1 - В ожидании, 2 - Выполнено
+    """
+    await db.run_que(
+        "CREATE TABLE AdminPunishmentUsersSaves "
+        "(userId INTEGER, adminId INTEGER, "
+        "punishmentId INTEGER, punihsmentTime INTEGER, "
+        "punihsmentComment TEXT, punihsmentSetTime INTEGER, "
+        "punihsmentEndTime INTEGER, randomHash TEXT, "
+        "statusId INTEGER)" 
+    )
+
     
     await db.close()
 
