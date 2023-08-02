@@ -89,7 +89,8 @@ class TranslaterCog(Cog):
         text = re.sub(r"<[^:\s]+>", "", text)
         text = re.sub(r":[^:\s]+:", "", text)
         text = re.sub(r'<(\d+)>', "",  text)
-
+        text = text.replace("-t", "")
+        
         return text
 
     @commands.command(aliases=["tig"])
@@ -107,11 +108,13 @@ class TranslaterCog(Cog):
             return
         if message.author.bot:
             return
-        if message.author.id in self.ignore_my_message_id:
+        if message.author.id in self.ignore_my_message_id and \
+        not message.content.startswith("-t"):
             return
         if message.content.isdigit() or len(message.content) < 10:
             return
-        if message.content.startswith("-t"):
+        if message.content.startswith("-t") and \
+        message.author.id not in self.ignore_my_message_id:
             return
         if message.content.startswith(">"):
             return
@@ -125,9 +128,11 @@ class TranslaterCog(Cog):
             return
         if before.author.bot:
             return
-        if before.author.id in self.ignore_my_message_id:
+        if before.author.id in self.ignore_my_message_id and \
+        not before.content.startswith("-t"):
             return
-        if before.content.startswith("-t"):
+        if before.content.startswith("-t") and \
+        before.author.id not in self.ignore_my_message_id:
             return
 
         # Delete the old response from the bot
