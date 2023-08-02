@@ -155,7 +155,11 @@ class HelperCog(Cog):
 
     @commands.command()
     async def image(self, ctx: Context, url: Optional[str] = None):
-        if ctx.author.id not in self.bot.OWNERS and 814807573890465822 not in [role.id for role in ctx.author.roles]:
+        allowed = [
+            497644678506741760, 1135088921500459049, 1135987909367959582,
+            857627224769298445, 1134833163848388688, 1134833348473262240
+        ]
+        if not any(role.id in allowed for role in ctx.author.roles):
             return
         try:
             if "http" not in str(url) and len(ctx.message.attachments) == 0:
