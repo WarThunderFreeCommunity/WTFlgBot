@@ -19,6 +19,7 @@ def get_news_from_page(url):
         comment = block.find(class_='widget__comment').text.strip()
         data = block.find(class_='widget-meta__item widget-meta__item--right').text.strip()
         more_url = "warthunder.com" + block.find(class_='widget__link')['href']
+        
         print(banner_url)
         print(more_url)
         return
