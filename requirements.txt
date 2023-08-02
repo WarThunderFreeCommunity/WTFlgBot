@@ -6,6 +6,8 @@ aiosqlite
 sphinx
 sphinx_rtd_theme
 nextcord
+requests
+beautifulsoup4
 typing-extensions
 multidict
 idna
