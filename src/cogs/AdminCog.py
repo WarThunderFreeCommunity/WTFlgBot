@@ -279,7 +279,7 @@ class BanModal(AdminUserModal):
                 )
             except:
                 await interaction.send("Пользователь не был уведомлён!", ephemeral=True)
-            await self.user.ban(reason=self.reason)
+            await self.user.ban(reason=self.punihsmentComment)
             try:
                 await self.channel.send(embed=self.embed)
             except:
