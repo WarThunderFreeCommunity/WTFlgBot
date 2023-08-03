@@ -139,56 +139,65 @@ class AdminUserModal(nextcord.ui.Modal):
                     self.string_hash, self.statusId
                 )
             )
-            embed = nextcord.Embed()
-            embed.set_author(
+            self.embed = nextcord.Embed()
+            self.embed.set_author(
                 name=f"Наказан({self.types[self.punishmentId]}): "
                      f"{self.user.name}/{self.user.id}",
                 icon_url=self.user.avatar.url,
                 url="https://discordapp.com/users" + str(self.user.id),
             )
-            embed.add_field(
+            self.embed.add_field(
+                name="Пользователь:",
+                value=f"{self.user.mention}/`{self.user.name}`\n"
+                    f"`{self.user.id}`"
+            )
+            self.embed.add_field(
                 name="Администратор:",
                 value=f"{interaction.user.mention}/`{interaction.user.name}`\n"
                     f"`{interaction.user.id}`"
             )
-            embed.add_field(
+            self.embed.add_field(
                 name="Номер наказания:",
                 value=f"`{self.string_hash}`"
             ),
             try:
-                embed.add_field(
+                self.embed.add_field(
                     name="Срок наказания:",
                     value=f"`{self.punishment_time.value} часа(ов)`"
                 )
             except:
-                embed.add_field(
+                self.embed.add_field(
                     name="Срок наказания:",
                     value=f"`- часа(ов)`"
                 )
-            embed.add_field(
+            self.embed.add_field(
                 name="Комментарий:",
                 value=f"`{self.punihsmentComment}`"
             )
-            channel = await BOT.fetch_channel(LOG_CHANNEL_ID)
-            await channel.send(embed=embed)
+            self.channel = await BOT.fetch_channel(LOG_CHANNEL_ID)
         except BaseException as ex:
             print(ex_format(ex, "AdminUserModal"))
+            await interaction.send(f"<@1120793294931234958>\n```{ex_format(ex, 'AdminUserModal')}")
         finally:
             await db.close()
             
 
 class WarnModal(AdminUserModal):
-    def __init__(self, _punishmentId, user: nextcord.Member, view):
-        super().__init__(_punishmentId, user, view)
-
     async def callback(self, interaction: nextcord.Interaction):
         await super().callback(interaction)
         try:
             await self.user.send(
                 f"```Вы получили Warn на сервер WarThunder```\n"
-                f"admin: {interaction.user.mention}\ncomment: {self.punihsmentComment}"
+                f"```admin: {interaction.user.name}```\n"
+                f"```comment: {self.punihsmentComment}```"
+                f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
+                "https://discordapp.com/users/1134894363302961202"
             )
             await interaction.send("Выдан Warn!", ephemeral=True)
+            try:
+                await self.channel.send(embed=self.embed)
+            except:
+                await interaction.send("Не удалось опубликовать лог!", ephemeral=True)
             self.statusId = 2
         except BaseException as ex:
             await interaction.send(f"Не удалось уведомить пользователя!", ephemeral=True)
@@ -210,15 +219,34 @@ class WarnModal(AdminUserModal):
 class MuteModal(AdminUserModal):           
     async def callback(self, interaction: nextcord.Interaction):
         await super().callback(interaction)
-        try:
-            db = DataBase("WarThunder.db")
-            await db.connect()
+        try: # TODO для вышедших сделать функционал!!!!
+            try:
+                await self.user.send(
+                    f"```Вы получили Mute на сервер WarThunder```\n"
+                    f"```admin: {interaction.user.name}```\n"
+                    f"```comment: {self.punihsmentComment}```"
+                    f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
+                    "https://discordapp.com/users/1134894363302961202"
+                )
+            except:
+                await interaction.send(f"Не удалось уведомить пользователя!", ephemeral=True)
             punishment_time = \
                 datetime.datetime.utcnow() + \
                 datetime.timedelta(seconds=self.punihsmentTime)
             await self.user.timeout(timeout=punishment_time, reason=self.punihsmentComment)
+            try:
+                await self.channel.send(embed=self.embed)
+            except:
+                await interaction.send("Не удалось опубликовать лог!", ephemeral=True)
             await interaction.send("Установлен timeout!", ephemeral=True)
-            self.statusId = 2 # TODO
+            self.statusId = 2 # TODO status = 1
+        except BaseException as ex:
+            self.statusId = 0
+            await interaction.send("Что то пошло не так! Возможно моих прав недостаточно", ephemeral=True)
+            print(ex_format(ex, "mute_modal"))
+        try:
+            db = DataBase("WarThunder.db")
+            await db.connect()
             await db.run_que(
                 "UPDATE AdminPunishmentUsersSaves SET statusId=? WHERE randomHash=?",
                 (self.statusId, self.string_hash)
@@ -229,8 +257,8 @@ class MuteModal(AdminUserModal):
             #)
             # TODO добавить перезапись наказаний если существует действующее
             #  стоит также учитывать что может не быть наказаний активных
-        except BaseException as ex:
-            print(ex_format(ex, "mute_modal"))
+        except:
+            print(ex_format(ex, "MuteModal"))
         finally:
             await db.close()
         await self.view.update_message()
@@ -239,20 +267,41 @@ class MuteModal(AdminUserModal):
 class BanModal(AdminUserModal):           
     async def callback(self, interaction: nextcord.Interaction):
         await super().callback(interaction)
-        try: # TODO бан постоянный 
-            db = DataBase("WarThunder.db")
-            await self.user.send(
-                f"```Вам был выдан бан на сервере War Thunder```\n"
-                f"admin: {interaction.user.mention}\ncomment: {self.punihsmentComment}"
-            )
+        # TODO сейчас только постоянный бан нужен временный 
+        try:
+            try:
+                await self.user.send(
+                    f"```Вы получили Ban на сервер WarThunder```\n"
+                    f"```admin: {interaction.user.name}```\n"
+                    f"```comment: {self.punihsmentComment}```\n"
+                    f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
+                    "https://discordapp.com/users/1134894363302961202"
+                )
+            except:
+                await interaction.send("Пользователь не был уведомлён!", ephemeral=True)
             await self.user.ban(reason=self.reason)
+            try:
+                await self.channel.send(embed=self.embed)
+            except:
+                await interaction.send("Не удалось опубликовать лог!", ephemeral=True)
             await interaction.send("Выдан бан", ephemeral=True)
-            await db.connect()
-            ... # TODO
+            self.statusId = 2
         except BaseException as ex:
+            self.statusId = 0
+            await interaction.send("Что-то пошло не так! Возможно мне недостаточно прав.", ephemeral=True)
             print(ex_format(ex, "ban_modal"))
+        try:
+            db = DataBase("WarThunder.db")
+            await db.connect()
+            await db.run_que(
+                "UPDATE AdminPunishmentUsersSaves SET statusId=? WHERE randomHash=?",
+                (self.statusId, self.string_hash)
+            )
+        except BaseException as ex:
+            print(ex_format(ex, "BanModal"))
         finally:
             await db.close()
+        await self.view.update_message()
 
 
 class AdminUserView(nextcord.ui.View):
