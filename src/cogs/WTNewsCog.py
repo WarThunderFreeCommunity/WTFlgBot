@@ -44,17 +44,43 @@ async def get_news_from_page(url):
             raise Exception(f"Ошибка при получении страницы. Код ошибки: {response.status_code}")
 
         soup = BeautifulSoup(response.content, 'html.parser')
-        p_tags = soup.find_all('p')
+        #p_tags = soup.find_all('p')
         #h2_tags = soup.find_all('h2')
         #all_tags = soup.find_all(['h2', 'p'])
 
-        embed = nextcord.Embed(description=p_tags[0].text.strip())
-        embed.set_author(name=title, url=more_url)
-        embed.set_image(banner_url)
+        news_cl = soup.find_all('div', class_='g-col')
+        for element in news_cl:
+            # Find all text elements including <p>, <h2>, and <h3> tags
+            text_tags = element.find_all(['p', 'h2', 'h3'])
 
-        async with aiohttp.ClientSession() as session:
-            webhook = nextcord.Webhook.from_url(RU_NEWS_HOOK, session=session)
-            await webhook.send(embed=embed)
+            for tag in text_tags:
+                # Check the tag type and print accordingly
+                if tag.name == 'p':
+                    print("Текст из тега <p>:")
+                elif tag.name == 'h2':
+                    print("Заголовок из тега <h2>:")
+                elif tag.name == 'h3':
+                    print("Заголовок из тега <h3>:")
+
+                print(tag.get_text())
+
+            # Check for the <ul> tag and print its contents
+            ul_tag = element.find('ul')
+            if ul_tag:
+                print("Список <ul>:")
+                li_tags = ul_tag.find_all('li')
+                for li_tag in li_tags:
+                    print(li_tag.get_text())
+
+        print("\n\n\n\n\n\n\n\n\n")
+
+        #embed = nextcord.Embed(description=p_tags[0].text.strip())
+        #embed.set_author(name=title, url=more_url)
+        #embed.set_image(banner_url)
+
+        #async with aiohttp.ClientSession() as session:
+        #    webhook = nextcord.Webhook.from_url(RU_NEWS_HOOK, session=session)
+        #    await webhook.send(embed=embed)
         
 
 if __name__ == "__main__":
