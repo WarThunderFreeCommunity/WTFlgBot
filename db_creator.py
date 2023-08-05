@@ -171,7 +171,12 @@ async def main():
         "statusId INTEGER)" 
     )
 
+    """
     
+    """
+    await db.run_que(
+        "CREATE TABLE WTNewsCog (titleArray TEXT, typeNews INTEGER)"
+    )
     await db.close()
 
 if __name__ == "__main__":
