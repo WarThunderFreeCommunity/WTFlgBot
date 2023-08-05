@@ -274,8 +274,6 @@ class BanModal(AdminUserModal):
                     f"```Вы получили Ban на сервер WarThunder```\n"
                     f"```admin: {interaction.user.name}```\n"
                     f"```comment: {self.punihsmentComment}```\n"
-                    f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
-                    "https://discordapp.com/users/1134894363302961202"
                 )
             except:
                 await interaction.send("Пользователь не был уведомлён!", ephemeral=True)
