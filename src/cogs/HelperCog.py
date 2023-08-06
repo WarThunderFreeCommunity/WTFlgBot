@@ -100,9 +100,9 @@ class HelperCog(Cog):
                 for member in voice.members:
                     voice_members.add(member.id)
             voices_online = len(voice_members)
-            await self.bot.get_channel(int(1135290097584046110)).edit(name=f'online-{all_online}')
             await self.bot.get_channel(int(1135289860530372669)).edit(name=f'members-{len(mbrs)}')
-            await self.bot.get_channel(int(1137248626364653658)).edit(name=f'in-voices-{voices_online}')
+            await self.bot.get_channel(int(1137501931800109197)).edit(name=f'online-{all_online}')
+            await self.bot.get_channel(int(1137743413656170507)).edit(name=f'in-voices-{voices_online}')
         except BaseException as ex:
             print(ex_format(ex, "on_voice_helper"))
             
