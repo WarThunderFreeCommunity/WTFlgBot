@@ -73,91 +73,92 @@ async def get_news_from_page(url, url_webhook, type_, ctx, title_text):
     finally:
         await db.close()
     
-    try:
         for block in news_blocks[::-1]:
-            title = block.find(class_='widget__title').text.strip()
-            banner_url = "https:" + quote(block.find(
-                class_='widget__poster-media js-lazy-load'
-            )['data-src'])
-            comment = block.find(class_='widget__comment').text.strip()
-            data = block.find(class_='widget-meta__item widget-meta__item--right').text.strip()
-            more_url = "https://warthunder.com" + block.find(class_='widget__link')['href']
-            
-            # Для тестов
-            if title_text:
-                print(title_text)
-                print(title)
-                print()
-                print(title_text not in title)
-                if title_text not in title:
+            try:
+                title = block.find(class_='widget__title').text.strip()
+                banner_url = "https:" + quote(block.find(
+                    class_='widget__poster-media js-lazy-load'
+                )['data-src'])
+                comment = block.find(class_='widget__comment').text.strip()
+                data = block.find(class_='widget-meta__item widget-meta__item--right').text.strip()
+                more_url = "https://warthunder.com" + block.find(class_='widget__link')['href']
+                
+                # Для тестов
+                if title_text:
+                    print(title_text)
+                    print(title)
+                    print()
+                    print(title_text not in title)
+                    if title_text not in title:
+                        continue
+                
+                if title in title_arrays:
                     continue
+                title_arrays.append(title)
+
+                response = requests.get(more_url)
+                if response.status_code != 200:
+                    raise Exception(f"Ошибка при получении страницы. Код ошибки: {response.status_code}")
+
+                soup = BeautifulSoup(response.content, 'html.parser')
+                p_tags = soup.find_all('p')
+                #h2_tags = soup.find_all('h2')
+                #all_tags = soup.find_all(['h2', 'p'])
+
+                text_arrays = []
+                news_cl = soup.find_all('div', class_='g-col')
+                for element in news_cl:
+                    if not element.find_all('p'):
+                        continue
+                
+                description = p_tags[0].text.strip()
+                if url_webhook in [RU_CHANGES_HOOK, EN_CHANGES_HOOK]:
+                    description = comment
+                if len(description) > 2000:
+                    description = description[:1997] + "..."
+                content = {
+                    RU_NEWS_HOOK: random.choice([
+                        "Хей, <@&1136434561002254458>, тут свежая новость!",
+                        "Привет, <@&1136434561002254458>, у нас есть свежая новость!",
+                        "Эй, <@&1136434561002254458>, появилась новость!",
+                        "Здравствуйте, <@&1136434561002254458>, у нас есть актуальная новость!",
+                        "Приветствую, <@&1136434561002254458>! Важное объявление!"
+                    ]),
+                    EN_NEWS_HOOK: random.choice([
+                        "Hey, <@&1136313491184160788>, here's a fresh news!",
+                        "Hello, <@&1136313491184160788>, we've got some fresh news!",
+                        "Hey, <@&1136313491184160788>, there's a new news update!",
+                        "Greetings, <@&1136313491184160788>! We have an exciting news to share!",
+                        "Hey, <@&1136313491184160788>, check out the latest news!"
+                    ]),
+                    RU_CHANGES_HOOK: random.choice([
+                        "Хей, <@&1136434648122142770>, новое обновление!",
+                        "Привет, <@&1136434648122142770>, у нас есть новое обновление!",
+                        "Эй, <@&1136434648122142770>, тут свежее обновление!",
+                        "Хей, <@&1136434648122142770>, пришло новое обновление!",
+                        "Приветствую, <@&1136434648122142770>! У нас есть актуальное обновление!"
+                    ]),
+                    EN_CHANGES_HOOK: random.choice([
+                        "Hey, <@&1136313556225232964>, new update!",
+                        "Hello, <@&1136313556225232964>, we have a new update!",
+                        "Hey, <@&1136313556225232964>, there's a fresh update!",
+                        "Greetings, <@&1136313556225232964>! We have an exciting update to share!",
+                        "Hey, <@&1136313556225232964>, check out the latest update!"
+                    ]),
+                }
+                
+                embed = nextcord.Embed(description=description)
+                embed.set_author(name=title, url=more_url)
+                embed.set_image(banner_url)
+                embed.set_footer(text=data)
+
+                async with aiohttp.ClientSession() as session:
+                    webhook = nextcord.Webhook.from_url(url_webhook, session=session)
+                    message = await webhook.send(content=content[url_webhook], embed=embed, wait=True)
+                    yield {"message_id": message.id, "text_arrays": text_arrays, "title": title}
             
-            if title in title_arrays:
-                continue
-            title_arrays.append(title)
-
-            response = requests.get(more_url)
-            if response.status_code != 200:
-                raise Exception(f"Ошибка при получении страницы. Код ошибки: {response.status_code}")
-
-            soup = BeautifulSoup(response.content, 'html.parser')
-            p_tags = soup.find_all('p')
-            #h2_tags = soup.find_all('h2')
-            #all_tags = soup.find_all(['h2', 'p'])
-
-            text_arrays = []
-            news_cl = soup.find_all('div', class_='g-col')
-            for element in news_cl:
-                if not element.find_all('p'):
-                    continue
-            
-            description = p_tags[0].text.strip()
-            if url_webhook in [RU_CHANGES_HOOK, EN_CHANGES_HOOK]:
-                description = comment
-            if len(description) > 2000:
-                description = description[:1997] + "..."
-            content = {
-                RU_NEWS_HOOK: random.choice([
-                    "Хей, <@&1136434561002254458>, тут свежая новость!",
-                    "Привет, <@&1136434561002254458>, у нас есть свежая новость!",
-                    "Эй, <@&1136434561002254458>, появилась новость!",
-                    "Здравствуйте, <@&1136434561002254458>, у нас есть актуальная новость!",
-                    "Приветствую, <@&1136434561002254458>! Важное объявление!"
-                ]),
-                EN_NEWS_HOOK: random.choice([
-                    "Hey, <@&1136313491184160788>, here's a fresh news!",
-                    "Hello, <@&1136313491184160788>, we've got some fresh news!",
-                    "Hey, <@&1136313491184160788>, there's a new news update!",
-                    "Greetings, <@&1136313491184160788>! We have an exciting news to share!",
-                    "Hey, <@&1136313491184160788>, check out the latest news!"
-                ]),
-                RU_CHANGES_HOOK: random.choice([
-                    "Хей, <@&1136434648122142770>, новое обновление!",
-                    "Привет, <@&1136434648122142770>, у нас есть новое обновление!",
-                    "Эй, <@&1136434648122142770>, тут свежее обновление!",
-                    "Хей, <@&1136434648122142770>, пришло новое обновление!",
-                    "Приветствую, <@&1136434648122142770>! У нас есть актуальное обновление!"
-                ]),
-                EN_CHANGES_HOOK: random.choice([
-                    "Hey, <@&1136313556225232964>, new update!",
-                    "Hello, <@&1136313556225232964>, we have a new update!",
-                    "Hey, <@&1136313556225232964>, there's a fresh update!",
-                    "Greetings, <@&1136313556225232964>! We have an exciting update to share!",
-                    "Hey, <@&1136313556225232964>, check out the latest update!"
-                ]),
-            }[url_webhook]
-            
-            embed = nextcord.Embed(description=description)
-            embed.set_author(name=title, url=more_url)
-            embed.set_image(banner_url)
-            embed.set_footer(text=data)
-
-            async with aiohttp.ClientSession() as session:
-                webhook = nextcord.Webhook.from_url(url_webhook, session=session)
-                message = await webhook.send(content=content, embed=embed, wait=True)
-                yield {"message_id": message.id, "text_arrays": text_arrays, "title": title}
-    except BaseException as ex:
-        print(ex_format(ex, "main_for_wtnews"))
+            except BaseException as ex:
+                print(ex_format(ex, "main_for_wtnews"))
 
     try:
         db = DataBase("WarThunder.db")
@@ -188,7 +189,7 @@ class WTNewsCog(Cog):
     def cog_unload(self):
         ...
 
-    @tasks.loop(minutes=10)
+    @tasks.loop(minutes=30)
     async def update_news(self):
         links = [RU_NEWS_LINK, EN_NEWS_LINK, RU_CHANGES_LINK, EN_CHANGES_LINK]
         hoocks = [RU_NEWS_HOOK, EN_NEWS_HOOK, RU_CHANGES_HOOK, EN_CHANGES_HOOK]
