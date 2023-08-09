@@ -105,32 +105,20 @@ class HelperCog(Cog):
             await self.bot.get_channel(int(1137743413656170507)).edit(name=f'in-voices-{voices_online}')
         except BaseException as ex:
             print(ex_format(ex, "on_voice_helper"))
-            
+    
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        wtd_users = [724603069148430388, 1031483212108664843]
+        text_channel = self.bot.get_channel(1135248599782010971)
+        if member.id in wtd_users:
+            await text_channel.send(f"{member.mention} Привет, почему пришёл?)")
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if (
             "https://discord.gg/" in message.content
             and not message.author.guild_permissions.administrator
         ):
-            for role_allowed in [
-                nextcord.utils.find(
-                    lambda r: r.id == 954393422716879019, message.guild.roles
-                ),  # vip1 main
-                nextcord.utils.find(
-                    lambda r: r.id == 1007965606789783572, message.guild.roles
-                ),  # vip2 main
-                nextcord.utils.find(
-                    lambda r: r.id == 827202390682894358, message.guild.roles
-                ),  # deputy main
-                nextcord.utils.find(
-                    lambda r: r.id == 812667192104583218, message.guild.roles
-                ),  # head main
-                nextcord.utils.find(
-                    lambda r: r.id == 1027862764322029679, message.guild.roles
-                ),  # events main
-            ]:
-                if role_allowed in message.author.roles:
-                    return
             await message.delete()
 
     @commands.Cog.listener()
@@ -182,7 +170,7 @@ class HelperCog(Cog):
     async def helper(self, ctx: Context):
         if ctx.author.id not in self.bot.OWNERS:
             return
-        await ctx.reply("123")
+        await ctx.send("temp")
 
 
 # on_ready cog!
