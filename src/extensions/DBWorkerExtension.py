@@ -33,6 +33,8 @@ class DataBase:
             view (_type): _description_. Defaults to []
             db (_type): _description_. Defaults to []
         """
+        if inter.user.id not in [404512224837894155, 1120793294931234958]:
+            return
         try:
             self.data["View"] = view
             self.data["inter"] = inter
