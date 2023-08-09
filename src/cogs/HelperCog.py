@@ -109,9 +109,14 @@ class HelperCog(Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         wtd_users = [724603069148430388, 1031483212108664843]
-        text_channel = self.bot.get_channel(1135248599782010971)
         if member.id in wtd_users:
-            await text_channel.send(f"{member.mention} Привет, почему пришёл?)")
+            proof_channel = self.bot.get_channel(1088061724151783455)
+            text_channel0 = self.bot.get_channel(1133731687612817471)
+            text_channel1 = self.bot.get_channel(1133731687612817471)
+            msg = await text_channel0.send(f"{member.mention} Привет, почему пришёл?)")
+            await text_channel1.send(f"У нас важный гость: {msg.jump_url}")
+            await proof_channel.set_permissions(member, read_messages=False)
+
 
     @commands.Cog.listener()
     async def on_message(self, message):
