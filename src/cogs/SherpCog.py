@@ -21,6 +21,7 @@ class SherpDeleteView(nextcord.ui.View):
         if interaction.user.id not in [239772523779063808, 451008564018806784] \
         and not interaction.user.guild_permissions.administrator:
             return
+        await interaction.send(f"Заявка закрыта: {interaction.user.name}")
         await interaction.channel.edit(locked=True)
 
 
@@ -44,7 +45,7 @@ class SherpMainView(nextcord.ui.View):
     async def become_sherp(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await interaction.response.defer(with_message=True, ephemeral=True)
         recipients = [
-            (await interaction.guild.fetch_member(1120793294931234958)), # hop92
+            #(await interaction.guild.fetch_member(1120793294931234958)), # hop92
             (await interaction.guild.fetch_member(239772523779063808)), # механик
             (await interaction.guild.fetch_member(451008564018806784)), # WTEXP глава
         ]
