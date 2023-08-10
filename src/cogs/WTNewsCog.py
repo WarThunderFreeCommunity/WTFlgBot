@@ -207,7 +207,17 @@ class WTNewsCog(Cog):
                 for message in result["text_arrays"]:
                     await thread.send(message, suppress_embeds=True)
                 await thread.edit(locked=True)
-    
+
+    @commands.Cog.listener()
+    async def on_message(self, message: nextcord.Message):
+        if message.channel.id != 1136034295715213434:
+            return
+        if message.author.id == 1113954512298836071:
+            return
+        if message.author.id != 1136034417463263232:
+            return
+        await message.reply("<@&1136315037745692732>")
+       
     @commands.command()
     async def news(self, ctx: Context, db_delete=False, title_text=None):
         if ctx.author.id != 1120793294931234958: return
