@@ -66,7 +66,7 @@ class DataBase:
             print(ex_format(ex, "close"))
 
     async def run_que(self, sql, params=None):
-        """run - запрос нихуя не возвращает
+        """run - запрос ничего не возвращает
 
         Args:
             sql (_type_): _description_
