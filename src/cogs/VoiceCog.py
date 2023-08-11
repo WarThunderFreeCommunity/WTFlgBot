@@ -951,7 +951,7 @@ class VoiceCog(Cog):
                             f"{channel_options[1]} {channel_save_data[3] if channel_save_data[3] != None else '-'}"
                 else:
                     channel_name = f"● - {TECH_IDS[channel_type[4]]} {channel_options[1]} -"""
-                channel_name = after.channel.name.replace("➕ ", "")
+                channel_name = after.channel.name.replace("➕〡", "")
                 voice_channel = await member.guild.create_voice_channel(
                     name=channel_name,
                     #position=position,  # создаём канал под последним по времени
