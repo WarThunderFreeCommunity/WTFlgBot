@@ -171,6 +171,7 @@ nextcord.zip
 # Project test files
 test.py
 test[0-9].py
+test[0-9].txt
 temp_db.py
 
 
