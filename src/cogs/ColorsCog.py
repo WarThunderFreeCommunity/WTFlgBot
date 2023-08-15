@@ -177,7 +177,7 @@ class MainButtons(nextcord.ui.View):
         await interaction.send("Select the desired color..", view=view, ephemeral=True)
                                
 
-class AuthPayWT(Cog):
+class CogColors(Cog):
     def __init__(self, bot: Bot) -> None:
         self.bot = bot
         self.obj_guild = self.bot.get_guild(974022203987357766)
@@ -209,4 +209,4 @@ class AuthPayWT(Cog):
 def setup(bot: Bot) -> None:
     print(f"{__name__.split('.')[2]} loaded!")
     bot.add_view(MainButtons())
-    bot.add_cog(AuthPayWT(bot))
+    bot.add_cog(CogColors(bot))
