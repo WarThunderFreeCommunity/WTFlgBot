@@ -30,8 +30,6 @@ main_embed = nextcord.Embed.from_dict({
 })
 
 
-
-
 class Dropdown(nextcord.ui.Select):
     def __init__(self, lang):
         self.emojies = {
@@ -149,7 +147,7 @@ class Dropdown(nextcord.ui.Select):
 
 class MainButtons(nextcord.ui.View):
     def __init__(self):
-        super().__init__(timeout=None)
+        super().__init__(timeout=None, prevent_update=False)
 
     @nextcord.ui.button(
         label="ВЫБРАТЬ ЦВЕТ НИКНЕЙМА",
@@ -193,7 +191,6 @@ class CogColors(Cog):
  
     def cog_unload(self):
         self.bot.remove_view(MainButtons())
-    
 
     @commands.command()
     async def ColorsMsg(self, ctx: Context):
