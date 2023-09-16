@@ -16,7 +16,7 @@ import configuration
 
 
 BOT = None # объект бота
-LOG_CHANNEL_ID = 1135110265390772324
+LOG_CHANNEL_ID = 1149033686164066354
 SAVED_USERS = {} # сохранённые имена админов
 
 
@@ -190,8 +190,8 @@ class WarnModal(AdminUserModal):
                 f"```Вы получили Warn на сервер WarThunder```\n"
                 f"```admin: {interaction.user.name}```\n"
                 f"```comment: {self.punihsmentComment}```"
-                f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
-                "https://discordapp.com/users/1134894363302961202"
+                #f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
+                #"https://discordapp.com/users/1134894363302961202"
             )
             await interaction.send("Выдан Warn!", ephemeral=True)
             try:
@@ -225,8 +225,8 @@ class MuteModal(AdminUserModal):
                     f"```Вы получили Mute на сервер WarThunder```\n"
                     f"```admin: {interaction.user.name}```\n"
                     f"```comment: {self.punihsmentComment}```"
-                    f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
-                    "https://discordapp.com/users/1134894363302961202"
+                    #f"`Если вы не согласны-пишите:` <@1134894363302961202> \n"
+                    #"https://discordapp.com/users/1134894363302961202"
                 )
             except:
                 await interaction.send(f"Не удалось уведомить пользователя!", ephemeral=True)
@@ -415,6 +415,7 @@ class AdminUserView(nextcord.ui.View):
         finally:
             await db.close()
 
+    # TODO Кнопки переписать на классы и наследники
     @nextcord.ui.button(
         label="Предыдущая страница", style=nextcord.ButtonStyle.grey, row=0
     )
@@ -490,7 +491,7 @@ class AdminInteadSlashButtons(nextcord.ui.View):
     async def enter_user(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         await interaction.response.send_modal(...)
 
-
+# TODO Добавить проверку истории своих наказаний
 class AdminCog(Cog):
     def __init__(self, bot: Bot):
         global BOT

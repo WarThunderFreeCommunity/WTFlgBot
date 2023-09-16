@@ -91,18 +91,18 @@ class HelperCog(Cog):
     async def online_members(self):
         try:
             voice_members = set()
-            mbrs = self.bot.get_guild(407187066582204427).members
+            mbrs = self.bot.get_guild(1141373361063198822).members
             online = len(list(filter(lambda x: x.status == nextcord.Status.online, mbrs)))
             idle = len(list(filter(lambda x: x.status == nextcord.Status.idle, mbrs)))
             dnd = len(list(filter(lambda x: x.status == nextcord.Status.dnd, mbrs)))
             all_online = online+idle+dnd
-            for voice in self.bot.get_guild(407187066582204427).voice_channels:
+            for voice in self.bot.get_guild(1141373361063198822).voice_channels:
                 for member in voice.members:
                     voice_members.add(member.id)
             voices_online = len(voice_members)
-            await self.bot.get_channel(int(1135289860530372669)).edit(name=f'👥〡members-{len(mbrs)}')
-            await self.bot.get_channel(int(1137501931800109197)).edit(name=f'🟢〡online-{all_online}')
-            await self.bot.get_channel(int(1137743413656170507)).edit(name=f'🔊〡in-voices-{voices_online}')
+            await self.bot.get_channel(int(1148656018692243456)).edit(name=f'👥〡members-{len(mbrs)}')
+            await self.bot.get_channel(int(1148656037839257700)).edit(name=f'🟢〡online-{all_online}')
+            await self.bot.get_channel(int(1148656056289992795)).edit(name=f'🔊〡in-voices-{voices_online}')
         except BaseException as ex:
             print(ex_format(ex, "on_voice_helper"))
     
@@ -119,15 +119,11 @@ class HelperCog(Cog):
 
 
     @commands.Cog.listener()
-    async def on_message(self, message):
-        if (
-            "https://discord.gg/" in message.content
-            and not message.author.guild_permissions.administrator
-        ):
-            await message.delete()
-
-    @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
+        if "discord.gg" in str(message.content) \
+        and not message.author.guild_permissions.administrator:
+            await message.delete()
+        
         if message.author.id == 159985870458322944 and message.channel.category_id in [
             851708687693119508,
             786488640087785492,
@@ -176,6 +172,16 @@ class HelperCog(Cog):
         if ctx.author.id not in self.bot.OWNERS:
             return
         await ctx.send("temp")
+
+    @commands.command()
+    async def user_info(self, ctx, userid: int):
+        user = await ctx.bot.fetch_user(userid)
+        
+        joined = str(ctx.author.joined_at).split(' ')[0].split('-')
+        created = str(user.created_at).split(' ')[0].split('-')
+        
+        if (int(joined[0]) - int(created[0])) < 1:
+            await ctx.send(f'{joined[0]}, {created[0]}')
 
 
 # on_ready cog!

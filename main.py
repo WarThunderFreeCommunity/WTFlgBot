@@ -96,7 +96,7 @@ class Bot(commands.Bot):
             self.DATA['bot-started'] = True
 
 
-bot = Bot(
+bot: commands.Bot = Bot(
     cogs_add_on_ready=configuration.cogs_add_on_ready,
     intents=nextcord.Intents.all(),
     command_prefix='>',

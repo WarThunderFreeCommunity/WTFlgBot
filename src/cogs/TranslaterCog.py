@@ -104,7 +104,7 @@ class TranslaterCog(Cog):
 
     @Cog.listener()
     async def on_message(self, message: nextcord.Message):
-        if message.channel.id != 1133729915901059102:
+        if message.channel.id != 1141398986725540092:#1133729915901059102:
             return
         if message.author.bot:
             return
@@ -124,7 +124,7 @@ class TranslaterCog(Cog):
 
     @Cog.listener()
     async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message):
-        if before.channel.id != 1133729915901059102:
+        if before.channel.id != 1141398986725540092:#1133729915901059102:
             return
         if before.author.bot:
             return
@@ -144,7 +144,7 @@ class TranslaterCog(Cog):
 
     @Cog.listener()
     async def on_message_delete(self, message: nextcord.Message):
-        if message.channel.id != 1133729915901059102:
+        if message.channel.id != 1141398986725540092:#1133729915901059102:
             return
 
         # Check if the deleted message had a bot response

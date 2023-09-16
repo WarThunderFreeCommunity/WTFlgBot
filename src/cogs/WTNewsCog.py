@@ -21,10 +21,10 @@ RU_NEWS_LINK = "https://warthunder.com/ru/news/"
 EN_NEWS_LINK = "https://warthunder.com/en/news/"
 RU_CHANGES_LINK = "https://warthunder.com/ru/game/changelog/"
 EN_CHANGES_LINK = "https://warthunder.com/en/game/changelog/"
-RU_NEWS_HOOK = "https://discord.com/api/webhooks/1137374678516768880/Ncml-uxFJqu308pEZhM3RkdZ84UcMqrXp9O1a0GOiVwU60XFnekUif0C-rNmrLy-b0bf"
-EN_NEWS_HOOK = "https://discord.com/api/webhooks/1137196714516807770/6b9njS-rBplqIDBKwM-DsvG1ICOFXA2bU-FuQ9iZoXzWEA9cDfsRpiIthOR4x3MTCKrL"
-RU_CHANGES_HOOK = "https://discord.com/api/webhooks/1137197492430184488/Q6yMw1G5YBISjEtnMg6BXu6mc-2fJ0ssovUWrrRwyMhKNW2I3tzHarOUpwxa1wHC6l5e"
-EN_CHANGES_HOOK = "https://discord.com/api/webhooks/1137196859937542274/FjyjdMHwKF0kYjwP74dimquUyy0De8AL77kKUI9mcDuwCIHK5Le7U7sMhsZe-Kn-GGsp"
+RU_NEWS_HOOK = "https://discord.com/api/webhooks/1148658847095988274/XEAhTLAE8ljAAPA6h3WE-3Qs9ZHvFhkn8c0lzRUuAJXw5olQUCU6CsV48HuWScPUTXtX"
+EN_NEWS_HOOK = "https://discord.com/api/webhooks/1148658458468557043/OISfx157G9eL1t931BSS_x8rOv5hjUeM3VQpV7dFYvAugShTH5RNJ_1aNA9twtHzBvl5"
+RU_CHANGES_HOOK = "https://discord.com/api/webhooks/1148658852011708447/TvMvxg5egZnGkGcE-PEkJ3Oclpl7ONOBWo2CVoWK13j1xGlZVSDurD0UWVKfbVnPfAGH"
+EN_CHANGES_HOOK = "https://discord.com/api/webhooks/1148658467708600381/BBFPfvUE3fA4J2den3qBbB7guBpjaznct3iKrkJKGLVdAHTD_WTxjqGNn1Nm51l1QbIF"
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
     "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0",
@@ -193,7 +193,7 @@ class WTNewsCog(Cog):
     async def update_news(self):
         links = [RU_NEWS_LINK, EN_NEWS_LINK, RU_CHANGES_LINK, EN_CHANGES_LINK]
         hoocks = [RU_NEWS_HOOK, EN_NEWS_HOOK, RU_CHANGES_HOOK, EN_CHANGES_HOOK]
-        channels = [1134866761519468666, 1133738939287605278] * 2
+        channels = [1148657425046577152, 1148657314912538694] * 2
         types = [0, 1, 2, 3, 4]
         for link, hoock, type_, channel_id in zip(links, hoocks, types, channels):
             async for result in get_news_from_page(link, hoock, type_, None, None):
@@ -223,7 +223,7 @@ class WTNewsCog(Cog):
         if ctx.author.id != 1120793294931234958: return
         links = [RU_NEWS_LINK, EN_NEWS_LINK, RU_CHANGES_LINK, EN_CHANGES_LINK]
         hoocks = [RU_NEWS_HOOK, EN_NEWS_HOOK, RU_CHANGES_HOOK, EN_CHANGES_HOOK]
-        channels = [1134866761519468666, 1133738939287605278] * 2
+        channels = [1148657425046577152, 1148657314912538694] * 2
         types = [0, 1, 2, 3, 4]
         await ctx.send("Started")
         if db_delete:
