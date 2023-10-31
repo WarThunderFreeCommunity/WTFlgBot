@@ -583,11 +583,11 @@ class VoiceChannelsButtons(nextcord.ui.View):
                     await interaction.channel.edit(name=name)
                     await interaction.send("Установили бр!", ephemeral=True)
                 except:
-                    await interaction.send("Что-то пошло не так", ephemeral=True)
+                    await interaction.send(self.data["else_error"], ephemeral=True)
             modal_cmbr.callback = modal_callback
             await interaction.response.send_modal(modal_cmbr)
         except:
-            await interaction.send("Что-то пошло не так", ephemeral=True)
+            await interaction.send(self.data["else_error"], ephemeral=True)
         return
         try:
             modal_cmbr = nextcord.ui.Modal(
@@ -928,8 +928,8 @@ class VoiceCog(Cog):
                 afk_channel = nextcord.utils.get(
                     member.guild.voice_channels, id=int(self.afk_channel_id)
                 )
-                # Костыль для того, чтоб очумелые ручки не успевали выходить из канала до создания нового
-                await member.move_to(afk_channel)
+                #! Костыль для того, чтоб очумелые ручки не успевали выходить из канала до создания нового
+                #await member.move_to(afk_channel)
                 tech_id = nation_id = cmbr_var = limit_var = 4
                 channel_options = self.parrent_channel_ids[str(after.channel.id)].split(":")
                 lang = channel_options[0]

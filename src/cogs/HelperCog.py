@@ -77,7 +77,6 @@ class HelperCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
         self.on_init.start()
-        self.online_members.start()
 
     @tasks.loop(count=1)
     async def on_init(self):
@@ -87,48 +86,6 @@ class HelperCog(Cog):
         self.online_members.stop()
         pass
 
-    @tasks.loop(minutes=6) # таск на онлайн на сервере
-    async def online_members(self):
-        try:
-            voice_members = set()
-            mbrs = self.bot.get_guild(1141373361063198822).members
-            online = len(list(filter(lambda x: x.status == nextcord.Status.online, mbrs)))
-            idle = len(list(filter(lambda x: x.status == nextcord.Status.idle, mbrs)))
-            dnd = len(list(filter(lambda x: x.status == nextcord.Status.dnd, mbrs)))
-            all_online = online+idle+dnd
-            for voice in self.bot.get_guild(1141373361063198822).voice_channels:
-                for member in voice.members:
-                    voice_members.add(member.id)
-            voices_online = len(voice_members)
-            await self.bot.get_channel(int(1148656018692243456)).edit(name=f'👥〡members-{len(mbrs)}')
-            await self.bot.get_channel(int(1148656037839257700)).edit(name=f'🟢〡online-{all_online}')
-            await self.bot.get_channel(int(1148656056289992795)).edit(name=f'🔊〡in-voices-{voices_online}')
-        except BaseException as ex:
-            print(ex_format(ex, "on_voice_helper"))
-    
-    @commands.Cog.listener()
-    async def on_member_join(self, member):
-        wtd_users = [724603069148430388, 1031483212108664843]
-        if member.id in wtd_users:
-            proof_channel = self.bot.get_channel(1088061724151783455)
-            text_channel0 = self.bot.get_channel(1133731687612817471)
-            text_channel1 = self.bot.get_channel(1133731687612817471)
-            msg = await text_channel0.send(f"{member.mention} Привет, почему пришёл?)")
-            await text_channel1.send(f"У нас важный гость: {msg.jump_url}")
-            await proof_channel.set_permissions(member, read_messages=False)
-
-
-    @commands.Cog.listener()
-    async def on_message(self, message: nextcord.Message):
-        if "discord.gg" in str(message.content) \
-        and not message.author.guild_permissions.administrator:
-            await message.delete()
-        
-        if message.author.id == 159985870458322944 and message.channel.category_id in [
-            851708687693119508,
-            786488640087785492,
-        ]:
-            await message.delete()
 
     @Cog.listener()
     async def on_voice_state_update(
@@ -182,6 +139,20 @@ class HelperCog(Cog):
         
         if (int(joined[0]) - int(created[0])) < 1:
             await ctx.send(f'{joined[0]}, {created[0]}')
+    
+    @Cog.listener()
+    async def on_message(self, message):
+        # Проверяем, что сообщение отправлено в нужные чаты
+        if message.channel.id == 1141374754352267264:
+            # Выдаем роль с id 1149037221769400511
+            role = message.guild.get_role(1149037221769400511)
+            if role:
+                await message.author.add_roles(role)
+        elif message.channel.id == 1141374728502788299:
+            # Выдаем роль с id 1149037331051986975
+            role = message.guild.get_role(1149037331051986975)
+            if role:
+                await message.author.add_roles(role)
 
 
 # on_ready cog!
