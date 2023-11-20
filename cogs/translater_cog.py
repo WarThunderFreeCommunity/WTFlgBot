@@ -74,9 +74,9 @@ class TranslaterCog(Cog):
 
     @tasks.loop(count=1)
     async def on_init(self):
-        ...
+        await self.bot.wait_until_ready()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         ...
 
     async def text_processing(self, text: str):
@@ -185,7 +185,6 @@ class TranslaterCog(Cog):
         return f"`{target_language}:` {translation}"
 
 
-# on_ready cog!
-def setup(bot: Bot):
+async def setup(bot: Bot):
     logging.getLogger("discord.cogs.load").info("TranslaterCog loaded!")
-    bot.add_cog(TranslaterCog(bot))
+    await bot.add_cog(TranslaterCog(bot))

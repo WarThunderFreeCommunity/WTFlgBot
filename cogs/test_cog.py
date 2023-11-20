@@ -27,7 +27,7 @@ class ServerTestsCog(commands.Cog):
         await thread.edit(archived=True)
 
 
-
-def setup(bot: commands.Bot) -> None:
+async def setup(bot: commands.Bot) -> None:
     logging.getLogger("discord.cogs.load").info("ServerTestsCog loaded!")
-    bot.add_cog(ServerTestsCog(bot))
+    await bot.add_cog(ServerTestsCog(bot))
+    

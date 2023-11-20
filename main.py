@@ -78,9 +78,10 @@ class Bot(commands.Bot):
     async def setup_hook(self):
         await self.tree.set_translator(MyCustomTranslator())
         if self.cogs_on_start:
+            print(self.cogs_on_start)
             [await self.load_extension(f"cogs.{cog}") for cog in self.cogs_on_start]
-        self.tree.copy_global_to(guild=discord.Object(id=1064192306904846377))
-        #await self.tree.sync(guild=discord.Object(id=1064192306904846377))
+        self.tree.copy_global_to(guild=discord.Object(id=1141373361063198822))
+        await self.tree.sync(guild=discord.Object(id=1141373361063198822))
 
     async def on_ready(self):
         print(f"Logged in as {self.user} (ID: {self.user.id})\n------")

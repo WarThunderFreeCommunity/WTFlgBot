@@ -13,9 +13,9 @@ class ServerStatsCog(Cog):
 
     @tasks.loop(count=1)
     async def on_init(self):
-        pass
+        await self.bot.wait_until_ready()
 
-    def cog_unload(self):
+    async def cog_unload(self):
         self.online_members.stop()
         pass
 
@@ -39,6 +39,6 @@ class ServerStatsCog(Cog):
             logging.getLogger("discord.cogs.stats_cog").error(ex)
 
 
-def setup(bot: Bot):
+async def setup(bot: Bot):
     logging.getLogger("discord.cogs.load").info("ServerStatsCog loaded!")
-    bot.add_cog(ServerStatsCog(bot))
+    await bot.add_cog(ServerStatsCog(bot))
