@@ -40,7 +40,7 @@ class ServerStatsCog(Cog):
                 # Используем метод get_channel из класса TextChannel
                 await self.bot.get_channel(1148656018692243456).edit(name=f'👥〡members-{len(mbrs)}')
                 await self.bot.get_channel(1148656037839257700).edit(name=f'🟢〡online-{all_online}')
-                await self.bot.get_channel(1148656056289992795).edit(name=f'🔊〡ins-voices-{voices_online}')
+                await self.bot.get_channel(1148656056289992795).edit(name=f'🔊〡in-voices-{voices_online}')
         except Exception as ex:
             logging.getLogger("discord.cogs.stats_cog").error(ex)
 
