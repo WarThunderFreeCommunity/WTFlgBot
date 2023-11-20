@@ -67,17 +67,9 @@ def remove_urls(_text):
 class TranslaterCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.on_init.start()
         self.finded_users = {}
         self.ignore_my_message_id = []
         self.message_responses = {}
-
-    @tasks.loop(count=1)
-    async def on_init(self):
-        await self.bot.wait_until_ready()
-
-    async def cog_unload(self):
-        ...
 
     async def text_processing(self, text: str):
         # links

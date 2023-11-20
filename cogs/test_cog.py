@@ -8,9 +8,6 @@ class ServerTestsCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-    def __del__(self):
-        ...
-
     @commands.command()
     async def runtest(self, ctx: commands.Context, autosend=0, info=0):
         import tests
