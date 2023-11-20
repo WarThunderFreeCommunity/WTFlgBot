@@ -1,14 +1,8 @@
-import unittest
 import ast
-import sys
-import os
+import unittest
 from io import StringIO
 
-
-data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src", "extensions"))
-sys.path.insert(0, data_path)
-
-from EvalExpressionAST import eval_expr, eval_
+from services.eval_expressions import eval_expr, eval_
 
 
 class TestCalculator(unittest.TestCase):
@@ -67,7 +61,3 @@ async def run_tests(**kwargs):
 
 if __name__ == '__main__':
     unittest.main()
-    #run_tests()
-
-
-

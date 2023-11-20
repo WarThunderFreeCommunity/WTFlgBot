@@ -1,36 +1,33 @@
-import sys
 import os
 import asyncio
 
+
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
-sys.path.insert(0, current_dir)
-sys.path.insert(0, os.path.join(current_dir, "..", "src", "cogs"))
-sys.path.insert(0, os.path.join(current_dir, "..", "data"))
+#sys.path.insert(0, current_dir)
+#sys.path.insert(0, os.path.join(current_dir, "..", "cogs"))
+#sys.path.insert(0, os.path.join(current_dir, "..", "data"))
 
 test_modules = [
-    __import__(f[:-3]) for f in os.listdir(current_dir) if f.endswith("Test.py")
+    __import__(f[:-3]) for f in os.listdir(current_dir) if f.endswith("_test.py")
 ]
 
 
 async def start_all(**kwargs):
     results = {}
-    autosend = kwargs.get("autosend")
 
     for test_module in test_modules:
         if all(
             [  # debugging
-                "AST" not in test_module.__name__,
-                "DBW" not in test_module.__name__,
-                "Srv" not in test_module.__name__,
+                "ast" not in test_module.__name__,
+                "dbw" not in test_module.__name__,
+                "srv" not in test_module.__name__,
             ]
         ):
             pass  # continue
 
         results[test_module.__name__] = await test_module.run_tests(**kwargs)
-        print(
-            info_str := results[test_module.__name__][0], test_module, type(test_module)
-        )
+        info_str = results[test_module.__name__][0], test_module, type(test_module)
 
         if kwargs.get("autosend"):
             await kwargs.get("thread").send(results[test_module.__name__][1])

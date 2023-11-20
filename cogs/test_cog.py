@@ -1,6 +1,7 @@
+import logging
 from datetime import datetime as dt
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 
 class ServerTestsCog(commands.Cog):
@@ -28,5 +29,5 @@ class ServerTestsCog(commands.Cog):
 
 
 def setup(bot: commands.Bot) -> None:
-    print("ServerTestsCog.py loaded")
+    logging.getLogger("discord.cogs.load").info("ServerTestsCog loaded!")
     bot.add_cog(ServerTestsCog(bot))
