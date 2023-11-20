@@ -78,7 +78,6 @@ class Bot(commands.Bot):
     async def setup_hook(self):
         await self.tree.set_translator(MyCustomTranslator())
         if self.cogs_on_start:
-            print(self.cogs_on_start)
             [await self.load_extension(f"cogs.{cog}") for cog in self.cogs_on_start]
         self.tree.copy_global_to(guild=discord.Object(id=1141373361063198822))
         await self.tree.sync(guild=discord.Object(id=1141373361063198822))
@@ -92,7 +91,7 @@ class Bot(commands.Bot):
             self.DATA["bot-started"] = True
 
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 intents.message_content = True
 
 bot: commands.Bot = Bot(
