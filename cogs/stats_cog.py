@@ -8,16 +8,12 @@ from discord.ext.commands import Bot, Cog
 class ServerStatsCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.on_init.start()
+
+    async def cog_load(self):
         self.online_members.start()
-
-    @tasks.loop(count=1)
-    async def on_init(self):
-        await self.bot.wait_until_ready()
-
+        
     async def cog_unload(self):
         self.online_members.stop()
-        pass
 
     @tasks.loop(minutes=6)
     async def online_members(self):
@@ -34,10 +30,14 @@ class ServerStatsCog(Cog):
             voices_online = len(voice_members)
             await self.bot.get_channel(int(1148656018692243456)).edit(name=f'👥〡members-{len(mbrs)}')
             await self.bot.get_channel(int(1148656037839257700)).edit(name=f'🟢〡online-{all_online}')
-            await self.bot.get_channel(int(1148656056289992795)).edit(name=f'🔊〡in-voices-{voices_online}')
+            await self.bot.get_channel(int(1148656056289992795)).edit(name=f'🔊〡ins-voices-{voices_online}')
         except BaseException as ex:
             logging.getLogger("discord.cogs.stats_cog").error(ex)
-
+    
+    @online_members.before_loop
+    async def before_online_members(self):
+        logging.getLogger("discord.cogs.stats_cog").info("waiting..")
+        await self.bot.wait_until_ready()
 
 async def setup(bot: Bot):
     logging.getLogger("discord.cogs.load").info("ServerStatsCog loaded!")
