@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 import requests
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 from discord.ext.commands import Bot, Cog, Context
 
 
