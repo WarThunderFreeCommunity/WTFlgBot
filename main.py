@@ -1,4 +1,5 @@
 import subprocess
+import os
 import asyncio
 
 import aeval
@@ -200,26 +201,26 @@ async def self_restart(ctx: commands.Context):
     embed = discord.Embed(
         title="Restarting", description=f"With command git pull"
     )
-    await ctx.send(embed=embed)
+    message = await ctx.send(embed=embed)
 
     try:
         # Asynchronous Git Pull in __file__ dir
         process = await asyncio.create_subprocess_exec(
-            "git", "pull", stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=__file__
+            "git", "pull", stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=os.path.dirname(os.path.abspath(__file__))
         )
 
         # Wait for the process to finish
         stdout, stderr = await process.communicate()
 
         if process.returncode == 0:
-            await ctx.send(f"Git pull successful:\n ```{stdout.decode()}```")
+            await message.edit(f"Git pull successful:\n ```{stdout.decode()}```")
         else:
-            await ctx.send(f"Git pull failed with error:\n```{stderr.decode()}```")
+            await message.edit(f"Git pull failed with error:\n```{stderr.decode()}```")
 
         # Restart the bot
         subprocess.run(["systemctl", "restart", "flgbot"])
     except Exception as e:
-        await ctx.send(f"An error occurred: {e}")
+        await message.reply(f"```An error occurred: \n{e}```")
 
 
 if __name__ == "__main__":
