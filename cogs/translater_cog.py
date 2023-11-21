@@ -60,7 +60,15 @@ def is_en_language(text: str):
 
 def remove_urls(_text):
     words = _text.split()
-    without_urls = [word for word in words if not urlparse(word).scheme]
+    without_urls = []
+
+    for word in words:
+        parsed_url = urlparse(word)
+        if parsed_url.scheme and parsed_url.netloc == "discord.gg":
+            without_urls.append(word)
+        elif not parsed_url.scheme:
+            without_urls.append(word)
+
     return " ".join(without_urls)
 
 
@@ -73,7 +81,7 @@ class TranslaterCog(Cog):
 
     async def text_processing(self, text: str):
         # links
-        #text = remove_urls(text)
+        text = remove_urls(text)
 
         # mentions
         mentions = re.findall(r"<@(\d+)>", text)
@@ -86,6 +94,9 @@ class TranslaterCog(Cog):
                 self.finded_users[user_id] = name
             text = text.replace(f"<@{mention}>", name)
 
+        # emoji
+        text = re.sub(r'<a?:[a-zA-Z0-9]+:[0-9]+>', '', text)
+        
         # commands
         text = text.replace("-t", "")
 
