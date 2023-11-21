@@ -191,14 +191,14 @@ async def eval_string(ctx: commands.Context, *, content: str):
 
 
 @bot.command(name="restart")
-async def self_restart(ctx: commands.Context, update: bool = True):
+async def self_restart(ctx: commands.Context):
     # Check if the user is an owner
     if ctx.author.id not in bot.OWNERS:
         return
 
     # Inform about the restart
     embed = discord.Embed(
-        title="Restarting", description=f"With command git pull: {update}"
+        title="Restarting", description=f"With command git pull"
     )
     await ctx.send(embed=embed)
 
