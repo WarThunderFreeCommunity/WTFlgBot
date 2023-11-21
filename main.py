@@ -203,7 +203,7 @@ async def self_restart(ctx: commands.Context, update: bool = True):
     await ctx.send(embed=embed)
 
     try:
-        # Asynchronous Git Pull
+        # Asynchronous Git Pull in __file__ dir
         process = await asyncio.create_subprocess_exec(
             "git", "pull", stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=__file__
         )
