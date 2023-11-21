@@ -211,13 +211,15 @@ async def self_restart(ctx: commands.Context):
         stdout, stderr = await process.communicate()
 
         if process.returncode == 0:
-            await message.edit(content=f"Git pull successful:\n ```{stdout.decode()}```")
+            await message.reply(content=f"Git pull successful: ```{stdout.decode()}```")
         else:
-            await message.edit(content=f"Git pull failed with error:\n```{stderr.decode()}```")
+            await message.reply(content=f"```Git pull failed with error: {stderr.decode()}```")
 
         subprocess.run(["systemctl", "restart", "flgbot"])
     except Exception as e:
         await message.reply(f"```An error occurred: \n{e}```")
+    else:
+        await message.reply(f"```Update finished```")
 
 
 if __name__ == "__main__":
