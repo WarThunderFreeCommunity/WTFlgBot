@@ -198,15 +198,17 @@ async def self_restart(ctx: commands.Context):
         return
 
     # Inform about the restart
-    embed = discord.Embed(
-        title="Restarting", description=f"With command git pull"
-    )
+    embed = discord.Embed(title="Restarting", description=f"With command git pull")
     message = await ctx.send(embed=embed)
 
     try:
         # Asynchronous Git Pull in __file__ dir
         process = await asyncio.create_subprocess_exec(
-            "git", "pull", stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=os.path.dirname(os.path.abspath(__file__))
+            "git",
+            "pull",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            cwd=os.path.dirname(os.path.abspath(__file__)),
         )
 
         # Wait for the process to finish
