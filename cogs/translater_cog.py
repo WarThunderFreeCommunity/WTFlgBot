@@ -73,7 +73,7 @@ class TranslaterCog(Cog):
 
     async def text_processing(self, text: str):
         # links
-        text = remove_urls(text)
+        #text = remove_urls(text)
 
         # mentions
         mentions = re.findall(r"<@(\d+)>", text)
@@ -86,10 +86,7 @@ class TranslaterCog(Cog):
                 self.finded_users[user_id] = name
             text = text.replace(f"<@{mention}>", name)
 
-        # stickers
-        text = re.sub(r"<[^:\s]+>", "", text)
-        text = re.sub(r":[^:\s]+:", "", text)
-        text = re.sub(r"<(\d+)>", "", text)
+        # commands
         text = text.replace("-t", "")
 
         return text
