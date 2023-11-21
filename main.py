@@ -191,7 +191,7 @@ async def eval_string(ctx: commands.Context, *, content: str):
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
-@bot.command(name="restart")
+@bot.command(name="restart") # test comment
 async def self_restart(ctx: commands.Context):
     if ctx.author.id not in bot.OWNERS:
         return
