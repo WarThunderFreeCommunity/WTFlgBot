@@ -1,3 +1,4 @@
+import subprocess
 import asyncio
 
 import aeval
@@ -11,11 +12,18 @@ import configuration
 class MyCustomTranslator(app_commands.Translator):
     async def load(self):
         ...
+
     # this gets called when the translator first gets loaded!
     async def unload(self):
         ...
         # in case you need to switch translators, this gets called when being removed
-    async def translate(self, string: app_commands.locale_str, locale: discord.Locale, context: app_commands.TranslationContext):
+
+    async def translate(
+        self,
+        string: app_commands.locale_str,
+        locale: discord.Locale,
+        context: app_commands.TranslationContext,
+    ):
         """
         `locale_str` is the string that is requesting to be translated
         `locale` is the target language to translate to
@@ -180,6 +188,38 @@ async def eval_string(ctx: commands.Context, *, content: str):
             f"Exception:\n```bash\n{str(ex).replace('```', '`')}\n```"
         )
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
+
+
+@bot.command(name="restart")
+async def self_restart(ctx: commands.Context, update: bool = True):
+    # Check if the user is an owner
+    if ctx.author.id not in bot.OWNERS:
+        return
+
+    # Inform about the restart
+    embed = discord.Embed(
+        title="Restarting", description=f"With command git pull: {update}"
+    )
+    await ctx.send(embed=embed)
+
+    try:
+        # Asynchronous Git Pull
+        process = await asyncio.create_subprocess_exec(
+            "git", "pull", stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=__file__
+        )
+
+        # Wait for the process to finish
+        stdout, stderr = await process.communicate()
+
+        if process.returncode == 0:
+            await ctx.send(f"Git pull successful:\n ```{stdout.decode()}```")
+        else:
+            await ctx.send(f"Git pull failed with error:\n```{stderr.decode()}```")
+
+        # Restart the bot
+        subprocess.run(["systemctl", "restart", "flgbot"])
+    except Exception as e:
+        await ctx.send(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
