@@ -191,14 +191,13 @@ async def eval_string(ctx: commands.Context, *, content: str):
         await message.edit(view=DeleteMessage(ctx=ctx, message=message))
 
 
-@bot.command(name="restart") # test comment
+@bot.command(name="restart")
 async def self_restart(ctx: commands.Context):
     if ctx.author.id not in bot.OWNERS:
         return
 
-    embed = discord.Embed(title="Restarting", description=f"With command git pull")
-    message = await ctx.send(embed=embed)
-
+    message = await ctx.send("```Updating the repository...```")
+    
     try:
         process = await asyncio.create_subprocess_exec(
             "git",
@@ -211,16 +210,17 @@ async def self_restart(ctx: commands.Context):
         stdout, stderr = await process.communicate()
 
         if process.returncode == 0:
-            await message.reply(content=f"Git pull successful: ```{stdout.decode()}```")
+            await message.edit(content=f"Git pull successful: ```{stdout.decode()}```")
         else:
-            await message.reply(content=f"```Git pull failed with error: {stderr.decode()}```")
+            await message.edit(content=f"```Git pull failed with error: {stderr.decode()}```")
 
+        embed = discord.Embed(title="Restarting", description="With command: systecmtl restart flgbot")
+        message = await message.edit(embed=embed)
+        
         subprocess.run(["systemctl", "restart", "flgbot"])
     except Exception as e:
-        await message.reply(f"```An error occurred: \n{e}```")
-    else:
-        await message.reply(f"```Update finished```")
-
+        embed = discord.Embed(title="Restarting failed", description=f"An error occurred: ```{e}```")
+        await message.edit(embed=embed)
 
 if __name__ == "__main__":
     bot.run(configuration.discord_token)
