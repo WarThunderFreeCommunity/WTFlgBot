@@ -193,16 +193,13 @@ async def eval_string(ctx: commands.Context, *, content: str):
 
 @bot.command(name="restart")
 async def self_restart(ctx: commands.Context):
-    # Check if the user is an owner
     if ctx.author.id not in bot.OWNERS:
         return
 
-    # Inform about the restart
     embed = discord.Embed(title="Restarting", description=f"With command git pull")
     message = await ctx.send(embed=embed)
 
     try:
-        # Asynchronous Git Pull in __file__ dir
         process = await asyncio.create_subprocess_exec(
             "git",
             "pull",
@@ -211,15 +208,13 @@ async def self_restart(ctx: commands.Context):
             cwd=os.path.dirname(os.path.abspath(__file__)),
         )
 
-        # Wait for the process to finish
         stdout, stderr = await process.communicate()
 
         if process.returncode == 0:
-            await message.edit(f"Git pull successful:\n ```{stdout.decode()}```")
+            await message.edit(content=f"Git pull successful:\n ```{stdout.decode()}```")
         else:
-            await message.edit(f"Git pull failed with error:\n```{stderr.decode()}```")
+            await message.edit(content=f"Git pull failed with error:\n```{stderr.decode()}```")
 
-        # Restart the bot
         subprocess.run(["systemctl", "restart", "flgbot"])
     except Exception as e:
         await message.reply(f"```An error occurred: \n{e}```")
