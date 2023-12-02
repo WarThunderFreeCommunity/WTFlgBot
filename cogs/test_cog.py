@@ -1,14 +1,12 @@
+import logging
 from datetime import datetime as dt
 
-from nextcord.ext import commands
+from discord.ext import commands
 
 
 class ServerTestsCog(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-
-    def __del__(self):
-        ...
 
     @commands.command()
     async def runtest(self, ctx: commands.Context, autosend=0, info=0):
@@ -26,7 +24,7 @@ class ServerTestsCog(commands.Cog):
         await thread.edit(archived=True)
 
 
-
-def setup(bot: commands.Bot) -> None:
-    print("ServerTestsCog.py loaded")
-    bot.add_cog(ServerTestsCog(bot))
+async def setup(bot: commands.Bot) -> None:
+    logging.getLogger("discord.cogs.load").info("ServerTestsCog loaded!")
+    await bot.add_cog(ServerTestsCog(bot))
+    

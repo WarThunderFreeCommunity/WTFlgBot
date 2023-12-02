@@ -1,13 +1,14 @@
 import re
-import urllib.parse
-import requests
-import concurrent.futures
 import html
+import logging
+import concurrent.futures
+import urllib.parse
 from urllib.parse import urlparse
 
-import nextcord
-from nextcord.ext import commands, tasks
-from nextcord.ext.commands import Bot, Cog, Context
+import requests
+import discord
+from discord.ext import commands
+from discord.ext.commands import Bot, Cog, Context
 
 
 def translate(text, target_language="ru", source_language="auto", timeout=5):
@@ -59,24 +60,24 @@ def is_en_language(text: str):
 
 def remove_urls(_text):
     words = _text.split()
-    without_urls = [word for word in words if not urlparse(word).scheme]
+    without_urls = []
+
+    for word in words:
+        parsed_url = urlparse(word)
+        if parsed_url.scheme and parsed_url.netloc == "discord.gg":
+            without_urls.append(word)
+        elif not parsed_url.scheme:
+            without_urls.append(word)
+
     return " ".join(without_urls)
 
 
 class TranslaterCog(Cog):
     def __init__(self, bot: Bot):
         self.bot = bot
-        self.on_init.start()
         self.finded_users = {}
         self.ignore_my_message_id = []
         self.message_responses = {}
-
-    @tasks.loop(count=1)
-    async def on_init(self):
-        ...
-
-    def cog_unload(self):
-        ...
 
     async def text_processing(self, text: str):
         # links
@@ -93,10 +94,10 @@ class TranslaterCog(Cog):
                 self.finded_users[user_id] = name
             text = text.replace(f"<@{mention}>", name)
 
-        # stickers
-        text = re.sub(r"<[^:\s]+>", "", text)
-        text = re.sub(r":[^:\s]+:", "", text)
-        text = re.sub(r"<(\d+)>", "", text)
+        # emoji
+        text = re.sub(r'<a?:[a-zA-Z0-9]+:[0-9]+>', '', text)
+        
+        # commands
         text = text.replace("-t", "")
 
         return text
@@ -111,8 +112,8 @@ class TranslaterCog(Cog):
             await ctx.reply("ignore translations", mention_author=False)
 
     @Cog.listener()
-    async def on_message(self, message: nextcord.Message):
-        if message.channel.id != 1141398986725540092:  # 1133729915901059102:
+    async def on_message(self, message: discord.Message):
+        if message.channel.id != 1141398986725540092:
             return
         if message.author.bot:
             return
@@ -135,7 +136,7 @@ class TranslaterCog(Cog):
             self.message_responses[message.id] = response
 
     @Cog.listener()
-    async def on_message_edit(self, before: nextcord.Message, after: nextcord.Message):
+    async def on_message_edit(self, before: discord.Message, after: discord.Message):
         if before.channel.id != 1141398986725540092:
             return
         if before.author.bot:
@@ -159,7 +160,7 @@ class TranslaterCog(Cog):
             )
 
     @Cog.listener()
-    async def on_message_delete(self, message: nextcord.Message):
+    async def on_message_delete(self, message: discord.Message):
         if message.channel.id != 1141398986725540092:
             return
 
@@ -169,11 +170,10 @@ class TranslaterCog(Cog):
             await bot_response.delete()
             del self.message_responses[message.id]
 
-    async def translate_and_reply(self, message: nextcord.Message, get_embed=False):
+    async def translate_and_reply(self, message: discord.Message, get_embed=False):
         text = await self.text_processing(message.content)
         if len(text) < 10:
             return False
-        link = "https://discordapp.com/users/"
         source_language = "en" if is_en_language(text) else "ru"
         target_language = "ru" if is_en_language(text) else "en"
         translation = translate(text, target_language, source_language)
@@ -185,7 +185,6 @@ class TranslaterCog(Cog):
         return f"`{target_language}:` {translation}"
 
 
-# on_ready cog!
-def setup(bot: Bot):
-    print("TranslaterCog loaded!")
-    bot.add_cog(TranslaterCog(bot))
+async def setup(bot: Bot):
+    logging.getLogger("discord.cogs.load").info("TranslaterCog loaded!")
+    await bot.add_cog(TranslaterCog(bot))
