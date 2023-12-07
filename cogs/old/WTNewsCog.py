@@ -7,14 +7,10 @@ from typing import List
 
 import aiohttp
 import requests
-import nextcord
+import discord
+from discord.ext import commands, tasks
+from discord.ext.commands import Bot, Cog, Context
 from bs4 import BeautifulSoup
-import nextcord
-from nextcord.ext import commands, tasks
-from nextcord.ext.commands import Bot, Cog, Context
-
-from ..extensions.DBWorkerExtension import DataBase
-from ..extensions.EXFormatExtension import ex_format
 
 
 RU_NEWS_LINK = "https://warthunder.com/ru/news/"
@@ -147,13 +143,13 @@ async def get_news_from_page(url, url_webhook, type_, ctx, title_text):
                     ]),
                 }
                 
-                embed = nextcord.Embed(description=description)
+                embed = discord.Embed(description=description)
                 embed.set_author(name=title, url=more_url)
                 embed.set_image(banner_url)
                 embed.set_footer(text=data)
 
                 async with aiohttp.ClientSession() as session:
-                    webhook = nextcord.Webhook.from_url(url_webhook, session=session)
+                    webhook = discord.Webhook.from_url(url_webhook, session=session)
                     message = await webhook.send(content=content[url_webhook], embed=embed, wait=True)
                     yield {"message_id": message.id, "text_arrays": text_arrays, "title": title}
             
@@ -181,14 +177,6 @@ class WTNewsCog(Cog):
         self.on_init.start()
         self.update_news.start()
     
-    @tasks.loop(count=1, reconnect=False)
-    async def on_init(self):
-        #await self.bot.sync_all_application_commands()
-        ...
-
-    def cog_unload(self):
-        ...
-
     @tasks.loop(minutes=30)
     async def update_news(self):
         links = [RU_NEWS_LINK, EN_NEWS_LINK, RU_CHANGES_LINK, EN_CHANGES_LINK]
@@ -198,7 +186,7 @@ class WTNewsCog(Cog):
         for link, hoock, type_, channel_id in zip(links, hoocks, types, channels):
             async for result in get_news_from_page(link, hoock, type_, None, None):
                 channel = await self.bot.fetch_channel(channel_id)
-                message: nextcord.Message = \
+                message: discord.Message = \
                     await channel.fetch_message(result["message_id"])
                 thread = await message.create_thread(
                     name=result["title"], auto_archive_duration=10080
@@ -208,52 +196,7 @@ class WTNewsCog(Cog):
                     await thread.send(message, suppress_embeds=True)
                 await thread.edit(locked=True)
 
-    @commands.Cog.listener()
-    async def on_message(self, message: nextcord.Message):
-        if message.channel.id != 1136034295715213434:
-            return
-        if message.author.id == 1113954512298836071:
-            return
-        if message.author.id != 1136034417463263232:
-            return
-        await message.reply("<@&1136315037745692732>")
-       
-    @commands.command()
-    async def news(self, ctx: Context, db_delete=False, title_text=None):
-        if ctx.author.id != 1120793294931234958: return
-        links = [RU_NEWS_LINK, EN_NEWS_LINK, RU_CHANGES_LINK, EN_CHANGES_LINK]
-        hoocks = [RU_NEWS_HOOK, EN_NEWS_HOOK, RU_CHANGES_HOOK, EN_CHANGES_HOOK]
-        channels = [1148657425046577152, 1148657314912538694] * 2
-        types = [0, 1, 2, 3, 4]
-        await ctx.send("Started")
-        if db_delete:
-            await ctx.send("db deleted news")
-            try:
-                db = DataBase("WarThunder.db")
-                await db.connect()
-                await db.run_que(
-                    "DELETE FROM WTNewsCog"
-                )
-            except: pass
-            finally:
-                await db.close()
-        for link, hoock, type_, channel_id in zip(links, hoocks, types, channels):
-            async for result in get_news_from_page(link, hoock, type_, ctx, title_text):
-                channel = await self.bot.fetch_channel(channel_id)
-                message: nextcord.Message = \
-                    await ctx.channel.fetch_message(result["message_id"])
-                thread = await message.create_thread(
-                    name=result["title"], auto_archive_duration=10080
-                )
-                await thread.send("coming soon...")
-                for message in result["text_arrays"]:
-                    await thread.send(message, suppress_embeds=True)
-                await thread.edit(locked=True)
-        await ctx.send("Finished")
 
-
-
-# on_ready cog!
 def setup(bot: Bot):
     print("WTNewsCog loaded!")
     bot.add_cog(WTNewsCog(bot))

@@ -2,3 +2,4 @@ requests
 discord
 aeval
 SQLAlchemy
+beautifulsoup4
