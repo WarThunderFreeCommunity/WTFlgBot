@@ -4,7 +4,5 @@ import os
 # Загрузка переменных из .env файла
 load_dotenv()
 
-# MAIN
-
-#DEBUG: bool = os.getenv("DEBUG").lower() == "true"
+DATABASE_URL: str = os.getenv("DATABASE_URL")
 
