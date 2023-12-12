@@ -11,8 +11,7 @@ from bs4 import BeautifulSoup
 import aiohttp
 
 from core.database import get_session
-import services
-import schemas
+from .. import services, schemas
 
 
 RU_NEWS_LINK = "https://warthunder.com/ru/news/"
