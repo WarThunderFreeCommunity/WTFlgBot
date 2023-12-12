@@ -6,5 +6,5 @@ load_dotenv()
 
 # MAIN
 
-DEBUG: bool = os.getenv("DEBUG").lower() == "true"
+#DEBUG: bool = os.getenv("DEBUG").lower() == "true"
 
