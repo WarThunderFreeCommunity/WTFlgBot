@@ -1,8 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, exists, delete, and_
 
-from .. import models, schemas
-
+import models, schemas
 
 async def create_news(db_session: AsyncSession, data: schemas.NewsInDB) -> models.News:
     db_obj = models.News(**data.model_dump(exclude_unset=True))

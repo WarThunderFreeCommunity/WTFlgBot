@@ -4,11 +4,10 @@ from core.database import Base
 import core.settings.config as conf
 
 
-engine = create_async_engine(conf.DATABASE_URL, echo=True)
-
+engine = create_async_engine(conf.DATABASE_URL, echo=False)
 
 async def init_models(*, drop_all=False):
-    if not conf.DEBUG and drop_all:
+    if not False and drop_all:
         raise ValueError("This action is possible only when the debug is enabled!")
 
     async with engine.begin() as conn:

@@ -1,3 +1,4 @@
+import sys
 import asyncio
 import random
 import logging
@@ -10,8 +11,10 @@ import discord
 from bs4 import BeautifulSoup
 import aiohttp
 
-from core.database import get_session
-from .. import services, schemas
+if __name__ != "__main__": # debug if...
+    from core.database import get_session
+    import schemas
+    import services
 
 
 RU_NEWS_LINK = "https://warthunder.com/ru/news/"
@@ -81,7 +84,7 @@ async def get_bs4(news_link: str) -> BeautifulSoup:
 async def get_widgets(soup: BeautifulSoup):
     news_widgets: List[BeautifulSoup] = soup.select(".showcase__item.widget")
 
-    for widget in news_widgets:
+    for widget in reversed(news_widgets):
         title = widget.select_one(".widget__title").text.strip()
         comment = widget.select_one(".widget__comment").text.strip()
         date = widget.select_one(".widget-meta__item--right").text.strip()
@@ -114,7 +117,7 @@ async def process_news(soup: BeautifulSoup):
 def get_embed_py_preview(preview) -> discord.Embed:
     embed = discord.Embed(description=preview["comment"])
     embed.set_author(name=preview["title"], url=preview["news_url"])
-    embed.set_image(preview["image_url"])
+    embed.set_image(url=preview["image_url"])
     embed.set_footer(text=preview["date"])
     return embed
 
@@ -124,8 +127,6 @@ async def send_webhook(url_webhook: str, embed: discord.Embed) -> discord.Messag
         webhook = discord.Webhook.from_url(url_webhook, session=session)
         message = await webhook.send(content=random.choice(CONTENT[url_webhook]), embed=embed, wait=True)
         return message
-    
-    ...
 
 
 class WTNewsCog(Cog):
@@ -138,30 +139,34 @@ class WTNewsCog(Cog):
 
     @tasks.loop(minutes=10)
     async def update_news(self):
-        db_session = await get_session()
         ru_channel = await self.bot.fetch_channel(1148657425046577152)
         en_channel = await self.bot.fetch_channel(1148657314912538694)
-        news_liks = [
+
+        news_links = [
             [RU_NEWS_LINK, RU_NEWS_HOOK, ru_channel],
             [EN_NEWS_LINK, EN_NEWS_HOOK, en_channel],
             [RU_CHANGES_LINK, RU_CHANGES_HOOK, ru_channel],
             [EN_CHANGES_LINK, EN_CHANGES_HOOK, en_channel],
         ]
-        for news_data in news_liks:
-            async for preview in get_widgets(await get_bs4(news_data[0])):
-                if await services.get_news_by_url(db_session, preview["news_url"]):
-                    return
-                await services.create_news(db_session, data=schemas.NewsInDB(**preview))
-                embed = get_embed_py_preview(preview)
-                message = await send_webhook(news_data[1], embed)
-                thread = await message.create_thread(name=preview["title"])
-                await thread.send("Cooooming soooooon...")
-                await thread.edit(locked=True)
+
+        for link, hook, channel in news_links:
+            async for db_session in get_session():
+                async for preview in get_widgets(await get_bs4(link)):
+                    if await services.news.get_news_by_url(db_session, preview["news_url"]):
+                        continue
+                    await services.news.create_news(db_session, data=schemas.NewsInDB(**preview))
+                    embed = get_embed_py_preview(preview)
+                    wh_msg = await send_webhook(hook, embed)
+                    message = await channel.fetch_message(wh_msg.id)
+                    thread = await message.create_thread(name=preview["title"])
+                    await thread.send("Cooooming soooooon...")
+                    await thread.edit(locked=True)
+                    await asyncio.sleep(5)
 
 
-def setup(bot: Bot):
+async def setup(bot: Bot):
     logging.getLogger("discord.cogs.load").info("WTNewsCog loaded!")
-    bot.add_cog(WTNewsCog(bot))
+    await bot.add_cog(WTNewsCog(bot))
 
 
 async def main():

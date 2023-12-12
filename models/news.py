@@ -6,9 +6,10 @@ from core.database import Base
 class News(Base):
     __tablename__ = "news"
     
-    news_url = Column(String, primary_key=True, index=True)
-    title =  Column(String, unique=True, nullable=False)
-    comment = Column(String, unique=True, nullable=False)
+    id = Column(Integer, primary_key=True)
+    news_url = Column(String, unique=False, index=True)
+    title =  Column(String, unique=False, nullable=False)
+    comment = Column(String, unique=False, nullable=False)
     date = Column(String, nullable=False)
     image_url = Column(String, nullable=False)
     
