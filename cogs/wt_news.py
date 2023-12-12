@@ -1,12 +1,18 @@
 import asyncio
 import random
+import logging
 from urllib.parse import quote
 from typing import List
 
 from discord.ext.commands import Bot, Cog
 from discord.ext import tasks
+import discord
 from bs4 import BeautifulSoup
 import aiohttp
+
+from core.database import get_session
+import services
+import schemas
 
 
 RU_NEWS_LINK = "https://warthunder.com/ru/news/"
@@ -32,34 +38,34 @@ TYPES_NEWS =>
 
 """
 CONTENT = {
-    RU_NEWS_HOOK: random.choice([
-        "Хей, <@&1157380814347190272>, тут свежая новость!",
-        "Привет, <@&1157380814347190272>, у нас есть свежая новость!",
-        "Эй, <@&1157380814347190272>, появилась новость!",
-        "Здравствуйте, <@&1157380814347190272>, у нас есть актуальная новость!",
-        "Приветствую, <@&1136434561002254458>! Важное объявление!"
-    ]),
-    EN_NEWS_HOOK: random.choice([
-        "Hey, <@&1157380868210438276>, here's a fresh news!",
-        "Hello, <@&1157380868210438276>, we've got some fresh news!",
-        "Hey, <@&1157380868210438276>, there's a new news update!",
-        "Greetings, <@&1157380868210438276>! We have an exciting news to share!",
-        "Hey, <@&1157380868210438276>, check out the latest news!"
-    ]),
-    RU_CHANGES_HOOK: random.choice([
-        "Хей, <@&1157380916533010452>, новое обновление!",
-        "Привет, <@&1157380916533010452>, у нас есть новое обновление!",
-        "Эй, <@&1157380916533010452>, тут свежее обновление!",
-        "Хей, <@&1157380916533010452>, пришло новое обновление!",
-        "Приветствую, <@&1157380916533010452>! У нас есть актуальное обновление!"
-    ]),
-    EN_CHANGES_HOOK: random.choice([
-        "Hey, <@&1136313556225232964>, new update!",
-        "Hello, <@&1136313556225232964>, we have a new update!",
-        "Hey, <@&1136313556225232964>, there's a fresh update!",
-        "Greetings, <@&1136313556225232964>! We have an exciting update to share!",
-        "Hey, <@&1136313556225232964>, check out the latest update!"
-    ]),
+    RU_NEWS_HOOK: [
+            "Хей, <@&1157380814347190272>, тут свежая новость!",
+            "Привет, <@&1157380814347190272>, у нас есть свежая новость!",
+            "Эй, <@&1157380814347190272>, появилась новость!",
+            "Здравствуйте, <@&1157380814347190272>, у нас есть актуальная новость!",
+            "Приветствую, <@&1136434561002254458>! Важное объявление!",
+        ],
+    EN_NEWS_HOOK: [
+            "Hey, <@&1157380868210438276>, here's a fresh news!",
+            "Hello, <@&1157380868210438276>, we've got some fresh news!",
+            "Hey, <@&1157380868210438276>, there's a new news update!",
+            "Greetings, <@&1157380868210438276>! We have an exciting news to share!",
+            "Hey, <@&1157380868210438276>, check out the latest news!",
+        ],
+    RU_CHANGES_HOOK: [
+            "Хей, <@&1157380916533010452>, новое обновление!",
+            "Привет, <@&1157380916533010452>, у нас есть новое обновление!",
+            "Эй, <@&1157380916533010452>, тут свежее обновление!",
+            "Хей, <@&1157380916533010452>, пришло новое обновление!",
+            "Приветствую, <@&1157380916533010452>! У нас есть актуальное обновление!",
+        ],
+    EN_CHANGES_HOOK: [
+            "Hey, <@&1136313556225232964>, new update!",
+            "Hello, <@&1136313556225232964>, we have a new update!",
+            "Hey, <@&1136313556225232964>, there's a fresh update!",
+            "Greetings, <@&1136313556225232964>! We have an exciting update to share!",
+            "Hey, <@&1136313556225232964>, check out the latest update!",
+        ],
 }
 
 
@@ -73,7 +79,7 @@ async def get_bs4(news_link: str) -> BeautifulSoup:
                 return None
 
 
-async def get_widgets(soup: BeautifulSoup):    
+async def get_widgets(soup: BeautifulSoup):
     news_widgets: List[BeautifulSoup] = soup.select(".showcase__item.widget")
 
     for widget in news_widgets:
@@ -106,24 +112,57 @@ async def process_news(soup: BeautifulSoup):
     ...
 
 
+def get_embed_py_preview(preview) -> discord.Embed:
+    embed = discord.Embed(description=preview["comment"])
+    embed.set_author(name=preview["title"], url=preview["news_url"])
+    embed.set_image(preview["image_url"])
+    embed.set_footer(text=preview["date"])
+    return embed
+
+
+async def send_webhook(url_webhook: str, embed: discord.Embed) -> discord.Message:
+    async with aiohttp.ClientSession() as session:
+        webhook = discord.Webhook.from_url(url_webhook, session=session)
+        message = await webhook.send(content=random.choice(CONTENT[url_webhook]), embed=embed, wait=True)
+        return message
+    
+    ...
+
 
 class WTNewsCog(Cog):
     def __init__(self, bot: Bot):
-        # send(suppress_embeds=True)
         self.bot = bot
-        self.on_init.start()
         self.update_news.start()
-    
-    @tasks.loop(minutes=30)
+
+    async def cog_unload(self) -> None:
+        self.update_news.stop()
+
+    @tasks.loop(minutes=10)
     async def update_news(self):
-        
-        ...
+        db_session = await get_session()
+        ru_channel = await self.bot.fetch_channel(1148657425046577152)
+        en_channel = await self.bot.fetch_channel(1148657314912538694)
+        news_liks = [
+            [RU_NEWS_LINK, RU_NEWS_HOOK, ru_channel],
+            [EN_NEWS_LINK, EN_NEWS_HOOK, en_channel],
+            [RU_CHANGES_LINK, RU_CHANGES_HOOK, ru_channel],
+            [EN_CHANGES_LINK, EN_CHANGES_HOOK, en_channel],
+        ]
+        for news_data in news_liks:
+            async for preview in get_widgets(await get_bs4(news_data[0])):
+                if await services.get_news_by_url(db_session, preview["news_url"]):
+                    return
+                await services.create_news(db_session, data=schemas.NewsInDB(**preview))
+                embed = get_embed_py_preview(preview)
+                message = await send_webhook(news_data[1], embed)
+                thread = await message.create_thread(name=preview["title"])
+                await thread.send("Cooooming soooooon...")
+                await thread.edit(locked=True)
 
 
 def setup(bot: Bot):
-    print("WTNewsCog loaded!")
+    logging.getLogger("discord.cogs.load").info("WTNewsCog loaded!")
     bot.add_cog(WTNewsCog(bot))
-
 
 
 async def main():
