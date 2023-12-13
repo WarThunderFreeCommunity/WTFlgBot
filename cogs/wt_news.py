@@ -115,8 +115,8 @@ async def process_news(soup: BeautifulSoup):
 
 
 def get_embed_py_preview(preview) -> discord.Embed:
-    embed = discord.Embed(description=preview["comment"])
-    embed.set_author(name=preview["title"], url=preview["news_url"])
+    text = f"### [{preview['title']}]({preview['news_url']})\n"
+    embed = discord.Embed(description=text + preview["comment"])
     embed.set_image(url=preview["image_url"])
     embed.set_footer(text=preview["date"])
     return embed
