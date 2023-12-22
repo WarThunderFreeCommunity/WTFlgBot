@@ -84,9 +84,13 @@ async def get_bs4(news_link: str) -> BeautifulSoup:
 async def get_widgets(soup: BeautifulSoup):
     news_widgets: List[BeautifulSoup] = soup.select(".showcase__item.widget")
 
-    for widget in reversed(news_widgets):
+    for widget in reversed(news_widgets):        
         title = widget.select_one(".widget__title").text.strip()
-        comment = widget.select_one(".widget__comment").text.strip()
+        try:
+            comment = widget.select_one(".widget__comment").text.strip()
+        except AttributeError:
+            # Ошибка в отсутвии краткого описания на сайте
+            comment = ""
         date = widget.select_one(".widget-meta__item--right").text.strip()
         news_url = "https://warthunder.com" + widget.select_one(".widget__link")["href"]
         image_url = "https:" + quote(
