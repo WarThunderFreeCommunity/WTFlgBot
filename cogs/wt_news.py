@@ -16,7 +16,7 @@ if __name__ != "__main__": # debug if...
     import schemas
     import services
 
-
+# TODO Перенести в .env файл основные переменные
 RU_NEWS_LINK = "https://warthunder.com/ru/news/"
 EN_NEWS_LINK = "https://warthunder.com/en/news/"
 RU_CHANGES_LINK = "https://warthunder.com/ru/game/changelog/"
