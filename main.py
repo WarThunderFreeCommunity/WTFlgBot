@@ -105,6 +105,21 @@ class Bot(commands.Bot):
             self.OWNERS.append(application_info.owner.id)
             self.EVAL_OWNER.append(application_info.owner.id)
             self.DATA["bot-started"] = True
+            await self.change_presence(activity=discord.Activity(
+                application_id=1113954512298836071,
+                name='War Thunder',
+                type=discord.ActivityType.playing,
+                state="Playing Solo",
+                details="Air RB",
+                timestamps={
+                    "start": 1577829661
+                },
+                party={
+                    "id": "ae488379-351d-4a4f-ad32-2b9b01c91657",
+                    "size": [1, 4]
+                },
+            ))
+
 
 
 intents = discord.Intents.all()

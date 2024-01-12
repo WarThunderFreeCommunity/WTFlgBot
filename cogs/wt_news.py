@@ -16,7 +16,7 @@ if __name__ != "__main__": # debug if...
     import schemas
     import services
 
-
+# TODO Перенести в .env файл основные переменные
 RU_NEWS_LINK = "https://warthunder.com/ru/news/"
 EN_NEWS_LINK = "https://warthunder.com/en/news/"
 RU_CHANGES_LINK = "https://warthunder.com/ru/game/changelog/"
@@ -45,7 +45,7 @@ CONTENT = {
             "Привет, <@&1157380814347190272>, у нас есть свежая новость!",
             "Эй, <@&1157380814347190272>, появилась новость!",
             "Здравствуйте, <@&1157380814347190272>, у нас есть актуальная новость!",
-            "Приветствую, <@&1136434561002254458>! Важное объявление!",
+            "Приветствую, <@&1157380814347190272>! Важное объявление!",
         ],
     EN_NEWS_HOOK: [
             "Hey, <@&1157380868210438276>, here's a fresh news!",
@@ -84,9 +84,13 @@ async def get_bs4(news_link: str) -> BeautifulSoup:
 async def get_widgets(soup: BeautifulSoup):
     news_widgets: List[BeautifulSoup] = soup.select(".showcase__item.widget")
 
-    for widget in reversed(news_widgets):
+    for widget in reversed(news_widgets):        
         title = widget.select_one(".widget__title").text.strip()
-        comment = widget.select_one(".widget__comment").text.strip()
+        try:
+            comment = widget.select_one(".widget__comment").text.strip()
+        except AttributeError:
+            # Ошибка в отсутвии краткого описания на сайте
+            comment = ""
         date = widget.select_one(".widget-meta__item--right").text.strip()
         news_url = "https://warthunder.com" + widget.select_one(".widget__link")["href"]
         image_url = "https:" + quote(
