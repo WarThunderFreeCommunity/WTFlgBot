@@ -139,6 +139,7 @@ class WTNewsCog(Cog):
 
     @tasks.loop(minutes=10)
     async def update_news(self):
+        await self.bot.wait_until_ready()
         ru_channel = await self.bot.fetch_channel(1148657425046577152)
         en_channel = await self.bot.fetch_channel(1148657314912538694)
 
